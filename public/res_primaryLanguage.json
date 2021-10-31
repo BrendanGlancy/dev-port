@@ -1,0 +1,113 @@
+{
+    "basic_info": {
+      "description_header": "Hello there,",
+      "description": "I'm Brendan Glancy. Currently, I am a student at the University of Akron, studying Computer Science. In addition, I work at the Canton Chamber of Commerce as an Information Technology professional and Wed Developer. I am interested in everything from Full-Stack to Cyber Security and work with ambitious people on ambitious projects.", 
+      "section_name": {
+        "about": "About me",
+        "projects": "Projects",
+        "skills": "Skills",
+        "experience": "Experience"
+      }
+    },
+    "projects": [
+      {
+        "title": "Brewery Locator",
+        "startDate": "2020",
+        "description": "Full-Stack web application I made at Tech Elevator, working with a team of multiple engineers. Our team was able to create this custom web application with a database full of information on Breweries in the Cleveland area.",
+        "images": [
+          "images/portfolio/brew/p1.jpg",
+          "images/portfolio/brew/p2.jpg"
+        ],
+        "url": "https://github.com/BrendanGlancy/BreweryLocater3000",
+        "technologies": [
+          {
+            "class": "devicon-vuejs-plain",
+            "name": "Vue"
+          },
+          {
+            "class": "devicon-java-plain",
+            "name": "Java"
+          },
+          {
+            "class": "devicon-javascript-plain",
+            "name": "JavaScript"
+          },
+          {
+            "class": "devicon-postgresql-plain",
+            "name": "PostgresSQL"
+          }
+        ]
+      },
+      {
+        "title": "Hack The Box",
+        "startDate": "2020",
+        "description": "Multiple machines and challenges completed, I compete in CTF and CDCC for Akron. Learning about Cyber Security is not only fun, but helps me improve the quality of the software I write.",
+        "images": [
+          "images/portfolio/hack/p1.jpg",
+          "images/portfolio/hack/p2.jpg"
+        ],
+        "url": "https://app.hackthebox.com/profile/414640" ,
+        "technologies": [
+          {
+            "class": "devicon-python-plain",
+            "name": "Python"
+          },
+          {
+            "class": "devicon-linux-plain",
+            "name": "Linux"
+          }
+        ]
+      },
+      {
+        "title": "Empyrial",
+        "startDate": "2021",
+        "description": "I'm a contributer on this very cool python project!",
+        "images": [
+          "images/portfolio/empyrial/p1.jpg",
+          "images/portfolio/empyrial/p2.jpg"
+        ],
+        "url": "https://github.com/ssantoshp/Empyrial",
+        "technologies": [
+          {
+            "class": "devicon-python-plain",
+            "name": "Python"
+          }
+        ]
+      }
+    ],
+    "experience": [
+      {
+        "company": "Chamber of Commerce",
+        "title": "Developer",
+        "years": "8.2019 - present",
+        "mainTech": [
+          "JavaScript"
+        ],
+        "technologies": [
+          "JavaScript",
+          "React",
+          "Wordpress",
+          "MySQL",
+          "Cyber Security"
+        ]
+      },
+      {
+        "company": "Tech Elevator",
+        "title": "Student",
+        "years": "09.2020 - 12.2020",
+        "mainTech": [
+          "Java"
+        ],
+        "technologies": [
+          "Java",
+          "SQL",
+          "JavaScript",
+          "Vue",
+          "JDBC",
+          "REST API",
+          "Bootstrap",
+          ".NET Core"
+        ]
+      }
+    ]
+  }

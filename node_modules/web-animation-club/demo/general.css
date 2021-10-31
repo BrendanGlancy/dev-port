@@ -1,0 +1,22 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: monospace;
+}
+body > div {
+  padding: 25px;
+}
+button {
+  margin: 10px 0;
+  height: 30px;
+  width: 50px;
+}
+p {
+  line-height: 24px;
+}
+.status {
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 10px;
+}

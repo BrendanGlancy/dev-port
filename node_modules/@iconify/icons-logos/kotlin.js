@@ -1,0 +1,7 @@
+var data = {
+	"body": "<defs><linearGradient x1=\"26.599%\" y1=\"146.559%\" x2=\"73.845%\" y2=\"52.381%\" id=\"ssvg-id-kotlina\"><stop stop-color=\"#0095D5\" offset=\"9.677%\"/><stop stop-color=\"#238AD9\" offset=\"30.07%\"/><stop stop-color=\"#557BDE\" offset=\"62.11%\"/><stop stop-color=\"#7472E2\" offset=\"86.43%\"/><stop stop-color=\"#806EE3\" offset=\"100%\"/></linearGradient><linearGradient x1=\"13.984%\" y1=\"37.105%\" x2=\"68.682%\" y2=\"-13.554%\" id=\"ssvg-id-kotlinb\"><stop stop-color=\"#0095D5\" offset=\"11.83%\"/><stop stop-color=\"#3C83DC\" offset=\"41.78%\"/><stop stop-color=\"#6D74E1\" offset=\"69.62%\"/><stop stop-color=\"#806EE3\" offset=\"83.33%\"/></linearGradient><linearGradient x1=\"-16.836%\" y1=\"91.94%\" x2=\"76.219%\" y2=\"-1.116%\" id=\"ssvg-id-kotlinc\"><stop stop-color=\"#C757BC\" offset=\"10.75%\"/><stop stop-color=\"#D0609A\" offset=\"21.38%\"/><stop stop-color=\"#E1725C\" offset=\"42.54%\"/><stop stop-color=\"#EE7E2F\" offset=\"60.48%\"/><stop stop-color=\"#F58613\" offset=\"74.3%\"/><stop stop-color=\"#F88909\" offset=\"82.32%\"/></linearGradient></defs><path fill=\"url(#ssvg-id-kotlina)\" d=\"M0 256l128.427-128.427L256 256z\"/><path fill=\"url(#ssvg-id-kotlinb)\" d=\"M0 0h128.427L0 138.667z\"/><path fill=\"url(#ssvg-id-kotlinc)\" d=\"M128.427 0L0 135.253V256l128.427-128.427L256 0z\"/>",
+	"width": 256,
+	"height": 256
+};
+exports.__esModule = true;
+exports.default = data;

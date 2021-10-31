@@ -1,0 +1,7 @@
+var data = {
+	"body": "<defs><linearGradient x1=\"50%\" y1=\"0%\" x2=\"50%\" y2=\"100%\" id=\"ssvg-id-gittera\"><stop stop-color=\"#FB0766\" offset=\"0%\"/><stop stop-color=\"#C50948\" offset=\"100%\"/></linearGradient></defs><path d=\"M0 0h256v256H0V0z\" fill=\"url(#ssvg-id-gittera)\"/><path d=\"M83.914 62.873h12.525v82.661H83.914V62.873zm76.149 20.039h12.524v62.622h-12.524V82.912zm-50.599 0h12.524v110.466h-12.524V82.912zm25.049 0h12.525v110.466h-12.525V82.912z\" fill=\"#FFF\"/>",
+	"width": 256,
+	"height": 256
+};
+exports.__esModule = true;
+exports.default = data;
