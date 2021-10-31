@@ -1,18 +1,18 @@
 {
-	"name": "developer-portfolio",
-	"version": "1.0.0",
-	"description": "Software Developer Portfolio Template built with react.js bootstrap that helps you showcase your work and skills as a software developer.",
-	"main": "index.js",
-	"repository": "https://github.com/1hanzla100/hanzla-portfolio.git",
-	"author": "Hanzla Tauqeer",
-	"license": "MIT",
-	"scripts": {
+  "name": "dev-port",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/BrendanGlancy/dev-port.git",
+  "author": "BrendanGlancy <bglance68@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
 		"lint": "next lint"
 	},
-	"dependencies": {
+    "dependencies": {
 		"@apollo/client": "^3.3.21",
 		"@next/eslint-plugin-next": "11.1.3-canary.7",
 		"bootstrap": "^5.0.2",
