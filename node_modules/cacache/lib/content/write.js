@@ -4,7 +4,7 @@ const util = require('util')
 
 const contentPath = require('./path')
 const fixOwner = require('../util/fix-owner')
-const fs = require('graceful-fs')
+const fs = require('fs')
 const moveFile = require('../util/move-file')
 const Minipass = require('minipass')
 const Pipeline = require('minipass-pipeline')
@@ -20,20 +20,17 @@ const writeFile = util.promisify(fs.writeFile)
 
 module.exports = write
 
-function write (cache, data, opts) {
-  opts = opts || {}
-  if (opts.algorithms && opts.algorithms.length > 1) {
+function write (cache, data, opts = {}) {
+  const { algorithms, size, integrity } = opts
+  if (algorithms && algorithms.length > 1)
     throw new Error('opts.algorithms only supports a single algorithm for now')
-  }
-  if (typeof opts.size === 'number' && data.length !== opts.size) {
-    return Promise.reject(sizeError(opts.size, data.length))
-  }
-  const sri = ssri.fromData(data, {
-    algorithms: opts.algorithms
-  })
-  if (opts.integrity && !ssri.checkData(data, opts.integrity, opts)) {
-    return Promise.reject(checksumError(opts.integrity, sri))
-  }
+
+  if (typeof size === 'number' && data.length !== size)
+    return Promise.reject(sizeError(size, data.length))
+
+  const sri = ssri.fromData(data, algorithms ? { algorithms } : {})
+  if (integrity && !ssri.checkData(data, integrity, opts))
+    return Promise.reject(checksumError(integrity, sri))
 
   return disposer(makeTmp(cache, opts), makeTmpDisposer,
     (tmp) => {
@@ -90,8 +87,7 @@ class CacacheWriteStream extends Flush {
   }
 }
 
-function writeStream (cache, opts) {
-  opts = opts || {}
+function writeStream (cache, opts = {}) {
   return new CacacheWriteStream(cache, opts)
 }
 
@@ -115,13 +111,17 @@ function pipeToTmp (inputStream, cache, tmpTarget, opts) {
   const hashStream = ssri.integrityStream({
     integrity: opts.integrity,
     algorithms: opts.algorithms,
-    size: opts.size
+    size: opts.size,
   })
-  hashStream.on('integrity', i => { integrity = i })
-  hashStream.on('size', s => { size = s })
+  hashStream.on('integrity', i => {
+    integrity = i
+  })
+  hashStream.on('size', s => {
+    size = s
+  })
 
   const outStream = new fsm.WriteStream(tmpTarget, {
-    flags: 'wx'
+    flags: 'wx',
   })
 
   // NB: this can throw if the hashStream has a problem with
@@ -135,21 +135,23 @@ function pipeToTmp (inputStream, cache, tmpTarget, opts) {
 
   return pipeline.promise()
     .then(() => ({ integrity, size }))
-    .catch(er => rimraf(tmpTarget).then(() => { throw er }))
+    .catch(er => rimraf(tmpTarget).then(() => {
+      throw er
+    }))
 }
 
 function makeTmp (cache, opts) {
   const tmpTarget = uniqueFilename(path.join(cache, 'tmp'), opts.tmpPrefix)
   return fixOwner.mkdirfix(cache, path.dirname(tmpTarget)).then(() => ({
     target: tmpTarget,
-    moved: false
+    moved: false,
   }))
 }
 
 function makeTmpDisposer (tmp) {
-  if (tmp.moved) {
+  if (tmp.moved)
     return Promise.resolve()
-  }
+
   return rimraf(tmp.target)
 }
 

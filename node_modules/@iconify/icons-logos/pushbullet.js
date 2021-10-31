@@ -1,7 +1,0 @@
-var data = {
-	"body": "<defs><linearGradient x1=\"8.59%\" y1=\"1.954%\" x2=\"77.471%\" y2=\"73.896%\" id=\"ssvg-id-pushbulletc\"><stop stop-color=\"#4CB36B\" offset=\"0%\"/><stop stop-color=\"#3EA16F\" offset=\"100%\"/></linearGradient><path id=\"ssvg-id-pushbulleta\" d=\"M256 128c0 70.692-57.308 128-128 128C57.308 256 0 198.692 0 128C0 57.308 57.308 0 128 0c70.692 0 128 57.308 128 128\"/></defs><mask id=\"ssvg-id-pushbulletb\" fill=\"#fff\"><use xlink:href=\"#ssvg-id-pushbulleta\"/></mask><use fill=\"#67BF79\" xlink:href=\"#ssvg-id-pushbulleta\"/><path d=\"M256 128c0 70.692-57.308 128-128 128C57.308 256 0 198.692 0 128C0 57.308 57.308 0 128 0c70.692 0 128 57.308 128 128\" fill=\"#67BF79\" mask=\"url(#ssvg-id-pushbulletb)\"/><path d=\"M63.111 187.022L96.178 72l64.533 60.978L200 90.133l87.533 86.289l-110.844 124.889L63.111 187.022\" fill=\"url(#ssvg-id-pushbulletc)\" mask=\"url(#ssvg-id-pushbulletb)\"/><path d=\"M77 189.6c-16.733 0-16.733 0-16.733-16.733V81c0-16.733 0-16.733 16.733-16.733h3.334c16.733 0 16.733 0 16.733 16.733v91.867c0 16.733 0 16.733-16.733 16.733H77z\" fill=\"#FFF\" mask=\"url(#ssvg-id-pushbulletb)\"/><path d=\"M121.041 189.6c-5.699 0-8.508-2.809-8.508-8.508V72.774c0-5.698 2.809-8.507 8.508-8.507h37.537c32.178 0 52.628 32.273 52.628 63.025c0 30.752-20.628 62.308-52.628 62.308h-37.537z\" fill=\"#FFF\" mask=\"url(#ssvg-id-pushbulletb)\"/>",
-	"width": 256,
-	"height": 256
-};
-exports.__esModule = true;
-exports.default = data;

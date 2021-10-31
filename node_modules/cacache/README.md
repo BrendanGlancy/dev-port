@@ -12,8 +12,6 @@ when running as `root`.
 It was written to be used as [npm](https://npm.im)'s local cache, but can
 just as easily be used on its own.
 
-_Translations: [español](README.es.md)_
-
 ## Install
 
 `$ npm install --save cacache`
@@ -35,10 +33,11 @@ _Translations: [español](README.es.md)_
   * Writing
     * [`put`](#put-data)
     * [`put.stream`](#put-stream)
-    * [`put*` opts](#put-options)
     * [`rm.all`](#rm-all)
     * [`rm.entry`](#rm-entry)
     * [`rm.content`](#rm-content)
+    * [`index.compact`](#index-compact)
+    * [`index.insert`](#index-insert)
   * Utilities
     * [`clearMemoized`](#clear-memoized)
     * [`tmp.mkdir`](#tmp-mkdir)
@@ -94,7 +93,7 @@ cacache.get.byDigest(cachePath, integrityHash).then(data => {
 * Lockless, high-concurrency cache access
 * Streaming support
 * Promise support
-* Pretty darn fast -- sub-millisecond reads and writes including verification
+* Fast -- sub-millisecond reads and writes including verification
 * Arbitrary metadata storage
 * Garbage collection and additional offline verification
 * Thorough test coverage
@@ -203,6 +202,8 @@ A sub-function, `get.byDigest` may be used for identical behavior, except lookup
 will happen by integrity hash, bypassing the index entirely. This version of the
 function *only* returns `data` itself, without any wrapper.
 
+See: [options](#get-options)
+
 ##### Note
 
 This function loads the entire cache entry into memory before returning it. If
@@ -243,6 +244,8 @@ you need to collect that extra data about the cached entry.
 A sub-function, `get.stream.byDigest` may be used for identical behavior,
 except lookup will happen by integrity hash, bypassing the index entirely. This
 version does not emit the `metadata` and `integrity` events at all.
+
+See: [options](#get-options)
 
 ##### Example
 
@@ -330,11 +333,32 @@ cacache.get.hasContent(cachePath, 'sha521-NOT+IN/CACHE==').then(console.log)
 false
 ```
 
+##### <a name="get-options"></a> Options
+
+##### `opts.integrity`
+If present, the pre-calculated digest for the inserted content. If this option
+is provided and does not match the post-insertion digest, insertion will fail
+with an `EINTEGRITY` error.
+
+##### `opts.memoize`
+
+Default: null
+
+If explicitly truthy, cacache will read from memory and memoize data on bulk read. If `false`, cacache will read from disk data. Reader functions by default read from in-memory cache.
+
+##### `opts.size`
+If provided, the data stream will be verified to check that enough data was
+passed through. If there's more or less data than expected, insertion will fail
+with an `EBADSIZE` error.
+
+
 #### <a name="put-data"></a> `> cacache.put(cache, key, data, [opts]) -> Promise`
 
 Inserts data passed to it into the cache. The returned Promise resolves with a
 digest (generated according to [`opts.algorithms`](#optsalgorithms)) after the
 cache entry has been successfully written.
+
+See: [options](#put-options)
 
 ##### Example
 
@@ -355,6 +379,8 @@ Stream](https://nodejs.org/api/stream.html#stream_writable_streams) that inserts
 data written to it into the cache. Emits an `integrity` event with the digest of
 written contents when it succeeds.
 
+See: [options](#put-options)
+
 ##### Example
 
 ```javascript
@@ -367,9 +393,7 @@ request.get(
 )
 ```
 
-#### <a name="put-options"></a> `> cacache.put options`
-
-`cacache.put` functions have a number of options in common.
+##### <a name="put-options"></a> Options
 
 ##### `opts.metadata`
 
@@ -384,7 +408,7 @@ with an `EBADSIZE` error.
 ##### `opts.integrity`
 
 If present, the pre-calculated digest for the inserted content. If this option
-if provided and does not match the post-insertion digest, insertion will fail
+is provided and does not match the post-insertion digest, insertion will fail
 with an `EINTEGRITY` error.
 
 `algorithms` has no effect if this option is present.
@@ -417,6 +441,11 @@ cache.
 Reading from disk data can be forced by explicitly passing `memoize: false` to
 the reader functions, but their default will be to read from memory.
 
+##### `opts.tmpPrefix`
+Default: null
+
+Prefix to append on the temporary directory name inside the cache's tmp dir. 
+
 #### <a name="rm-all"></a> `> cacache.rm.all(cache) -> Promise`
 
 Clears the entire cache. Mainly by blowing away the cache directory itself.
@@ -429,12 +458,16 @@ cacache.rm.all(cachePath).then(() => {
 })
 ```
 
-#### <a name="rm-entry"></a> `> cacache.rm.entry(cache, key) -> Promise`
+#### <a name="rm-entry"></a> `> cacache.rm.entry(cache, key, [opts]) -> Promise`
 
 Alias: `cacache.rm`
 
 Removes the index entry for `key`. Content will still be accessible if
 requested directly by content address ([`get.stream.byDigest`](#get-stream)).
+
+By default, this appends a new entry to the index with an integrity of `null`.
+If `opts.removeFully` is set to `true` then the index file itself will be
+physically deleted rather than appending a `null`.
 
 To remove the content itself (which might still be used by other entries), use
 [`rm.content`](#rm-content). Or, to safely vacuum any unused content, use
@@ -462,6 +495,34 @@ cacache.rm.content(cachePath, 'sha512-SoMeDIGest/IN+BaSE64==').then(() => {
 })
 ```
 
+#### <a name="index-compact"></a> `> cacache.index.compact(cache, key, matchFn, [opts]) -> Promise`
+
+Uses `matchFn`, which must be a synchronous function that accepts two entries
+and returns a boolean indicating whether or not the two entries match, to
+deduplicate all entries in the cache for the given `key`.
+
+If `opts.validateEntry` is provided, it will be called as a function with the
+only parameter being a single index entry. The function must return a Boolean,
+if it returns `true` the entry is considered valid and will be kept in the index,
+if it returns `false` the entry will be removed from the index.
+
+If `opts.validateEntry` is not provided, however, every entry in the index will
+be deduplicated and kept until the first `null` integrity is reached, removing
+all entries that were written before the `null`.
+
+The deduplicated list of entries is both written to the index, replacing the
+existing content, and returned in the Promise.
+
+#### <a name="index-insert"></a> `> cacache.index.insert(cache, key, integrity, opts) -> Promise`
+
+Writes an index entry to the cache for the given `key` without writing content.
+
+It is assumed if you are using this method, you have already stored the content
+some other way and you only wish to add a new index to that content. The `metadata`
+and `size` properties are read from `opts` and used as part of the index entry.
+
+Returns a Promise resolving to the newly added entry.
+
 #### <a name="clear-memoized"></a> `> cacache.clearMemoized()`
 
 Completely resets the in-memory entry cache.
@@ -479,6 +540,8 @@ permissions.
 
 If you want automatic cleanup of this directory, use
 [`tmp.withTmp()`](#with-tpm)
+
+See: [options](#tmp-options)
 
 ##### Example
 
@@ -519,6 +582,8 @@ promise completes.
 The same caveats apply when it comes to managing permissions for the tmp dir's
 contents.
 
+See: [options](#tmp-options)
+
 ##### Example
 
 ```javascript
@@ -528,6 +593,13 @@ cacache.tmp.withTmp(cache, dir => {
   // `dir` no longer exists
 })
 ```
+
+##### <a name="tmp-options"></a> Options
+
+##### `opts.tmpPrefix`
+Default: null
+
+Prefix to append on the temporary directory name inside the cache's tmp dir. 
 
 #### <a name="integrity"></a> Subresource Integrity Digests
 
@@ -584,10 +656,24 @@ When it's done, it'll return an object with various stats about the verification
 process, including amount of storage reclaimed, number of valid entries, number
 of entries removed, etc.
 
-##### Options
+##### <a name="verify-options"></a> Options
 
-* `opts.filter` - receives a formatted entry. Return false to remove it.
-                  Note: might be called more than once on the same entry.
+##### `opts.concurrency`
+
+Default: 20
+
+Number of concurrently read files in the filesystem while doing clean up.
+
+##### `opts.filter`
+Receives a formatted entry. Return false to remove it.
+Note: might be called more than once on the same entry.
+
+##### `opts.log`
+Custom logger function:
+```
+  log: { silly () {} }
+  log.silly('verify', 'verifying cache at', cache)
+```
 
 ##### Example
 

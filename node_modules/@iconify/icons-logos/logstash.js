@@ -1,7 +1,0 @@
-var data = {
-	"body": "<path d=\"M122.435 189.217H0V0h11.13c61.474 0 111.305 49.83 111.305 111.304v77.913z\" fill=\"#FEC514\"/><path d=\"M116.87 306.086h5.565V189.217H0c0 64.545 52.324 116.87 116.87 116.87\" fill=\"#343741\"/><path fill=\"#00BFB3\" d=\"M150.261 306.086H256V189.217H150.261z\"/>",
-	"width": 256,
-	"height": 307
-};
-exports.__esModule = true;
-exports.default = data;

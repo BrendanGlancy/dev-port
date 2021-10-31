@@ -4,9 +4,8 @@ const util = require('util')
 
 const pMap = require('p-map')
 const contentPath = require('./content/path')
-const figgyPudding = require('figgy-pudding')
 const fixOwner = require('./util/fix-owner')
-const fs = require('graceful-fs')
+const fs = require('fs')
 const fsm = require('fs-minipass')
 const glob = util.promisify(require('glob'))
 const index = require('./entry-index')
@@ -22,20 +21,16 @@ const truncate = util.promisify(fs.truncate)
 const writeFile = util.promisify(fs.writeFile)
 const readFile = util.promisify(fs.readFile)
 
-const VerifyOpts = figgyPudding({
-  concurrency: {
-    default: 20
-  },
-  filter: {},
-  log: {
-    default: { silly () {} }
-  }
+const verifyOpts = (opts) => ({
+  concurrency: 20,
+  log: { silly () {} },
+  ...opts,
 })
 
 module.exports = verify
 
 function verify (cache, opts) {
-  opts = VerifyOpts(opts)
+  opts = verifyOpts(opts)
   opts.log.silly('verify', 'verifying cache at', cache)
 
   const steps = [
@@ -45,12 +40,12 @@ function verify (cache, opts) {
     rebuildIndex,
     cleanTmp,
     writeVerifile,
-    markEndTime
+    markEndTime,
   ]
 
   return steps
     .reduce((promise, step, i) => {
-      const label = step.name || `step #${i}`
+      const label = step.name
       const start = new Date()
       return promise.then((stats) => {
         return step(cache, opts).then((s) => {
@@ -59,9 +54,9 @@ function verify (cache, opts) {
               stats[k] = s[k]
             })
           const end = new Date()
-          if (!stats.runTime) {
+          if (!stats.runTime)
             stats.runTime = {}
-          }
+
           stats.runTime[label] = end - start
           return Promise.resolve(stats)
         })
@@ -113,9 +108,9 @@ function garbageCollect (cache, opts) {
   const indexStream = index.lsStream(cache)
   const liveContent = new Set()
   indexStream.on('data', (entry) => {
-    if (opts.filter && !opts.filter(entry)) {
+    if (opts.filter && !opts.filter(entry))
       return
-    }
+
     liveContent.add(entry.integrity.toString())
   })
   return new Promise((resolve, reject) => {
@@ -125,14 +120,14 @@ function garbageCollect (cache, opts) {
     return glob(path.join(contentDir, '**'), {
       follow: false,
       nodir: true,
-      nosort: true
+      nosort: true,
     }).then((files) => {
       return Promise.resolve({
         verifiedContent: 0,
         reclaimedCount: 0,
         reclaimedSize: 0,
         badContentCount: 0,
-        keptSize: 0
+        keptSize: 0,
       }).then((stats) =>
         pMap(
           files,
@@ -176,14 +171,14 @@ function verifyContent (filepath, sri) {
     .then((s) => {
       const contentInfo = {
         size: s.size,
-        valid: true
+        valid: true,
       }
       return ssri
         .checkStream(new fsm.ReadStream(filepath), sri)
         .catch((err) => {
-          if (err.code !== 'EINTEGRITY') {
+          if (err.code !== 'EINTEGRITY')
             throw err
-          }
+
           return rimraf(filepath).then(() => {
             contentInfo.valid = false
           })
@@ -191,9 +186,9 @@ function verifyContent (filepath, sri) {
         .then(() => contentInfo)
     })
     .catch((err) => {
-      if (err.code === 'ENOENT') {
+      if (err.code === 'ENOENT')
         return { size: 0, valid: false }
-      }
+
       throw err
     })
 }
@@ -204,18 +199,19 @@ function rebuildIndex (cache, opts) {
     const stats = {
       missingContent: 0,
       rejectedEntries: 0,
-      totalEntries: 0
+      totalEntries: 0,
     }
     const buckets = {}
     for (const k in entries) {
+      /* istanbul ignore else */
       if (hasOwnProperty(entries, k)) {
         const hashed = index.hashKey(k)
         const entry = entries[k]
         const excluded = opts.filter && !opts.filter(entry)
         excluded && stats.rejectedEntries++
-        if (buckets[hashed] && !excluded) {
+        if (buckets[hashed] && !excluded)
           buckets[hashed].push(entry)
-        } else if (buckets[hashed] && excluded) {
+        else if (buckets[hashed] && excluded) {
           // skip
         } else if (excluded) {
           buckets[hashed] = []
@@ -248,7 +244,7 @@ function rebuildBucket (cache, bucket, stats, opts) {
             return index
               .insert(cache, entry.key, entry.integrity, {
                 metadata: entry.metadata,
-                size: entry.size
+                size: entry.size,
               })
               .then(() => {
                 stats.totalEntries++

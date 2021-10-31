@@ -1,8 +1,6 @@
 function resolveModuleName(request, issuer, compilerOptions, moduleResolutionHost, parentResolver) {
   const pnp = require(`pnpapi`);
 
-  const topLevelLocation = pnp.getPackageInformation(pnp.topLevel).packageLocation;
-
   const [, prefix = ``, packageName = ``, rest] = request.match(/^(!(?:.*!)+)?((?!\.{0,2}\/)(?:@[^\/]+\/)?[^\/]+)?(.*)/);
 
   let failedLookupLocations = [];
@@ -13,7 +11,7 @@ function resolveModuleName(request, issuer, compilerOptions, moduleResolutionHos
 
     let unqualified;
     try {
-      unqualified = pnp.resolveToUnqualified(typesPackagePath, `${topLevelLocation}/`, {considerBuiltins: false});
+      unqualified = pnp.resolveToUnqualified(typesPackagePath, issuer, {considerBuiltins: false});
     } catch (error) {}
 
     if (unqualified) {

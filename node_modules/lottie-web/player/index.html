@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body, html{
+            background-color:#ccc;
+            margin: 0px;
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        #lottie{
+            background-color:#000;
+            width:600px;
+            height:400px;
+            display:block;
+            overflow: hidden;
+            transform: translate3d(0,0,0);
+            /*display:none;*/
+        }
+
+    </style>
+    <!-- build:js lottie.js -->
+    <script src="js/main.js"></script>
+    <script src="js/utils/common.js"></script>
+    <script src="js/utils/BaseEvent.js"></script>
+    <script src="js/utils/getFontProperties.js"></script>
+    <script src="js/utils/helpers/arrays.js"></script>
+    <script src="js/utils/helpers/svg_elements.js" data-builds="full,svg,svg_light,html,html_light"></script>
+    <script src="js/utils/helpers/html_elements.js"></script>
+    <script src="js/utils/helpers/dynamicProperties.js"></script>
+    <script src="js/utils/helpers/blendModes.js"></script>
+    <script src="js/utils/helpers/shapeEnums.js"></script>
+    <script src="js/3rd_party/transformation-matrix.js"></script>
+    <script src="js/3rd_party/seedrandom.js"></script>
+    <script src="js/3rd_party/BezierEaser.js"></script>
+    <script src="js/3rd_party/howler.js"></script>
+    <script src="js/utils/animationFramePolyFill.js"></script>
+    <script src="js/utils/functionExtensions.js"></script>
+    <script src="js/utils/bez.js"></script>
+    <script src="js/utils/DataManager.js"></script>
+    <!-- <script src="js/utils/DataManagerWorkerOverrides.js" data-builds="canvas_worker"></script> -->
+    <script src="js/utils/FontManager.js"></script>
+    <!-- <script src="js/utils/FontManagerWorkerOverride.js" data-builds="canvas_worker"></script> -->
+    <script src="js/utils/PropertyFactory.js"></script>
+    <script src="js/utils/TransformProperty.js"></script>
+    <script src="js/utils/shapes/ShapePath.js"></script>
+    <script src="js/utils/shapes/ShapeProperty.js"></script>
+    <script src="js/utils/shapes/ShapeModifiers.js"></script>
+    <script src="js/utils/shapes/TrimModifier.js"></script>
+    <script src="js/utils/shapes/RoundCornersModifier.js"></script>
+    <script src="js/utils/shapes/PuckerAndBloatModifier.js"></script>
+    <script src="js/utils/shapes/RepeaterModifier.js"></script>
+    <script src="js/utils/shapes/ShapeCollection.js"></script>
+    <script src="js/utils/shapes/DashProperty.js"></script>
+    <script src="js/utils/shapes/GradientProperty.js"></script>
+    <script src="js/utils/shapes/shapePathBuilder.js"></script>
+    <script src="js/utils/audio/AudioController.js"></script>
+    <script src="js/utils/imagePreloader.js" data-builds="full,canvas,canvas_light,html,html_light,svg,svg_light"></script>
+    <!-- <script src="js/utils/imagePreloaderWorkerOverride.js" data-builds="canvas_worker"></script> -->
+    <script src="js/utils/featureSupport.js"></script>
+    <script src="js/utils/filters.js"></script>
+    <script src="js/utils/asset_loader.js"></script>
+    <!-- <script src="js/utils/asset_loader_worker_override.js" data-builds="canvas_worker"></script> -->
+    <script src="js/utils/text/TextAnimatorProperty.js"></script>
+    <script src="js/utils/text/TextAnimatorDataProperty.js"></script>
+    <script src="js/utils/text/LetterProps.js"></script>
+    <script src="js/utils/text/TextProperty.js"></script>
+    <script src="js/utils/text/TextSelectorProperty.js"></script>
+    <script src="js/utils/pooling/pool_factory.js"></script>
+    <script src="js/utils/pooling/pooling.js"></script>
+    <script src="js/utils/pooling/point_pool.js"></script>
+    <script src="js/utils/pooling/shape_pool.js"></script>
+    <script src="js/utils/pooling/shapeCollection_pool.js"></script>
+    <script src="js/utils/pooling/segments_length_pool.js"></script>
+    <script src="js/utils/pooling/bezier_length_pool.js"></script>
+    <script src="js/utils/markers/markerParser.js"></script>
+    <script src="js/renderers/BaseRenderer.js"></script>
+    <script src="js/renderers/SVGRenderer.js"></script>
+    <script src="js/renderers/CanvasRenderer.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
+    <!-- <script src="js/renderers/CanvasRendererWorkerOverride.js" data-builds="canvas_worker"></script> -->
+    <script src="js/renderers/HybridRenderer.js" data-builds="full,html,html_light"></script>
+    <script src="js/mask.js"></script>
+    <script src="js/elements/helpers/HierarchyElement.js"></script>
+    <script src="js/elements/helpers/FrameElement.js"></script>
+    <script src="js/elements/helpers/TransformElement.js"></script>
+    <script src="js/elements/helpers/RenderableElement.js"></script>
+    <script src="js/elements/helpers/RenderableDOMElement.js"></script>
+    <script src="js/elements/helpers/shapes/ProcessedElement.js"></script>
+    <script src="js/elements/helpers/shapes/SVGStyleData.js" data-builds="full,svg,svg_light,html,html_light"></script>
+    <script src="js/elements/helpers/shapes/SVGShapeData.js" ></script>
+    <script src="js/elements/helpers/shapes/SVGTransformData.js" data-builds="full,svg,svg_light,html,html_light"></script>
+    <script src="js/elements/helpers/shapes/SVGStrokeStyleData.js" data-builds="full,svg,svg_light,html,html_light"></script>
+    <script src="js/elements/helpers/shapes/SVGFillStyleData.js" data-builds="full,svg,svg_light,html,html_light"></script>
+    <script src="js/elements/helpers/shapes/SVGGradientFillStyleData.js" data-builds="full,svg,svg_light,html,html_light"></script>
+    <script src="js/elements/helpers/shapes/SVGGradientStrokeStyleData.js" data-builds="full,svg,svg_light,html,html_light"></script>
+    <script src="js/elements/helpers/shapes/ShapeGroupData.js"></script>
+    <script src="js/elements/helpers/shapes/SVGElementsRenderer.js" data-builds="full,svg,svg_light,html,html_light"></script>
+    <script src="js/elements/helpers/shapes/ShapeTransformManager.js"></script>
+    <script src="js/elements/helpers/shapes/CVShapeData.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
+    <script src="js/elements/BaseElement.js"></script>
+    <script src="js/elements/NullElement.js"></script>
+    <script src="js/elements/svgElements/SVGBaseElement.js"></script>
+    <script src="js/elements/ShapeElement.js"></script>
+    <script src="js/elements/TextElement.js"></script>
+    <script src="js/elements/CompElement.js"></script>
+    <script src="js/elements/ImageElement.js"></script>
+    <script src="js/elements/SolidElement.js"></script>
+    <script src="js/elements/AudioElement.js"></script>
+    <script src="js/elements/FootageElement.js"></script>
+    <script src="js/elements/svgElements/SVGCompElement.js" data-builds="full,svg,svg_light,html,html_light"></script>
+    <script src="js/elements/svgElements/SVGTextElement.js" data-builds="full,svg,svg_light,html,html_light"></script>
+    <script src="js/elements/svgElements/SVGShapeElement.js"></script>
+    <script src="js/elements/svgElements/effects/SVGTintEffect.js" data-builds="full,svg,svg_light,html,html_light"></script>
+    <script src="js/elements/svgElements/effects/SVGFillFilter.js" data-builds="full,svg,svg_light,html,html_light"></script>
+    <script src="js/elements/svgElements/effects/SVGGaussianBlurEffect.js" data-builds="full,svg,svg_light,html,html_light"></script>
+    <script src="js/elements/svgElements/effects/SVGStrokeEffect.js" data-builds="full,svg,svg_light,html,html_light"></script>
+    <script src="js/elements/svgElements/effects/SVGTritoneFilter.js" data-builds="full,svg,svg_light,html,html_light"></script>
+    <script src="js/elements/svgElements/effects/SVGProLevelsFilter.js" data-builds="full,svg,svg_light,html,html_light"></script>
+    <script src="js/elements/svgElements/effects/SVGDropShadowEffect.js" data-builds="full,svg,svg_light,html,html_light"></script>
+    <script src="js/elements/svgElements/effects/SVGMatte3Effect.js" data-builds="full,svg,svg_light,html,html_light"></script>
+    <script src="js/elements/svgElements/SVGEffectsPlaceholder.js" data-builds="svg_light,html_light"></script>
+    <script src="js/elements/svgElements/SVGEffects.js" data-builds="full,svg,html"></script>
+    <script src="js/elements/canvasElements/CVContextData.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
+    <script src="js/elements/canvasElements/CVBaseElement.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
+    <script src="js/elements/canvasElements/CVImageElement.js" data-builds="full,canvas,canvas_light"></script>
+    <script src="js/elements/canvasElements/CVCompElement.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
+    <script src="js/elements/canvasElements/CVMaskElement.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
+    <script src="js/elements/canvasElements/CVShapeElement.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
+    <script src="js/elements/canvasElements/CVSolidElement.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
+    <script src="js/elements/canvasElements/CVTextElement.js" data-builds="full,canvas,canvas_light"></script>
+    <script src="js/elements/canvasElements/CVEffects.js" data-builds="full,canvas,canvas_light,html,html_light,canvas_worker"></script>
+    <script src="js/elements/htmlElements/HBaseElement.js" data-builds="full,html,html_light"></script>
+    <script src="js/elements/htmlElements/HSolidElement.js" data-builds="full,html,html_light"></script>
+    <script src="js/elements/htmlElements/HCompElement.js" data-builds="full,html,html_light"></script>
+    <script src="js/elements/htmlElements/HShapeElement.js" data-builds="full,html,html_light"></script>
+    <script src="js/elements/htmlElements/HTextElement.js" data-builds="full,html,html_light"></script>
+    <script src="js/elements/htmlElements/HImageElement.js" data-builds="full,html,html_light"></script>
+    <script src="js/elements/htmlElements/HCameraElement.js" data-builds="full,html,html_light"></script>
+    <script src="js/elements/htmlElements/HEffects.js" data-builds="full,html,html_light"></script>
+    <script src="js/animation/AnimationManager.js"></script>
+    <!-- <script src="js/animation/AnimationManagerWorkerOverride.js" data-builds="canvas_worker"></script> -->
+    <script src="js/animation/AnimationItem.js"></script>
+    <!-- <script src="js/animation/AnimationItemWorkerOverride.js" data-builds="canvas_worker"></script> -->
+    <!-- Expressions -->
+    <script src="js/utils/expressions/Expressions.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/ExpressionManager.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/expressionHelpers.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/ExpressionPropertyDecorator.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/ExpressionTextPropertyDecorator.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/PropertyGroupFactory.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/PropertyInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/ShapeInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/shapes/ShapePathInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/TextInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/LayerInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/FootageInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/CompInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/TransformInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/ProjectInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/EffectInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/MaskInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/ExpressionValueFactory.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/TextSelectorPropertyDecorator.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/effects/SliderEffect.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/effects/EffectsManagerPlaceholder.js"  data-builds="svg_light,canvas,html_light,canvas_worker" ></script>
+    <script src="js/EffectsManager.js" data-builds="full,svg,html"></script>
+    <!-- end Expressions -->
+    <!-- endbuild -->
+    <script src="js/module.js" ></script>
+    <!-- <script src="lottie.js"></script> -->
+    <!-- <script src="bodymovin_light.js"></script> -->
+
+
+
+</head>
+<body>
+<div id="lottie"></div>
+
+<script>
+    var anim;
+    var elem = document.getElementById('lottie');
+    var animData = {
+        container: elem,
+        renderer: 'svg',
+        loop: false,
+        autoplay: true,
+        rendererSettings: {
+            progressiveLoad:false,
+            preserveAspectRatio: 'xMidYMid meet',
+            imagePreserveAspectRatio: 'xMidYMid meet',
+            title: 'TEST TITLE',
+            description: 'TEST DESCRIPTION',
+            filterSize: {
+                width: '500%',
+                height: '500%',
+                x: '-200%',
+                y: '-200%',
+            }
+        },
+        path: 'exports/render/data.json',
+        audioFactory: createAudio,
+    };
+    // lottie.setQuality('low');
+    // anim.setSpeed(0.5)
+    anim = lottie.loadAnimation(animData);
+    anim.setSubframe(false);
+    anim.onError = function(errorType, nativeError, errorProps) {
+        console.log(errorType)
+    }
+
+    anim.addEventListener('error', function(error) {
+        console.log(error)
+    })
+
+    // setTimeout(()=>anim.destroy(), 1000);
+
+    function createAudio(assetPath) {
+        return new Howl({
+            src: [assetPath]
+        })
+    }
+
+</script>
+
+</body>
+</html>
