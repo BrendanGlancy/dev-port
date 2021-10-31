@@ -1,5 +1,5 @@
 {
-  "name": "react-frontend-dev-portfolio",
+  "name": "dev-port",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -44,5 +44,5 @@
     "gh-pages": "^3.1.0",
     "sass": "^1.42.1"
   },
-  "homepage": "https://BrendanGlancy.github.io/webpage"
+  "homepage": "https://BrendanGlancy.github.io/dev-port"
 }
