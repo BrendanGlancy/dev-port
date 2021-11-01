@@ -43,7 +43,7 @@ export default function Home({ githubProfileData }) {
 						"stocks",
 						"api",
 						"bitcoin",
-						"ethereum"
+						"ethereum",
 						"Cardano",
 						"full stack",
 						"full stack web developer",
