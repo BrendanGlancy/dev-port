@@ -2,7 +2,7 @@ import emoji from "react-easy-emoji";
 
 export const greetings = {
 	name: "Brendan Glancy",
-	title: "Hi all, I'm Brendan",
+	title: "Hello there, I'm Brendan",
 	description:
 		"A passionate Developer, learning Full Stack Web Development and Cyber Security. I have experience building Web applications with JavaScript / Reactjs / Nodejs / Python / Django and some other cool libraries and frameworks.",
 	resumeLink: "https://brendanglancy.github.io/Resume/",
@@ -113,6 +113,10 @@ export const SkillBars = [
 		progressPercentage: "80", //Insert relative proficiency in percentage
 	},
 	{
+		Stack: "Cyber Security",
+		progressPercentage: "75",
+	},
+	{
 		Stack: "Backend",
 		progressPercentage: "70",
 	},
@@ -123,7 +127,7 @@ export const educationInfo = [
 		schoolName: "Akron University",
 		subHeader: "Bachelor of Science in Computer Science",
 		duration: "August 2021 - Present",
-		desc: "Participated in the research of XXX and published 3 papers.",
+		desc: "Programming CIS degree, Current GPA: 4.0",
 		descBullets: [
 			"The Bachelor of Science in Computer Information Systems (CIS) - Programming degree option allows students to attain knowledge of effective software application development, client/server application development, and database application development and management for businesses.",
 		],
@@ -132,7 +136,7 @@ export const educationInfo = [
 		schoolName: "Tech Elevator",
 		subHeader: "Full Stack Web Development",
 		duration: "September 2020 - December 2020",
-		desc: "Participated in the research of XXX and published 3 papers.",
+		desc: "Programming Bootcamp to learn Full Stack Web Development",
 		descBullets: [
 			"Completed a 14-Week (60+ hrs/week) intensive software development program during the fall of 2020. Below is a list of projects I’ve completed during my time here:",
 			"Tenmo Capstone (Java Postgres, demonstrating knowledge of DAO, JDBC, Spring, MVC, Rest API)",
@@ -189,3 +193,4 @@ export const feedbacks = [
 			"the website is very nice, everything was perfectly made as i need. it just loads in moments, without giving u the chance to wait. the quality is also very amazing. i am using it without any problem. great job",
 	},
 ];
+
