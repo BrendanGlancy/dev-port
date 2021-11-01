@@ -38,6 +38,13 @@ export default function Home({ githubProfileData }) {
 						"empyrial",
 						"landscaping",
 						"canton",
+						"crytpo",
+						"crypto tracker",
+						"stocks"
+						"api",
+						"bitcoin",
+						"ethereum"
+						"Cardano",
 						"full stack",
 						"full stack web developer",
 						"mobile app developer",
