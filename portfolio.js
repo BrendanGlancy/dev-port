@@ -179,6 +179,11 @@ export const projects = [
 		desc: "Contributer on Empyrial, Empyrial is a Python-based open-source quantitative investment library dedicated to financial institutions and retail investors, officially released in March 2021. Already used by thousands of people working in the finance industry, Empyrial aims to become an all-in-one platform for portfolio management, analysis, and optimization.",
 		github: "https://github.com/ssantoshp/Empyrial",
 	},
+	{
+		name: "Crypto Tracker",
+		desc: "Crypto Tracker is a Next.js app, utilizing an API to gather real time prices of hundreds of crypto curriencies, I created this app because I invest in crytpo and wanted a place to see a lot of them at once.",
+		github: "https://crypto-tracker-7lqmdu936-brendanglancy.vercel.app/",
+	},
 ];
 
 export const feedbacks = [
