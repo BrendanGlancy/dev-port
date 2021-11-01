@@ -40,7 +40,7 @@ export default function Home({ githubProfileData }) {
 						"canton",
 						"crytpo",
 						"crypto tracker",
-						"stocks"
+						"stocks",
 						"api",
 						"bitcoin",
 						"ethereum"
