@@ -4,7 +4,7 @@ export const greetings = {
 	name: "Brendan Glancy",
 	title: "Hi all, I'm Brendan",
 	description:
-		"A passionate Developer, learning Full Stack Web Development and Cyber Security. I having an experience of building Web applications with JavaScript / Reactjs / Nodejs / Python / Django and some other cool libraries and frameworks.",
+		"A passionate Developer, learning Full Stack Web Development and Cyber Security. I having experience of building Web applications with JavaScript / Reactjs / Nodejs / Python / Django and some other cool libraries and frameworks.",
 	resumeLink: "https://brendanglancy.github.io/Resume/",
 };
 
@@ -22,7 +22,7 @@ export const socialLinks = {
 export const skillsSection = {
 	title: "What I do",
 	subTitle:
-		"CRAZY FULL STACK DEVELOPER WHO WANTS TO EXPLORE EVERY TECH STACK",
+		"FULL STACK DEVELOPER WHO WANTS TO EXPLORE EVERY TECH STACK",
 	skills: [
 		emoji(
 			"⚡ Develop highly interactive Front end / User Interfaces for your web and mobile applications"
