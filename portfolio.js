@@ -172,6 +172,7 @@ export const projects = [
 	{
 		name: "Kiss Landscaping",
 		desc: "Custom landscaping site, react scroll and react styled components. Great template for business react site. Kiss Landscaping is a company based out of North Canton, founded by Dylan Kiss. KissLandscaping makes getting a quote for your job easy, dozens of satisfied customers.",
+		github: "https://github.com/BrendanGlancy/KissLandscaping",
 		link: "https://kisslandscaping.com/",
 	},
 	{
