@@ -85,6 +85,10 @@ export const skillsSection = {
 			fontAwesomeClassname: "logos:git-icon",
 		},
 		{
+			skillName: 'aws',
+			fontAwesomeClassname: "logos:aws",
+		},
+		{
 			skillName: "vuejs",
 			fontAwesomeClassname: "logos:vue",
 		},
@@ -149,22 +153,22 @@ export const experience = [
 		role: "Web Developer",
 		company: "Chamber of Commerce",
 		companylogo: "/img/icons/common/program.svg",
-		date: "June 2018 – Present",
-		desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+		date: "June 2019 – Present",
+		desc: "Attract users to websites with attractive, user-friendly designs and clean code for high-performance operation. Work on multiple high traffic domains, deployed to AWS.",
 	},
 	{
 		role: "CTO",
 		company: "KissLandscaping",
 		companylogo: "/img/icons/common/svg-6.svg",
-		date: "june 2018 – present",
-		desc: "lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+		date: "june 2020 – present",
+		desc: "Developed and maintain website, cyber-security, design, marketing, anything tech related.",
 	},
 	{
 		role: "Akron CTF Team",
 		company: "Akron University",
 		companylogo: "/img/icons/common/hacker.svg",
 		date: "August 2021 – present",
-		desc: "lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+		desc: "Pen tester for CTF and CDCC club, find and exploit vunerablities in web, stego, crypto, reverse engineering. 23 out of 300+ teams in National Ohio State hacking competition.",
 	},
 ];
 
@@ -185,6 +189,11 @@ export const projects = [
 		name: "Crypto Tracker",
 		desc: "Crypto Tracker is a Next.js app, utilizing an API to gather real time prices of hundreds of crypto curriencies, I created this app because I invest in crytpo and wanted a place to see a lot of them at once.",
 		link: "https://crypto-tracker-7lqmdu936-brendanglancy.vercel.app/",
+	},
+	{
+		name: "Hall of Fame",
+		desc: "Design and attract customers to HallofFame.com, maintain site that generates a large amount of traffic. Mitigate Cyber Security threats.",
+		link: "https://www.profootballhof.com/",
 	},
 ];
 
