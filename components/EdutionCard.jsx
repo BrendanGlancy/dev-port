@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardBody, Badge } from "reactstrap";
+import { Card, CardBody, Badge, Button } from "reactstrap";
 
 import { Fade } from "react-reveal";
 
@@ -24,6 +24,22 @@ const EdutionCard = ({ education }) => {
 											return <li key={desc}>{desc}</li>;
 									  })
 									: null}
+								<br></br>
+								{education.github ? (
+									<Button
+										className="btn-icon"
+										color="github"
+										href={education.github}
+										target="_blank"
+										rel="noopener"
+										aria-label="Github"
+									>
+										<span className="btn-inner--icon">
+											<i className="fa fa-github" />
+										</span>
+									</Button>
+								) : null}
+
 							</ul>
 						</div>
 					</div>

@@ -135,6 +135,7 @@ export const educationInfo = [
 		descBullets: [
 			"The Bachelor of Science in Computer Information Systems (CIS) - Programming degree option allows students to attain knowledge of effective software application development, client/server application development, and database application development and management for businesses.",
 		],
+		github: "https://github.com/BrendanGlancy/akron/tree/master/logic-programming",
 	},
 	{
 		schoolName: "Tech Elevator",
