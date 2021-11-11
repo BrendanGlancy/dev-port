@@ -58,6 +58,10 @@ export const skillsSection = {
 			fontAwesomeClassname: "vscode-icons:file-type-reactjs",
 		},
 		{
+			skillName: "typescript",
+			fontAwesomeClassname: "logos:typescript-icon",
+		},
+		{
 			skillName: "nodejs",
 			fontAwesomeClassname: "logos:nodejs-icon",
 		},
@@ -144,9 +148,12 @@ export const educationInfo = [
 		duration: "September 2020 - December 2020",
 		desc: "Programming Bootcamp to learn Full Stack Web Development",
 		descBullets: [
-			"Completed a 14-Week (60+ hrs/week) intensive software development program during the fall of 2020. Below is a list of projects I’ve completed during my time here:",
-			"Tenmo Capstone (Java Postgres, demonstrating knowledge of DAO, JDBC, Spring, MVC, Rest API)",
+			"  Object-Oriented Programming: Java",
+			"  Web Application Development: HTML, CSS, JavaScript, Vue.js, APIs using Spring Boot, Tomcat",
+"  Database Programming: Spring JDBC/DAO, Table Design, SQL, PostgreSQL, E/R diagrams",
+"  Development tools and techniques: Agile, Unit Testing (JUnit), Integration Testing, Command Line navigation, Git, Eclipse, dbVisualizer, Postman, Visual Studio Code",
 		],
+		github: "https://github.com/BrendanGlancy/BreweryLocater",
 	},
 ];
 
