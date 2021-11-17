@@ -21,8 +21,8 @@ export default function Home({ githubProfileData }) {
 					title: "Brendan Glancy",
 					description:
 						"A passionate Full Stack Web Developer and Mobile App Developer.",
-					image: "https://avatars3.githubusercontent.com/u/59178380?v=4",
-					url: "https://developer-portfolio-1hanzla100.vercel.app",
+					image: "https://avatars.githubusercontent.com/u/61941978?v=4",
+					url: "https://dev-port-lac.vercel.app/",
 					keywords: [
 						"Brendan",
 						"Brendan Glancy",
