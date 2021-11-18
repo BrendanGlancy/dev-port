@@ -201,7 +201,7 @@ export const projects = [
 	},
 	{
 		name: "Hall of Fame",
-		desc: "Design and attract customers to HallofFame.com, maintain site that generates a large amount of traffic. Mitigate Cyber Security threats.",
+		desc: "Design and attract customers to profootballhof.com, maintain site that generates a large amount of traffic. Mitigate Cyber Security threats.",
 		link: "https://www.profootballhof.com/",
 	},
 ];
