@@ -70,6 +70,10 @@ export const skillsSection = {
 			fontAwesomeClassname: "vscode-icons:file-type-swift",
 		},
 		{
+			skillName: "go",
+			fontAwesomeClassname: "vscode-icons:file-type-go",
+		},
+		{
 			skillName: "npm",
 			fontAwesomeClassname: "vscode-icons:file-type-npm",
 		},
