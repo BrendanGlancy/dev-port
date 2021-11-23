@@ -80,8 +80,6 @@ export const skillsSection = {
 		{
 			skillName: "c",
 			fontAwesomeClassname: "logos:c",
-			skillName: "go",
-			fontAwesomeClassname: "vscode-icons:file-type-go",
 		},
 		{
 			skillName: "npm",
