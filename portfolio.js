@@ -38,6 +38,10 @@ export const skillsSection = {
 
 	softwareSkills: [
 		{
+			skillName: "python",
+			fontAwesomeClassname: "logos:python",
+		},
+		{
 			skillName: "html-5",
 			fontAwesomeClassname: "vscode-icons:file-type-html",
 		},
@@ -58,6 +62,10 @@ export const skillsSection = {
 			fontAwesomeClassname: "vscode-icons:file-type-reactjs",
 		},
 		{
+			skillName: "vuejs",
+			fontAwesomeClassname: "logos:vue",
+		},
+		{
 			skillName: "typescript",
 			fontAwesomeClassname: "logos:typescript-icon",
 		},
@@ -68,6 +76,16 @@ export const skillsSection = {
 		{
 			skillName: "swift",
 			fontAwesomeClassname: "vscode-icons:file-type-swift",
+		},
+		{
+			skillName: "c",
+			fontAwesomeClassname: "logos:c",
+			skillName: "go",
+			fontAwesomeClassname: "vscode-icons:file-type-go",
+		},
+		{
+			skillName: "npm",
+			fontAwesomeClassname: "vscode-icons:file-type-npm",
 		},
 		{
 			skillName: "go",
@@ -82,14 +100,6 @@ export const skillsSection = {
 			fontAwesomeClassname: "vscode-icons:file-type-sql",
 		},
 		{
-			skillName: "c-sharp",
-			fontAwesomeClassname: "vscode-icons:file-type-csharp",
-		},
-		{
-			skillName: "python",
-			fontAwesomeClassname: "logos:python",
-		},
-		{
 			skillName: "git",
 			fontAwesomeClassname: "logos:git-icon",
 		},
@@ -98,12 +108,8 @@ export const skillsSection = {
 			fontAwesomeClassname: "logos:aws",
 		},
 		{
-			skillName: "vuejs",
-			fontAwesomeClassname: "logos:vue",
-		},
-		{
-			skillName: "cpp",
-			fontAwesomeClassname: "vscode-icons:file-type-cpp",
+			skillName: 'pytorch',
+			fontAwesomeClassname: "logos:pytorch",
 		},
 		{
 			skillName: "php",
@@ -112,6 +118,10 @@ export const skillsSection = {
 		{
 			skillName: "jquery",
 			fontAwesomeClassname: "logos:jquery",
+		},
+		{
+			skillName: "haskell",
+			fontAwesomeClassname: "logos:haskell",
 		},
 	],
 };
@@ -222,4 +232,6 @@ export const feedbacks = [
 			"the website is very nice, everything was perfectly made as i need. it just loads in moments, without giving u the chance to wait. the quality is also very amazing. i am using it without any problem. great job",
 	},
 ];
+
+
 
