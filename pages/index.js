@@ -37,6 +37,8 @@ export default function Home({ githubProfileData }) {
 						"web developer",
 						"empyrial",
 						"landscaping",
+						"LinkedIn",
+						"Github",
 						"canton",
 						"crytpo",
 						"crypto tracker",
@@ -70,7 +72,6 @@ export default function Home({ githubProfileData }) {
 			<Navigation />
 			<Greetings />
 			<Skills />
-			<Proficiency />
 			<Education />
 			<Experience />
 			<Projects />

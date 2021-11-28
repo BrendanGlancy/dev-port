@@ -82,16 +82,16 @@ export const skillsSection = {
 			fontAwesomeClassname: "logos:c",
 		},
 		{
-			skillName: "npm",
-			fontAwesomeClassname: "vscode-icons:file-type-npm",
-		},
-		{
 			skillName: "go",
 			fontAwesomeClassname: "vscode-icons:file-type-go",
 		},
 		{
 			skillName: "npm",
 			fontAwesomeClassname: "vscode-icons:file-type-npm",
+		},
+		{
+			skillName: "jquery",
+			fontAwesomeClassname: "logos:jquery",
 		},
 		{
 			skillName: "sql-database",
@@ -106,16 +106,8 @@ export const skillsSection = {
 			fontAwesomeClassname: "logos:aws",
 		},
 		{
-			skillName: 'pytorch',
-			fontAwesomeClassname: "logos:pytorch",
-		},
-		{
 			skillName: "php",
 			fontAwesomeClassname: "logos:php",
-		},
-		{
-			skillName: "jquery",
-			fontAwesomeClassname: "logos:jquery",
 		},
 		{
 			skillName: "haskell",
