@@ -123,15 +123,15 @@ export const SkillBars = [
 	},
 	{
 		Stack: "Frontend/Design", //Insert stack or technology you have experience in
-		progressPercentage: "80", //Insert relative proficiency in percentage
-	},
-	{
-		Stack: "Cyber Security",
-		progressPercentage: "75",
+		progressPercentage: "85", //Insert relative proficiency in percentage
 	},
 	{
 		Stack: "Backend",
-		progressPercentage: "70",
+		progressPercentage: "80",
+	},
+	{
+		Stack: "Security",
+		progressPercentage: "75",
 	},
 ];
 
@@ -185,6 +185,33 @@ export const experience = [
 	},
 ];
 
+export const english = [
+	{
+		title: "Defintion of Good Writing",
+		class: "English Composition I",
+		companylogo: "/img/icons/common/goodwriting.svg",
+		datewritten: "Fall Semester 2021",
+		desc: "The Big Short details a small group of insiders who predicted the crash and clarifies how they saw what the investment banks, rating agencies, and the government overlooked; through humor and emotion, Lewis takes us through the complex events leading up to this meltdown.",
+		github: "https://github.com/BrendanGlancy/BreweryLocater",
+	},
+	{
+		title: "Documentry Short Response",
+		class: "English Composition I",
+		companylogo: "/img/icons/common/documentry.svg",
+		datewritten: "Fall Semester 2021",
+		desc: "Through their quick thinking and effective strategizing, Carville and Stephanopoulos helped Bill Clinton win his Presidential campaign and are painted as the film’s heroes.",
+		github: "https://github.com/BrendanGlancy/BreweryLocater",
+	},
+	{
+		title: "Glass Castle",
+		class: "English Composition I",
+		companylogo: "/img/icons/common/glasscastle.svg",
+		datewritten: "Fall Semester 2021",
+		desc: "Jeanette’s maturing voice in the Glass Castle plays a considerable role in how readers perceive events in the book. This maturing voice adds depth to Jeanette’s character, making the book more engaging;  the story would have been monotone written from the present, recalling her childhood.",
+		github: "https://github.com/BrendanGlancy/BreweryLocater",
+	},
+];
+
 export const projects = [
 	{
 		name: "Kiss Landscaping",
@@ -222,6 +249,3 @@ export const feedbacks = [
 			"the website is very nice, everything was perfectly made as i need. it just loads in moments, without giving u the chance to wait. the quality is also very amazing. i am using it without any problem. great job",
 	},
 ];
-
-
-
