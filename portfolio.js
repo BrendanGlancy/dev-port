@@ -4,7 +4,7 @@ export const greetings = {
 	name: "Brendan Glancy",
 	title: "Hello there, I'm Brendan",
 	description:
-		"A passionate Developer, learning Full Stack Web Development and Cyber Security. I have experience building Web applications with JavaScript / Reactjs / Nodejs / Python / Django and some other cool libraries and frameworks.",
+		"A passionate Developer, learning Full Stack Web Development and Cyber Security. I have experience building Web applications with JavaScript / Reactjs / Vuejs / Nodejs / Java / Spring Boot / Python / Django and some other cool libraries and frameworks.",
 	resumeLink: "https://brendanglancy.github.io/Resume/",
 };
 
@@ -32,7 +32,7 @@ export const skillsSection = {
 			"⚡ Progressive Web Applications ( PWA ) in normal and SPA Stacks"
 		),
 		emoji(
-			"⚡ Cyber Security, skilled in Python scripting for hacking, reverse engineering, and web explotation"
+			"⚡ Cyber Security, skilled in scripting for hacking, reverse engineering, and web explotation"
 		),
 	],
 
@@ -83,7 +83,7 @@ export const skillsSection = {
 		},
 		{
 			skillName: "go",
-			fontAwesomeClassname: "vscode-icons:file-type-go",
+			fontAwesomeClassname: "logos:go",
 		},
 		{
 			skillName: "npm",
@@ -92,6 +92,10 @@ export const skillsSection = {
 		{
 			skillName: "jquery",
 			fontAwesomeClassname: "logos:jquery",
+		},
+		{
+			skillName: "spring-boot",
+			fontAwesomeClassname: "logos:spring",
 		},
 		{
 			skillName: "sql-database",
@@ -155,7 +159,6 @@ export const educationInfo = [
 			"  Object-Oriented Programming: Java",
 			"  Web Application Development: HTML, CSS, JavaScript, Vue.js, APIs using Spring Boot, Tomcat",
 "  Database Programming: Spring JDBC/DAO, Table Design, SQL, PostgreSQL, E/R diagrams",
-"  Development tools and techniques: Agile, Unit Testing (JUnit), Integration Testing, Command Line navigation, Git, Eclipse, dbVisualizer, Postman, Visual Studio Code",
 		],
 		github: "https://github.com/BrendanGlancy/BreweryLocater",
 	},

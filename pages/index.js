@@ -13,6 +13,8 @@ const GithubProfileCard = dynamic(() =>
 );
 import { openSource } from "../portfolio";
 import SEO from "../components/SEO";
+import { Link, Router } from 'react-router-dom'
+
 
 export default function Home({ githubProfileData }) {
 	return (
@@ -41,6 +43,7 @@ export default function Home({ githubProfileData }) {
 						"LinkedIn",
 						"Github",
 						"canton",
+						"Canton",
 						"crytpo",
 						"crypto tracker",
 						"stocks",
@@ -66,6 +69,8 @@ export default function Home({ githubProfileData }) {
 						"reactjs ",
 						"contextapi",
 						"redux",
+						"dev-port",
+						"vercel",
 						"flutter",
 					],
 				}}
@@ -73,9 +78,9 @@ export default function Home({ githubProfileData }) {
 			<Navigation />
 			<Greetings />
 			<Skills />
+			<Proficiency />
 			<Education />
 			<Experience />
-			<English />
 			<Projects />
 			<GithubProfileCard prof={githubProfileData} />
 		</div>
