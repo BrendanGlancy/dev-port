@@ -39,6 +39,8 @@ export default function Home({ githubProfileData }) {
 						"Brendan Glancy Portfolio",
 						"web developer",
 						"empyrial",
+						"Empyrial",
+						"ssantoshp/Empyrial",
 						"landscaping",
 						"LinkedIn",
 						"Github",
