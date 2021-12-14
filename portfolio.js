@@ -144,7 +144,7 @@ export const educationInfo = [
 		schoolName: "Akron University",
 		subHeader: "Bachelor of Science in Computer Science",
 		duration: "August 2021 - Present",
-		desc: "Programming CIS degree, Current GPA: 4.0",
+		desc: "Programming CIS degree, Current GPA: 3.8",
 		descBullets: [
 			"The Bachelor of Science in Computer Information Systems (CIS) - Programming degree option allows students to attain knowledge of effective software application development, client/server application development, and database application development and management for businesses.",
 		],
