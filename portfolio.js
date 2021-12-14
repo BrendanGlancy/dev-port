@@ -26,13 +26,13 @@ export const skillsSection = {
 		"FULL STACK DEVELOPER WHO WANTS TO EXPLORE EVERY TECH STACK",
 	skills: [
 		emoji(
-			"⚡ Develop highly interactive Front end / User Interfaces for your web and mobile applications"
+			"⚡ Develop highly interactive Front end / User Interfaces for your web and mobile applications."
 		),
 		emoji(
-			"⚡ Progressive Web Applications ( PWA ) in normal and SPA Stacks"
+			"⚡ Progressive Web Applications ( PWA ) in normal and SPA Stacks."
 		),
 		emoji(
-			"⚡ Cyber Security, skilled in scripting for hacking, reverse engineering, and web explotation"
+			"⚡ Cyber Security, skilled in scripting for hacking, reverse engineering, and web exploitation."
 		),
 	],
 
@@ -157,7 +157,7 @@ export const educationInfo = [
 		desc: "Programming Bootcamp to learn Full Stack Web Development",
 		descBullets: [
 			"  Object-Oriented Programming: Java",
-			"  Web Application Development: HTML, CSS, JavaScript, Vue.js, APIs using Spring Boot, Tomcat",
+			"  Web Application Development: HTML, CSS, JavaScript, Vue.js, APIs usng Spring Boot, Tomcat",
 "  Database Programming: Spring JDBC/DAO, Table Design, SQL, PostgreSQL, E/R diagrams",
 		],
 		github: "https://github.com/BrendanGlancy/BreweryLocater",
@@ -188,7 +188,7 @@ export const experience = [
 	},
 ];
 
-export const english = [
+export const English = [
 	{
 		title: "Defintion of Good Writing",
 		class: "English Composition I",
@@ -218,19 +218,19 @@ export const english = [
 export const projects = [
 	{
 		name: "Kiss Landscaping",
-		desc: "Custom landscaping site, react scroll and react styled components. Great template for business react site. Kiss Landscaping is a company based out of North Canton, founded by Dylan Kiss. KissLandscaping makes getting a quote for your job easy, dozens of satisfied customers.",
-		github: "https://github.com/BrendanGlancy/KissLandscaping",
+		desc: "Custom landscaping site, react scroll and react styled-components. Great template for business react site. Kiss Landscaping is a company based out of North Canton, founded by Dylan Kiss. KissLandscaping makes getting a quote for your job easy, dozens of satisfied customers.",
+		GitHub: "https://github.com/BrendanGlancy/KissLandscaping",
 		link: "https://kisslandscaping.com/",
 	},
 	{
 		name: "Empyrial",
-		desc: "Contributer on Empyrial, Empyrial is a Python-based open-source quantitative investment library dedicated to financial institutions and retail investors, officially released in March 2021. Already used by thousands of people working in the finance industry, Empyrial aims to become an all-in-one platform for portfolio management, analysis, and optimization.",
-		github: "https://github.com/ssantoshp/Empyrial",
+		desc: "Contributor on Empyrial, Empyrial is a Python-based open-source quantitative investment library dedicated to financial institutions and retail investors, officially released in March 2021. Already used by thousands of people working in the finance industry, Empyrial aims to become an all-in-one platform for portfolio management, analysis, and optimization.",
+		GitHub: "https://github.com/ssantoshp/Empyrial",
 		link: "https://ssantoshp.github.io/Empyrial/",
 	},
 	{
 		name: "Crypto Tracker",
-		desc: "Crypto Tracker is a Next.js app, utilizing an API to gather real time prices of hundreds of crypto curriencies, I created this app because I invest in crytpo and wanted a place to see a lot of them at once.",
+		desc: "Crypto Tracker is a Next.js app, utilizing an API to gather real-time prices of hundreds of cryptocurrencies; I created this app because I invest in crypto and wanted a place to see a lot of them at once.",
 		link: "https://crypto-tracker-7lqmdu936-brendanglancy.vercel.app/",
 	},
 	{
