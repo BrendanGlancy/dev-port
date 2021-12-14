@@ -30,7 +30,7 @@ export default function Home({ githubProfileData }) {
 						"Brendan",
 						"Brendan Glancy",
 						"brendanglancy",
-						"brendanglancy",
+						"brendan glancy",
 						"Portfolio",
 						"dylan",
 						"Dylan Kiss",
