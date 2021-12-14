@@ -43,6 +43,18 @@ const SocialLinks = () => {
 					<i className="fa fa-linkedin" />
 				</span>
 			</Button>
+			<Button
+				className="btn-icon-only rounded-circle ml-1"
+				color="slack"
+				rel="noopener"
+				aria-label="Linkedin"
+				href={socialLinks.discord}
+				target="_blank"
+			>
+				<span className="btn-inner--icon">
+					<i className="fa fa-pied-piper-pp" />
+				</span>
+			</Button>
 		</div>
 	);
 };

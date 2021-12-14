@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 
 import { greetings, socialLinks } from "../portfolio";
 import Headroom from "headroom.js";
-import Link from "next/link";
 import {
 	UncontrolledCollapse,
 	NavbarBrand,
@@ -120,6 +119,20 @@ const Navigation = () => {
 										<i className="fa fa-linkedin" />
 										<span className="nav-link-inner--text d-lg-none ml-2">
 											Linkedin
+										</span>
+									</NavLink>
+								</NavItem>
+								<NavItem>
+									<NavLink
+										rel="noopener"
+										aria-label="Discord"
+										className="nav-link-icon"
+										href={socialLinks.discord}
+										target="_blank"
+									>
+										<i class="fa fa-pied-piper-alt" />
+										<span className="nav-link-inner--text d-lg-none ml-2">
+											Discord	
 										</span>
 									</NavLink>
 								</NavItem>
