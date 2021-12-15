@@ -114,10 +114,6 @@ export const skillsSection = {
 			skillName: "php",
 			fontAwesomeClassname: "logos:php",
 		},
-		{
-			skillName: "haskell",
-			fontAwesomeClassname: "logos:haskell",
-		},
 	],
 };
 
@@ -254,7 +250,7 @@ export const projects = [
 		desc: "Design and attract customers to profootballhof.com, maintain site that generates a large amount of traffic. Mitigate Cyber Security threats.",
 		link: "https://www.profootballhof.com/",
 		tags: [
-			"Scaled | ",
+			"NFL | ",
 			"Cybersecurity | ",
 			"Wordpress",
 		]

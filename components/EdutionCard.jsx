@@ -11,7 +11,7 @@ const EdutionCard = ({ education }) => {
 					<div className="d-flex px-3">
                         <div>
                           <div className="icon icon-shape bg-gradient-warning rounded-circle text-white">
-                            <i className="ni ni-ruler-pencil" />
+                            <i className="ni ni-hat-3" />
                           </div>
                         </div>
 						<div className="pl-4">

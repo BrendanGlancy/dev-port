@@ -11,7 +11,6 @@ const GithubProfileCard = dynamic(() =>
 	import("../components/GithubProfileCard")
 );
 import Landing from '../components/EmailCard'
-import Carisousel from '../components/Carsousel'
 import { openSource } from "../portfolio";
 import SEO from "../components/SEO";
 
