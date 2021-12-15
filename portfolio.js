@@ -222,22 +222,42 @@ export const projects = [
 		desc: "Custom landscaping site, react scroll and react styled-components. Great template for business react site. Kiss Landscaping is a company based out of North Canton, founded by Dylan Kiss. KissLandscaping makes getting a quote for your job easy, dozens of satisfied customers.",
 		GitHub: "https://github.com/BrendanGlancy/KissLandscaping",
 		link: "https://kisslandscaping.com/",
+		tags: [
+			"Design  | ",
+			"Reactjs | ",
+			"Bootstrap ",
+		]
 	},
 	{
 		name: "Empyrial",
 		desc: "Contributor on Empyrial, Empyrial is a Python-based open-source quantitative investment library dedicated to financial institutions and retail investors, officially released in March 2021. Already used by thousands of people working in the finance industry, Empyrial aims to become an all-in-one platform for portfolio management, analysis, and optimization.",
 		GitHub: "https://github.com/ssantoshp/Empyrial",
 		link: "https://ssantoshp.github.io/Empyrial/",
+		tags: [
+			"python | ",
+			"finace | ",
+			"machine learning",
+		]
 	},
 	{
 		name: "Crypto Tracker",
 		desc: "Crypto Tracker is a Next.js app, utilizing an API to gather real-time prices of hundreds of cryptocurrencies; I created this app because I invest in crypto and wanted a place to see a lot of them at once.",
 		link: "https://crypto-tracker-7lqmdu936-brendanglancy.vercel.app/",
+		tags: [
+			"Crypto | ",
+			"Reactjs | ",
+			"Nextjs",
+		]
 	},
 	{
 		name: "Hall of Fame",
 		desc: "Design and attract customers to profootballhof.com, maintain site that generates a large amount of traffic. Mitigate Cyber Security threats.",
 		link: "https://www.profootballhof.com/",
+		tags: [
+			"Scaled Website | ",
+			"Cybersecurity | ",
+			"Wordpress",
+		]
 	},
 ];
 
