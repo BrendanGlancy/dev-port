@@ -5,15 +5,15 @@ const Greetings = dynamic(() => import("../containers/Greetings"));
 const Skills = dynamic(() => import("../containers/Skills"));
 const Proficiency = dynamic(() => import("../containers/Proficiency"));
 const Education = dynamic(() => import("../containers/Education"));
-const English = dynamic(() => import("../containers/English")); 
 const Experience = dynamic(() => import("../containers/Experience"));
 const Projects = dynamic(() => import("../containers/Projects"));
 const GithubProfileCard = dynamic(() =>
 	import("../components/GithubProfileCard")
 );
+import Landing from '../components/EmailCard'
+import Carisousel from '../components/Carsousel'
 import { openSource } from "../portfolio";
 import SEO from "../components/SEO";
-import { Link, Router } from 'react-router-dom'
 
 
 export default function Home({ githubProfileData }) {
@@ -83,6 +83,7 @@ export default function Home({ githubProfileData }) {
 			<Proficiency />
 			<Education />
 			<Experience />
+			<Landing />
 			<Projects />
 			<GithubProfileCard prof={githubProfileData} />
 		</div>
@@ -92,6 +93,7 @@ export default function Home({ githubProfileData }) {
 Home.prototype = {
 	githubProfileData: PropTypes.object.isRequired,
 };
+
 
 export async function getStaticProps(_) {
 	const githubProfileData = await fetch(

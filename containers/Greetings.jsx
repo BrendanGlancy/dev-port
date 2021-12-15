@@ -15,7 +15,11 @@ const Greetings = () => {
 		<main>
 			<div className="position-relative">
 				<section className="section section-lg section-shaped pb-250">
-					<div className="shape shape-style-1 shape-default">
+					<div className="shape shape-style-1 shape-primary">
+						<span />
+						<span />
+						<span />
+						<span />
 						<span />
 						<span />
 						<span />
@@ -87,18 +91,6 @@ const Greetings = () => {
 									>
 										<span className="btn-inner--icon">
 											<i className="fa fa-linkedin" />
-										</span>
-									</Button>
-									<Button
-										className="btn-icon-only rounded-circle ml-1"
-										color="slack"
-										rel="noopener"
-										aria-label="Linkedin"
-										href={socialLinks.discord}
-										target="_blank"
-									>
-										<span className="btn-inner--icon">
-											<i className="fa fa-pied-piper-pp" />
 										</span>
 									</Button>
 									</div>

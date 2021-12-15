@@ -1,8 +1,9 @@
 import React from "react";
 
-import { Card, CardBody, Col, Button, Badge } from "reactstrap";
 
+import { Card, InputGroup, InputGroupAddon, InputGroupText, Input, CardBody, FormGroup, Col, Row, Container, Button, Badge } from "reactstrap";
 import { Fade } from "react-reveal";
+import GreetingLottie from "../components/DisplayLottie";
 
 const ProjectsCard = ({ data }) => {
 	return (
@@ -54,6 +55,7 @@ const ProjectsCard = ({ data }) => {
 					</CardBody>
 				</Card>
 			</Fade>
+		<GreetingLottie />
 		</Col>
 	);
 };

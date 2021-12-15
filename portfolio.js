@@ -75,12 +75,16 @@ export const skillsSection = {
 			fontAwesomeClassname: "logos:nodejs-icon",
 		},
 		{
+			skillName: "c",
+			fontAwesomeClassname: "logos:c",
+		},
+		{
 			skillName: "swift",
 			fontAwesomeClassname: "vscode-icons:file-type-swift",
 		},
 		{
-			skillName: "c",
-			fontAwesomeClassname: "logos:c",
+			skillName: "cpp",
+			fontAwesomeClassname: "vscode-icons:file-type-cpp",
 		},
 		{
 			skillName: "go",
@@ -91,16 +95,12 @@ export const skillsSection = {
 			fontAwesomeClassname: "vscode-icons:file-type-npm",
 		},
 		{
-			skillName: "jquery",
-			fontAwesomeClassname: "logos:jquery",
-		},
-		{
 			skillName: "spring-boot",
 			fontAwesomeClassname: "logos:spring",
 		},
 		{
-			skillName: "sql-database",
-			fontAwesomeClassname: "vscode-icons:file-type-sql",
+			skillName: "PostgreSQL",
+			fontAwesomeClassname: "logos:postgresql",
 		},
 		{
 			skillName: "git",
@@ -254,7 +254,7 @@ export const projects = [
 		desc: "Design and attract customers to profootballhof.com, maintain site that generates a large amount of traffic. Mitigate Cyber Security threats.",
 		link: "https://www.profootballhof.com/",
 		tags: [
-			"Scaled Website | ",
+			"Scaled | ",
 			"Cybersecurity | ",
 			"Wordpress",
 		]

@@ -8,13 +8,13 @@ import ExperienceCard from "../components/ExperienceCard";
 
 const Experience = () => {
 	return (
-		<section className="section section-lg">
+		<section className="section section-xl">
 			<Container>
 				<Fade bottom duration={1000} distance="40px">
 					<div className="d-flex p-4">
 						<div>
 							<div className="icon icon-lg icon-shape bg-gradient-white shadow rounded-circle text-info">
-								<i className="ni ni-briefcase-24 text-primary" />
+								<i className="ni ni-planet text-primary" />
 							</div>
 						</div>
 						<div className="pl-4">
