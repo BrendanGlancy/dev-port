@@ -4,7 +4,7 @@ export const greetings = {
 	name: "Brendan Glancy",
 	title: "Hello there, I'm Brendan",
 	description:
-		"A passionate Developer, learning Full Stack Web Development and Cyber Security. I have experience building Web applications with JavaScript / Reactjs / Vuejs / Nodejs / Java / Spring Boot / Python / Django and some other cool libraries and frameworks.",
+		"Developer, learning Full Stack Web Development and Cyber Security. I have experience building Web applications with JavaScript / Reactjs / Vuejs / Nodejs / Java / Spring Boot / Python / Django and some other cool libraries and frameworks.",
 	resumeLink: "https://brendanglancy.github.io/Resume/",
 };
 
