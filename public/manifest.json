@@ -1,15 +1,15 @@
 {
   "short_name": "Portfolio",
-  "name": "Brendan's portfolio",
+  "name": "Brendan Glancy portfolio",
   "description": "Full Stack Web Developer",
     "icons": [
       {
-        "src": "./favicon.png",
+        "src": "./favicon.svg",
         "type": "image/png",
         "sizes": "192x192"
       },
       {
-        "src": "./favicon.png",
+        "src": "./favicon.svg",
         "type": "image/png",
         "sizes": "512x512"
       }
