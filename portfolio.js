@@ -18,7 +18,7 @@ export const socialLinks = {
 	instagram: "https://www.instagram.com/brendanglance/",
 	github: "https://github.com/brendanglancy",
 	linkedin: "https://www.linkedin.com/in/brendan-glancy/",
-	discord: "http://www.piedpiper.com/",
+	discord: "https://www.hackerrank.com/Bglance68",
 };
 
 export const skillsSection = {
