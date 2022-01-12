@@ -183,6 +183,13 @@ export const experience = [
 		date: "August 2021 – present",
 		desc: "Pen tester for CTF and CDCC club, find and exploit vunerablities in web, stego, crypto, reverse engineering. 23 out of 300+ teams in National Ohio State hacking competition.",
 	},
+	{
+		role: "Intern",
+		company: "CodeMash 2022",
+		companylogo: "/img/icons/common/codemash.svg",
+		date: "January 2022",
+		desc: "CodeMash is a unique event that educates developers on current practices, methodologies and technology trends in a variety of platforms and development languages. Held every January at the lush Kalahari Resort in Sandusky, Ohio, attendees will be able to attend a world-class technical conference amid Ohio’s largest indoor waterpark. Nobody will frown if you show up in shorts, sandals, and your loudest t-shirt. You might even win a prize for doing so.",
+	},
 ];
 
 export const English = [
