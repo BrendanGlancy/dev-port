@@ -4,7 +4,7 @@ export const greetings = {
 	name: "Brendan Glancy",
 	title: "Hello there, I'm Brendan",
 	description:
-		"Developer, learning Full Stack Web Development and Cyber Security. I have experience building Web applications with JavaScript / Reactjs / Vuejs / Nodejs / Java / Spring Boot / Python / Django and some other cool libraries and frameworks.",
+		"Developer, learning Full Stack Web Development and Cyber Security. I have experience building Web applications with JavaScript / React / Vue / Node / Java / Spring Boot / Python / Django and some other cool libraries and frameworks.",
 	resumeLink: "https://brendanglancy.github.io/Resume/",
 };
 
@@ -175,7 +175,7 @@ export const experience = [
 		companylogo: "/img/icons/common/svg-6.svg",
 		date: "june 2020 – present",
 		desc: "Developed and maintain website, cyber-security, design, marketing, anything tech related.",
-	},
+    },
 	{
 		role: "Akron CTF Team",
 		company: "Akron University",
@@ -188,7 +188,7 @@ export const experience = [
 		company: "CodeMash 2022",
 		companylogo: "/img/icons/common/codemash.svg",
 		date: "January 2022",
-		desc: "CodeMash is a unique event that educates developers on current practices, methodologies and technology trends in a variety of platforms and development languages. Held every January at the lush Kalahari Resort in Sandusky, Ohio, attendees will be able to attend a world-class technical conference amid Ohio’s largest indoor waterpark. Nobody will frown if you show up in shorts, sandals, and your loudest t-shirt. You might even win a prize for doing so.",
+		desc: " Top 15 in CTF CodeMash is a unique event that educates developers on current practices, methodologies and technology trends in a variety of platforms and development languages. Attendees will be able to attend a world-class technical conference.",
 	},
 ];
 
