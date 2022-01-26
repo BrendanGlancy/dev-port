@@ -51,8 +51,9 @@ class Landing extends React.Component {
                               Your project is very important to me.
                             </p>
                             <FormGroup
-                              className={classnames("mt-5", {
-                              })}
+                                className={classnames("mt-5", {
+
+                                })} onReset={this.handleFormReset}
                             >
                               <InputGroup className="input-group-alternative">
                                 <InputGroupAddon addonType="prepend">
@@ -103,6 +104,7 @@ class Landing extends React.Component {
                                 color="default"
                                 size="lg"
                                 type="submit"
+                                onClick={() => window.location.reload(false)}
                               >
                                 Send Message
                               </Button>
