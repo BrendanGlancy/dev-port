@@ -79,6 +79,10 @@ export const skillsSection = {
 			fontAwesomeClassname: "logos:c",
 		},
 		{
+			skillName: "visual-basic",
+			fontAwesomeClassname: "vscode-icons:file-type-vb",
+		},
+		{
 			skillName: "swift",
 			fontAwesomeClassname: "vscode-icons:file-type-swift",
 		},
