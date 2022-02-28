@@ -158,7 +158,7 @@ export const educationInfo = [
 		desc: "Programming Bootcamp to learn Full Stack Web Development",
 		descBullets: [
 			"  Object-Oriented Programming: Java",
-			"  Web Application Development: HTML, CSS, JavaScript, Vue.js, APIs usng Spring Boot, Tomcat",
+			"  Web Application Development: HTML, CSS, JavaScript, Vue.js, APIs using Spring Boot, Tomcat",
 "  Database Programming: Spring JDBC/DAO, Table Design, SQL, PostgreSQL, E/R diagrams",
 		],
 		github: "https://github.com/BrendanGlancy/BreweryLocater",
