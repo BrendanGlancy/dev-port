@@ -67,10 +67,6 @@ export const skillsSection = {
 			fontAwesomeClassname: "logos:vue",
 		},
 		{
-			skillName: "typescript",
-			fontAwesomeClassname: "logos:typescript-icon",
-		},
-		{
 			skillName: "nodejs",
 			fontAwesomeClassname: "logos:nodejs-icon",
 		},
@@ -91,10 +87,6 @@ export const skillsSection = {
 			fontAwesomeClassname: "vscode-icons:file-type-cpp",
 		},
 		{
-			skillName: "go",
-			fontAwesomeClassname: "logos:go",
-		},
-		{
 			skillName: "npm",
 			fontAwesomeClassname: "vscode-icons:file-type-npm",
 		},
@@ -109,10 +101,6 @@ export const skillsSection = {
 		{
 			skillName: "git",
 			fontAwesomeClassname: "logos:git-icon",
-		},
-		{
-			skillName: 'aws',
-			fontAwesomeClassname: "logos:aws",
 		},
 		{
 			skillName: "php",
@@ -167,7 +155,7 @@ export const educationInfo = [
 
 export const experience = [
 	{
-		role: "Web Developer",
+		role: "Information Technology",
 		company: "Chamber of Commerce",
 		companylogo: "/img/icons/common/program.svg",
 		date: "June 2019 – Present",
