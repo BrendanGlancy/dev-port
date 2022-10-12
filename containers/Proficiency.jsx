@@ -17,7 +17,11 @@ const Proficiency = () => {
 							PicoCTF 341st place out of 10,000+ teams
 						</p>
 						<Progress multi>
-							<Progress bar value="341" max="10000">
+							<Progress
+								bar
+								color="success"
+								value="96"
+								max="100">
 								341
 							</Progress>
 						</Progress>
@@ -25,7 +29,11 @@ const Proficiency = () => {
 							Buckeye CTF 23rd place out of 300+ teams
 						</p>
 						<Progress multi>
-							<Progress bar value="23" max="300">
+							<Progress
+								bar
+								value="93"
+								color="warning"
+								max="100">
 								23
 							</Progress>
 						</Progress>
