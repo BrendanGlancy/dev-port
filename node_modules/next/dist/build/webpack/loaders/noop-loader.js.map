@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../../build/webpack/loaders/noop-loader.ts"],"sourcesContent":["import { webpack } from 'next/dist/compiled/webpack/webpack'\n\nconst NoopLoader: webpack.loader.Loader = (source) => source\nexport default NoopLoader\n"],"names":[],"mappings":";;;;;AAEA,KAAK,CAAC,UAAU,IAA2B,MAAM,GAAK,MAAM;;eAC7C,UAAU"}
