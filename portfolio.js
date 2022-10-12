@@ -112,19 +112,15 @@ export const skillsSection = {
 export const SkillBars = [
 	{
 		Stack: "Programming",
-		progressPercentage: "90",
 	},
 	{
 		Stack: "Frontend/Design", //Insert stack or technology you have experience in
-		progressPercentage: "85", //Insert relative proficiency in percentage
 	},
 	{
 		Stack: "Backend",
-		progressPercentage: "80",
 	},
 	{
 		Stack: "Security",
-		progressPercentage: "75",
 	},
 ];
 
@@ -137,7 +133,7 @@ export const educationInfo = [
 		descBullets: [
 			"The Bachelor of Science in Computer Information Systems (CIS) - Programming degree option allows students to attain knowledge of effective software application development, client/server application development, and database application development and management for businesses.",
 		],
-		github: "https://github.com/BrendanGlancy/akron/tree/master/logic-programming",
+		github: "https://github.com/BrendanGlancy/akron/",
 	},
 	{
 		schoolName: "Tech Elevator",
@@ -161,13 +157,6 @@ export const experience = [
 		date: "June 2019 – Present",
 		desc: "Attract users to websites with attractive, user-friendly designs and clean code for high-performance operation. Work on multiple high traffic domains, deployed to AWS.",
 	},
-	{
-		role: "CTO",
-		company: "KissLandscaping",
-		companylogo: "/img/icons/common/svg-6.svg",
-		date: "june 2020 – present",
-		desc: "Developed and maintain website, cyber-security, design, marketing, anything tech related.",
-    },
 	{
 		role: "Akron CTF Team",
 		company: "Akron University",
