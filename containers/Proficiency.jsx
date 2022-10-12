@@ -13,29 +13,21 @@ const Proficiency = () => {
 				<Row>
 					<Col lg="6">
 						<h1 className="h1">Competition Placements</h1>
-							<p>
-								BuckeyeCTF 2021 - 23rd Place (Out of 300+ Teams)
-							</p>
-						<Progress multi>
-							<Progress
-								bar
-								color="success"
-								value="96"
-								max="100"
-							>
-							</Progress>
-						</Progress>
-						<p>
-							PicoCTF 2022 - 341st Place (Out of 18,000+ Participants)
+						<p className="lead">
+							PicoCTF 341st place out of 10,000+ teams
 						</p>
 						<Progress multi>
-						<Progress
-							bar
-							color="warning"
-							value="93"
-							max="100"
-						>
+							<Progress bar value="341" max="10000">
+								341
+							</Progress>
 						</Progress>
+						<p className="lead">
+							Buckeye CTF 23rd place out of 300+ teams
+						</p>
+						<Progress multi>
+							<Progress bar value="23" max="300">
+								23
+							</Progress>
 						</Progress>
 					</Col>
 					<Col lg="6">

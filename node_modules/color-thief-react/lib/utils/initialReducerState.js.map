@@ -1,0 +1,1 @@
+{"version":3,"file":"initialReducerState.js","sourceRoot":"","sources":["../../src/utils/initialReducerState.ts"],"names":[],"mappings":";;AAEA,IAAM,mBAAmB,GAAsB;IAC7C,OAAO,EAAE,IAAI;IACb,IAAI,EAAE,SAAS;IACf,KAAK,EAAE,SAAS;CACjB,CAAC;AAEF,kBAAe,mBAAmB,CAAC"}

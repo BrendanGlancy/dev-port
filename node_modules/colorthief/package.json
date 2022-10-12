@@ -1,0 +1,54 @@
+{
+    "name": "colorthief",
+    "version": "2.3.2",
+    "author": {
+        "name": "Lokesh Dhakar",
+        "email": "lokesh.dhakar@gmail.com",
+        "url": "http://lokeshdhakar.com/"
+    },
+    "description": "Get the dominant color or color palette from an image.",
+    "keywords": [
+        "color",
+        "palette",
+        "sampling",
+        "image",
+        "picture",
+        "photo",
+        "canvas"
+    ],
+    "homepage": "http://lokeshdhakar.com/projects/color-thief/",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/lokesh/color-thief.git"
+    },
+    "license": "MIT",
+    "source": "src/color-thief.js",
+    "main": "dist/color-thief.js",
+    "module": "dist/color-thief.mjs",
+    "umd:main": "dist/color-thief.umd.js",
+    "amdName": "ColorThief",
+    "scripts": {
+        "build": "microbundle --no-sourcemap && node ./build/build.js",
+        "watch": "microbundle watch --no-sourcemap",
+        "dev": "http-server",
+        "test": "mocha && cypress run --config video=false",
+        "test:browser": "cypress open",
+        "test:node": "mocha"
+    },
+    "devDependencies": {
+        "@node-minify/core": "^4.0.5",
+        "@node-minify/uglify-es": "^4.0.5",
+        "chai": "^4.2.0",
+        "chai-as-promised": "^7.1.1",
+        "cypress": "^3.4.0",
+        "eslint": "^5.16.0",
+        "http-server": "^0.11.1",
+        "microbundle": "^0.11.0",
+        "mocha": "^6.2.0",
+        "mustache": "^3.0.1"
+    },
+    "dependencies": {
+        "get-pixels": "^3.3.2",
+        "quantize": "github:lokesh/quantize"
+    }
+}
