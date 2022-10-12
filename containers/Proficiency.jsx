@@ -22,7 +22,6 @@ const Proficiency = () => {
 								color="success"
 								value="96"
 								max="100">
-								341
 							</Progress>
 						</Progress>
 						<p className="lead">
@@ -34,7 +33,6 @@ const Proficiency = () => {
 								value="93"
 								color="warning"
 								max="100">
-								23
 							</Progress>
 						</Progress>
 					</Col>
