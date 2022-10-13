@@ -158,13 +158,6 @@ export const experience = [
 		desc: "Attract users to websites with attractive, user-friendly designs and clean code for high-performance operation. Work on multiple high traffic domains, deployed to AWS.",
 	},
 	{
-		role: "Akron CTF Team",
-		company: "Akron University",
-		companylogo: "/img/icons/common/hacker.svg",
-		date: "August 2021 – present",
-		desc: "Pen tester for CTF and CDCC club, find and exploit vunerablities in web, stego, crypto, reverse engineering. 23 out of 300+ teams in National Ohio State hacking competition.",
-	},
-	{
 		role: "Intern",
 		company: "CodeMash 2022",
 		companylogo: "/img/icons/common/codemash.svg",
@@ -175,24 +168,23 @@ export const experience = [
 
 export const projects = [
 	{
-		name: "Kiss Landscaping",
-		desc: "Custom landscaping site, react scroll and react styled-components. Great template for business react site. Kiss Landscaping is a company based out of North Canton, founded by Dylan Kiss. KissLandscaping makes getting a quote for your job easy, dozens of satisfied customers.",
-		GitHub: "https://github.com/BrendanGlancy/KissLandscaping",
-		link: "https://kisslandscaping.com/",
+		name: "Brewery Locator",
+		desc: "A web application that allows users to search and review breweries in the United States. Users can search for breweries by name, city, state, or zip code. Users can also add breweries to their favorites list and leave reviews for breweries.",
+		Github: "https://github.com/BrendanGlancy/BreweryLocater",
 		tags: [
-			"Design  | ",
-			"Reactjs | ",
-			"Bootstrap ",
+			"Java",
+			"VueJS",
+			"PostgreSQL",
 		]
 	},
 	{
 		name: "Empyrial",
 		desc: "Contributor on Empyrial, Empyrial is a Python-based open-source quantitative investment library dedicated to financial institutions and retail investors, officially released in March 2021. Already used by thousands of people working in the finance industry, Empyrial aims to become an all-in-one platform for portfolio management, analysis, and optimization.",
-		GitHub: "https://github.com/ssantoshp/Empyrial",
+		Github: "https://github.com/ssantoshp/Empyrial",
 		link: "https://ssantoshp.github.io/Empyrial/",
 		tags: [
-			"python | ",
-			"finace | ",
+			"python",
+			"finace",
 			"machine learning",
 		]
 	},
@@ -201,19 +193,19 @@ export const projects = [
 		desc: "Crypto Tracker is a Next.js app, utilizing an API to gather real-time prices of hundreds of cryptocurrencies; I created this app because I invest in crypto and wanted a place to see a lot of them at once.",
 		link: "https://crypto-tracker-7lqmdu936-brendanglancy.vercel.app/",
 		tags: [
-			"Crypto | ",
-			"Reactjs | ",
+			"Crypto",
+			"Reactjs",
 			"Nextjs",
 		]
 	},
 	{
-		name: "Hall of Fame",
-		desc: "Design and attract customers to profootballhof.com, maintain site that generates a large amount of traffic. Mitigate Cyber Security threats.",
-		link: "https://www.profootballhof.com/",
+		name: "University of Akron Security",
+		desc: "A website for everything cyber security at University of Akron. The development is student led and is the university's first open source project.",
+		Github: "https://github.com/avrha/uakronsec",
 		tags: [
-			"NFL | ",
-			"Cybersecurity | ",
-			"Wordpress",
+			"College",
+			"Cybersecurity",
+			"Open Source",
 		]
 	},
 ];

@@ -15,12 +15,12 @@ const ProjectsCard = ({ data }) => {
 							<div className="pl-4">
 								<h3>{data.name}</h3>
 									<div>
-									<Badge color="primary" pill className="mr-1">
-										{data.tags}
-									</Badge>
+										{data.tags.map((tag) => {
+											return <Badge color="primary" className="mr-1">{tag}</Badge>;
+										})}
 									</div>
 								<p className="description mt-3">{data.desc}</p>
-								{data.github ? (
+								{data.Github ? (
 									<Button
 										className="btn-icon"
 										color="github"
