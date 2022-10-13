@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 
-var path = require('path')
-var fs = require('fs')
-var napi = require('napi-build-utils')
+const path = require('path')
+const fs = require('fs')
+const napi = require('napi-build-utils')
 
-var pkg = require(path.resolve('package.json'))
-var rc = require('./rc')(pkg)
-var log = require('./log')(rc, process.env)
-var download = require('./download')
-var asset = require('./asset')
-var util = require('./util')
+const pkg = require(path.resolve('package.json'))
+const rc = require('./rc')(pkg)
+const log = require('./log')(rc, process.env)
+const download = require('./download')
+const asset = require('./asset')
+const util = require('./util')
 
-var prebuildClientVersion = require('./package.json').version
+const prebuildClientVersion = require('./package.json').version
 if (rc.version) {
   console.log(prebuildClientVersion)
   process.exit(0)
@@ -37,11 +37,11 @@ if (rc.help) {
 
 log.info('begin', 'Prebuild-install version', prebuildClientVersion)
 
-var opts = Object.assign({}, rc, { pkg: pkg, log: log })
+const opts = Object.assign({}, rc, { pkg: pkg, log: log })
 
 if (napi.isNapiRuntime(rc.runtime)) napi.logUnsupportedVersion(rc.target, log)
 
-var origin = util.packageOrigin(process.env, pkg)
+const origin = util.packageOrigin(process.env, pkg)
 
 if (opts.force) {
   log.warn('install', 'prebuilt binaries enforced with --force!')
@@ -54,7 +54,7 @@ if (opts.force) {
   process.exit(1)
 }
 
-var startDownload = function (downloadUrl) {
+const startDownload = function (downloadUrl) {
   download(downloadUrl, opts, function (err) {
     if (err) {
       log.warn('install', err.message)

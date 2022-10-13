@@ -1,20 +1,20 @@
-var url = require('url')
-var tunnel = require('tunnel-agent')
-var util = require('./util')
+const url = require('url')
+const tunnel = require('tunnel-agent')
+const util = require('./util')
 
 function applyProxy (reqOpts, opts) {
-  var log = opts.log || util.noopLogger
+  const log = opts.log || util.noopLogger
 
-  var proxy = opts['https-proxy'] || opts.proxy
+  const proxy = opts['https-proxy'] || opts.proxy
 
   if (proxy) {
     // eslint-disable-next-line node/no-deprecated-api
-    var parsedDownloadUrl = url.parse(reqOpts.url)
+    const parsedDownloadUrl = url.parse(reqOpts.url)
     // eslint-disable-next-line node/no-deprecated-api
-    var parsedProxy = url.parse(proxy)
-    var uriProtocol = (parsedDownloadUrl.protocol === 'https:' ? 'https' : 'http')
-    var proxyProtocol = (parsedProxy.protocol === 'https:' ? 'Https' : 'Http')
-    var tunnelFnName = [uriProtocol, proxyProtocol].join('Over')
+    const parsedProxy = url.parse(proxy)
+    const uriProtocol = (parsedDownloadUrl.protocol === 'https:' ? 'https' : 'http')
+    const proxyProtocol = (parsedProxy.protocol === 'https:' ? 'Https' : 'Http')
+    const tunnelFnName = [uriProtocol, proxyProtocol].join('Over')
     reqOpts.agent = tunnel[tunnelFnName]({
       proxy: {
         host: parsedProxy.hostname,

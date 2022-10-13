@@ -1,5 +1,12 @@
 # Changelog
 
+## [7.0.0] - 2021-11-12
+
+### Changed
+
+- **Breaking:** bump `node-abi` so that Electron 14+ gets correct ABI ([#161](https://github.com/prebuild/prebuild-install/issues/161)) ([`477f347`](https://github.com/prebuild/prebuild-install/commit/477f347)) (csett86). Drops support of Node.js &lt; 10.
+- Bump `simple-get` ([`7468c14`](https://github.com/prebuild/prebuild-install/commit/7468c14)) (Vincent Weevers).
+
 ## [6.1.4] - 2021-08-11
 
 ### Fixed
@@ -64,18 +71,20 @@
 
 - Replace `mkdirp` dependency with `mkdirp-classic` ([**@ralphtheninja**](https://github.com/ralphtheninja))
 
-[6.1.4]: https://github.com/prebuild/prebuild-install/compare/v6.1.3...v6.1.4
+[7.0.0]: https://github.com/prebuild/prebuild-install/releases/tag/v7.0.0
 
-[6.1.3]: https://github.com/prebuild/prebuild-install/compare/v6.1.2...v6.1.3
+[6.1.4]: https://github.com/prebuild/prebuild-install/releases/tag/v6.1.4
 
-[6.1.2]: https://github.com/prebuild/prebuild-install/compare/v6.1.1...v6.1.2
+[6.1.3]: https://github.com/prebuild/prebuild-install/releases/tag/v6.1.3
 
-[6.1.1]: https://github.com/prebuild/prebuild-install/compare/v6.1.0...v6.1.1
+[6.1.2]: https://github.com/prebuild/prebuild-install/releases/tag/v6.1.2
 
-[6.1.0]: https://github.com/prebuild/prebuild-install/compare/v6.0.1...v6.1.0
+[6.1.1]: https://github.com/prebuild/prebuild-install/releases/tag/v6.1.1
 
-[6.0.1]: https://github.com/prebuild/prebuild-install/compare/v6.0.0...v6.0.1
+[6.1.0]: https://github.com/prebuild/prebuild-install/releases/tag/v6.1.0
 
-[6.0.0]: https://github.com/prebuild/prebuild-install/compare/v5.3.6...v6.0.0
+[6.0.1]: https://github.com/prebuild/prebuild-install/releases/tag/v6.0.1
+
+[6.0.0]: https://github.com/prebuild/prebuild-install/releases/tag/v6.0.0
 
 [5.3.6]: https://github.com/prebuild/prebuild-install/releases/tag/v5.3.6

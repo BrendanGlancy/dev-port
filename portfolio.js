@@ -33,7 +33,7 @@ export const skillsSection = {
 			"⚡ Progressive Web Applications ( PWA ) in normal and SPA Stacks."
 		),
 		emoji(
-			"⚡ Cyber Security, skilled in scripting for hacking, reverse engineering, and web exploitation."
+			"⚡ Cyber Security, HackTheBox Globally Ranked 554, Top 2% in PicoCTF 2022, Top 7% in BuckeyeCTF 2021 "
 		),
 	],
 
@@ -79,8 +79,8 @@ export const skillsSection = {
 			fontAwesomeClassname: "vscode-icons:file-type-vb",
 		},
 		{
-			skillName: "swift",
-			fontAwesomeClassname: "vscode-icons:file-type-swift",
+			skillName: "Vim",
+			fontAwesomeClassname: "logos:vim",
 		},
 		{
 			skillName: "cpp",
@@ -170,33 +170,6 @@ export const experience = [
 		companylogo: "/img/icons/common/codemash.svg",
 		date: "January 2022",
 		desc: " Top 15 in CTF CodeMash is a unique event that educates developers on current practices, methodologies and technology trends in a variety of platforms and development languages. Attendees will be able to attend a world-class technical conference.",
-	},
-];
-
-export const English = [
-	{
-		title: "Defintion of Good Writing",
-		class: "English Composition I",
-		companylogo: "/img/icons/common/goodwriting.svg",
-		datewritten: "Fall Semester 2021",
-		desc: "The Big Short details a small group of insiders who predicted the crash and clarifies how they saw what the investment banks, rating agencies, and the government overlooked; through humor and emotion, Lewis takes us through the complex events leading up to this meltdown.",
-		github: "https://github.com/BrendanGlancy/dev-port/blob/master/public/eng_port/Definition%20of%20good%20writing_.pdf",
-	},
-	{
-		title: "Documentry Short Response",
-		class: "English Composition I",
-		companylogo: "/img/icons/common/documentry.svg",
-		datewritten: "Fall Semester 2021",
-		desc: "Through their quick thinking and effective strategizing, Carville and Stephanopoulos helped Bill Clinton win his Presidential campaign and are painted as the film’s heroes.",
-		github: "https://github.com/BrendanGlancy/dev-port/blob/master/public/eng_port/Documentary%20Short%20Response.pdf",
-	},
-	{
-		title: "Glass Castle",
-		class: "English Composition I",
-		companylogo: "/img/icons/common/glasscastle.svg",
-		datewritten: "Fall Semester 2021",
-		desc: "Jeanette’s maturing voice in the Glass Castle plays a considerable role in how readers perceive events in the book. This maturing voice adds depth to Jeanette’s character, making the book more engaging;  the story would have been monotone written from the present, recalling her childhood.",
-		github: "https://github.com/BrendanGlancy/dev-port/blob/master/public/eng_port/Glass_Castle_Essay-revised.pdf",
 	},
 ];
 

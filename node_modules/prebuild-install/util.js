@@ -1,11 +1,11 @@
-var path = require('path')
-var github = require('github-from-package')
-var home = require('os').homedir
-var crypto = require('crypto')
-var expandTemplate = require('expand-template')()
+const path = require('path')
+const github = require('github-from-package')
+const home = require('os').homedir
+const crypto = require('crypto')
+const expandTemplate = require('expand-template')()
 
 function getDownloadUrl (opts) {
-  var pkgName = opts.pkg.name.replace(/^@[a-zA-Z0-9_\-.~]+\//, '')
+  const pkgName = opts.pkg.name.replace(/^@[a-zA-Z0-9_\-.~]+\//, '')
   return expandTemplate(urlTemplate(opts), {
     name: pkgName,
     package_name: pkgName,
@@ -40,8 +40,8 @@ function urlTemplate (opts) {
     return opts.download
   }
 
-  var packageName = '{name}-v{version}-{runtime}-v{abi}-{platform}{libc}-{arch}.tar.gz'
-  var hostMirrorUrl = getHostMirrorUrl(opts)
+  const packageName = '{name}-v{version}-{runtime}-v{abi}-{platform}{libc}-{arch}.tar.gz'
+  const hostMirrorUrl = getHostMirrorUrl(opts)
 
   if (hostMirrorUrl) {
     return hostMirrorUrl + '/{tag_prefix}{version}/' + packageName
@@ -65,7 +65,7 @@ function getEnvPrefix (pkgName) {
 }
 
 function getHostMirrorUrl (opts) {
-  var propName = getEnvPrefix(opts.pkg.name) + '_binary_host'
+  const propName = getEnvPrefix(opts.pkg.name) + '_binary_host'
   return process.env[propName] || process.env[propName + '_mirror']
 }
 
@@ -74,12 +74,12 @@ function trimSlashes (str) {
 }
 
 function cachedPrebuild (url) {
-  var digest = crypto.createHash('md5').update(url).digest('hex').slice(0, 6)
+  const digest = crypto.createHash('md5').update(url).digest('hex').slice(0, 6)
   return path.join(prebuildCache(), digest + '-' + path.basename(url).replace(/[^a-zA-Z0-9.]+/g, '-'))
 }
 
 function npmCache () {
-  var env = process.env
+  const env = process.env
   return env.npm_config_cache || (env.APPDATA ? path.join(env.APPDATA, 'npm-cache') : path.join(home(), '.npm'))
 }
 
@@ -110,12 +110,12 @@ function packageOrigin (env, pkg) {
 }
 
 function localPrebuild (url, opts) {
-  var propName = getEnvPrefix(opts.pkg.name) + '_local_prebuilds'
-  var prefix = process.env[propName] || opts['local-prebuilds'] || 'prebuilds'
+  const propName = getEnvPrefix(opts.pkg.name) + '_local_prebuilds'
+  const prefix = process.env[propName] || opts['local-prebuilds'] || 'prebuilds'
   return path.join(prefix, path.basename(url))
 }
 
-var noopLogger = {
+const noopLogger = {
   http: function () {},
   silly: function () {},
   debug: function () {},

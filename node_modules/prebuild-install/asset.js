@@ -1,14 +1,14 @@
-var get = require('simple-get')
-var util = require('./util')
-var proxy = require('./proxy')
+const get = require('simple-get')
+const util = require('./util')
+const proxy = require('./proxy')
 
 function findAssetId (opts, cb) {
-  var downloadUrl = util.getDownloadUrl(opts)
-  var apiUrl = util.getApiUrl(opts)
-  var log = opts.log || util.noopLogger
+  const downloadUrl = util.getDownloadUrl(opts)
+  const apiUrl = util.getApiUrl(opts)
+  const log = opts.log || util.noopLogger
 
   log.http('request', 'GET ' + apiUrl)
-  var reqOpts = proxy({
+  const reqOpts = proxy({
     url: apiUrl,
     json: true,
     headers: {
@@ -17,15 +17,15 @@ function findAssetId (opts, cb) {
     }
   }, opts)
 
-  var req = get.concat(reqOpts, function (err, res, data) {
+  const req = get.concat(reqOpts, function (err, res, data) {
     if (err) return cb(err)
     log.http(res.statusCode, apiUrl)
     if (res.statusCode !== 200) return cb(err)
 
     // Find asset id in release
-    for (var release of data) {
+    for (const release of data) {
       if (release.tag_name === opts['tag-prefix'] + opts.pkg.version) {
-        for (var asset of release.assets) {
+        for (const asset of release.assets) {
           if (asset.browser_download_url === downloadUrl) {
             return cb(null, asset.id)
           }

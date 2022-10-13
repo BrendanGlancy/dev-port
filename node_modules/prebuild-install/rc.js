@@ -1,18 +1,18 @@
-var path = require('path')
-var minimist = require('minimist')
-var getAbi = require('node-abi').getAbi
-var detectLibc = require('detect-libc')
-var napi = require('napi-build-utils')
+const path = require('path')
+const minimist = require('minimist')
+const getAbi = require('node-abi').getAbi
+const detectLibc = require('detect-libc')
+const napi = require('napi-build-utils')
 
-var env = process.env
-var libc = env.LIBC || (detectLibc.isNonGlibcLinux && detectLibc.family) || ''
+const env = process.env
+const libc = env.LIBC || (detectLibc.isNonGlibcLinux && detectLibc.family) || ''
 
 // Get the configuration
 module.exports = function (pkg) {
-  var pkgConf = pkg.config || {}
-  var buildFromSource = env.npm_config_build_from_source
+  const pkgConf = pkg.config || {}
+  const buildFromSource = env.npm_config_build_from_source
 
-  var rc = require('rc')('prebuild-install', {
+  const rc = require('rc')('prebuild-install', {
     target: pkgConf.target || env.npm_config_target || process.versions.node,
     runtime: pkgConf.runtime || env.npm_config_runtime || 'node',
     arch: pkgConf.arch || env.npm_config_arch || process.arch,
@@ -23,8 +23,8 @@ module.exports = function (pkg) {
     verbose: env.npm_config_verbose === 'true',
     buildFromSource: buildFromSource === pkg.name || buildFromSource === 'true',
     path: '.',
-    proxy: env.npm_config_proxy || env['http_proxy'] || env['HTTP_PROXY'],
-    'https-proxy': env.npm_config_https_proxy || env['https_proxy'] || env['HTTPS_PROXY'],
+    proxy: env.npm_config_proxy || env.http_proxy || env.HTTP_PROXY,
+    'https-proxy': env.npm_config_https_proxy || env.https_proxy || env.HTTPS_PROXY,
     'local-address': env.npm_config_local_address,
     'local-prebuilds': 'prebuilds',
     'tag-prefix': 'v',

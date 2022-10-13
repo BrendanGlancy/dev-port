@@ -10,7 +10,7 @@ const Projects = dynamic(() => import("../containers/Projects"));
 const GithubProfileCard = dynamic(() =>
 	import("../components/GithubProfileCard")
 );
-import Landing from '../components/EmailCard'
+import Contact from '../components/ContactUs'
 import { openSource } from "../portfolio";
 import SEO from "../components/SEO";
 
@@ -31,8 +31,10 @@ export default function Home({ githubProfileData }) {
 						"brendanglancy",
 						"brendan glancy",
 						"Portfolio",
-						"dylan",
-						"Dylan Kiss",
+						"Jon",
+						"Jon Hetu",
+						"Jonathan",
+						"Jonathan Hetu",
 						"Austin Coontz",
 						"Brendan Portfolio ",
 						"Brendan Glancy Portfolio",
@@ -79,10 +81,9 @@ export default function Home({ githubProfileData }) {
 			<Navigation />
 			<Greetings />
 			<Skills />
-			<Proficiency />
 			<Education />
 			<Experience />
-			<Landing />
+			<Contact/>
 			<Projects />
 			<GithubProfileCard prof={githubProfileData} />
 		</div>

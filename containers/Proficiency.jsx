@@ -14,7 +14,7 @@ const Proficiency = () => {
 					<Col lg="6">
 						<h1 className="h1">Competition Placements</h1>
 						<p className="lead">
-							PicoCTF 341st place out of 10,000+ teams
+							PicoCTF 341st (out of 10,000+ teams)
 						</p>
 						<Progress multi>
 							<Progress
@@ -25,7 +25,7 @@ const Proficiency = () => {
 							</Progress>
 						</Progress>
 						<p className="lead">
-							Buckeye CTF 23rd place out of 300+ teams
+							Buckeye CTF 23rd (out of 300+ teams)
 						</p>
 						<Progress multi>
 							<Progress

@@ -1,0 +1,100 @@
+{
+  "name": "eslint-config-standard-with-typescript",
+  "version": "22.0.0",
+  "description": "An ESLint Shareable Config for JavaScript Standard Style with TypeScript support",
+  "main": "lib/index.js",
+  "scripts": {
+    "compile": "tsc",
+    "lint": "eslint --ext .js,.ts .",
+    "editorconfig": "editorconfig-checker",
+    "unit": "ava",
+    "test": "run-s clean-artifacts editorconfig compile lint unit",
+    "clean-artifacts": "git clean lib -X --force",
+    "is-code-clean": "git diff-index HEAD --quiet",
+    "prepare-release": "run-s is-code-clean bump-and-commit",
+    "bump-and-commit": "standard-version --skip.tag",
+    "prepublishOnly": "run-s is-code-clean test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/standard/eslint-config-standard-with-typescript.git"
+  },
+  "author": "Shahar Or <mightyiampresence@gmail.com> (mightyiam)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/standard/eslint-config-standard-with-typescript/issues"
+  },
+  "homepage": "https://github.com/standard/eslint-config-standard-with-typescript#readme",
+  "keywords": [
+    "JavaScript Standard Style",
+    "check",
+    "checker",
+    "code",
+    "code checker",
+    "code linter",
+    "code standards",
+    "code style",
+    "enforce",
+    "eslint",
+    "eslintconfig",
+    "hint",
+    "jscs",
+    "jshint",
+    "lint",
+    "policy",
+    "quality",
+    "simple",
+    "standard",
+    "standard style",
+    "style",
+    "style checker",
+    "style linter",
+    "verify",
+    "TypeScript"
+  ],
+  "dependencies": {
+    "@typescript-eslint/parser": "^5.0.0",
+    "eslint-config-standard": "17.0.0"
+  },
+  "peerDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "eslint": "^8.0.1",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-n": "^15.0.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "typescript": "*"
+  },
+  "devDependencies": {
+    "@arkweid/lefthook": "0.7.7",
+    "@commitlint/cli": "17.0.3",
+    "@commitlint/config-conventional": "17.0.3",
+    "@types/eslint": "8.4.5",
+    "@types/js-yaml": "4.0.5",
+    "@types/node": "18.0.2",
+    "@types/npm-package-arg": "6.1.1",
+    "@types/semver": "7.3.10",
+    "@typescript-eslint/eslint-plugin": "5.30.5",
+    "ava": "4.3.0",
+    "editorconfig-checker": "4.0.2",
+    "eslint": "8.19.0",
+    "eslint-plugin-import": "2.26.0",
+    "eslint-plugin-n": "15.2.4",
+    "eslint-plugin-promise": "6.0.0",
+    "inclusion": "1.0.1",
+    "js-yaml": "4.1.0",
+    "npm-package-arg": "9.1.0",
+    "npm-run-all": "4.1.5",
+    "read-pkg-up": "8.0.0",
+    "runtypes": "6.5.1",
+    "semver": "7.3.7",
+    "standard-version": "9.5.0",
+    "tsconfigs": "5.0.0",
+    "typescript": "4.7.4"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/index.d.ts",
+    "lib/eslint-config-standard.js",
+    "lib/eslint-config-standard.d.ts"
+  ]
+}

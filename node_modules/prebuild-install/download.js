@@ -1,19 +1,19 @@
-var path = require('path')
-var fs = require('fs')
-var get = require('simple-get')
-var pump = require('pump')
-var tfs = require('tar-fs')
-var zlib = require('zlib')
-var util = require('./util')
-var error = require('./error')
-var proxy = require('./proxy')
-var mkdirp = require('mkdirp-classic')
+const path = require('path')
+const fs = require('fs')
+const get = require('simple-get')
+const pump = require('pump')
+const tfs = require('tar-fs')
+const zlib = require('zlib')
+const util = require('./util')
+const error = require('./error')
+const proxy = require('./proxy')
+const mkdirp = require('mkdirp-classic')
 
 function downloadPrebuild (downloadUrl, opts, cb) {
-  var cachedPrebuild = util.cachedPrebuild(downloadUrl)
-  var localPrebuild = util.localPrebuild(downloadUrl, opts)
-  var tempFile = util.tempFile(cachedPrebuild)
-  var log = opts.log || util.noopLogger
+  let cachedPrebuild = util.cachedPrebuild(downloadUrl)
+  const localPrebuild = util.localPrebuild(downloadUrl, opts)
+  const tempFile = util.tempFile(cachedPrebuild)
+  const log = opts.log || util.noopLogger
 
   if (opts.nolocal) return download()
 
@@ -40,7 +40,7 @@ function downloadPrebuild (downloadUrl, opts, cb) {
         }
 
         log.http('request', 'GET ' + downloadUrl)
-        var reqOpts = proxy({ url: downloadUrl }, opts)
+        const reqOpts = proxy({ url: downloadUrl }, opts)
 
         if (opts.token) {
           reqOpts.headers = {
@@ -50,7 +50,7 @@ function downloadPrebuild (downloadUrl, opts, cb) {
           }
         }
 
-        var req = get(reqOpts, function (err, res) {
+        const req = get(reqOpts, function (err, res) {
           if (err) return onerror(err)
           log.http(res.statusCode, downloadUrl)
           if (res.statusCode !== 200) return onerror()
@@ -81,26 +81,26 @@ function downloadPrebuild (downloadUrl, opts, cb) {
   }
 
   function unpack () {
-    var binaryName
+    let binaryName
 
-    var updateName = opts.updateName || function (entry) {
+    const updateName = opts.updateName || function (entry) {
       if (/\.node$/i.test(entry.name)) binaryName = entry.name
     }
 
     log.info('unpacking @', cachedPrebuild)
 
-    var options = {
+    const options = {
       readable: true,
       writable: true,
       hardlinkAsFilesFallback: true
     }
-    var extract = tfs.extract(opts.path, options).on('entry', updateName)
+    const extract = tfs.extract(opts.path, options).on('entry', updateName)
 
     pump(fs.createReadStream(cachedPrebuild), zlib.createGunzip(), extract,
       function (err) {
         if (err) return cb(err)
 
-        var resolved
+        let resolved
         if (binaryName) {
           try {
             resolved = path.resolve(opts.path || '.', binaryName)
@@ -124,7 +124,7 @@ function downloadPrebuild (downloadUrl, opts, cb) {
   }
 
   function ensureNpmCacheDir (cb) {
-    var cacheFolder = util.npmCache()
+    const cacheFolder = util.npmCache()
     fs.access(cacheFolder, fs.R_OK | fs.W_OK, function (err) {
       if (err && err.code === 'ENOENT') {
         return makeNpmCacheDir()

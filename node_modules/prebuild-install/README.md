@@ -5,9 +5,9 @@
 
 [![npm](https://img.shields.io/npm/v/prebuild-install.svg)](https://www.npmjs.com/package/prebuild-install)
 ![Node version](https://img.shields.io/node/v/prebuild-install.svg)
-[![Test](https://github.com/prebuild/prebuild-install/actions/workflows/test.yml/badge.svg)](https://github.com/prebuild/prebuild-install/actions/workflows/test.yml)
-[![david](https://david-dm.org/prebuild/prebuild-install.svg)](https://david-dm.org/prebuild/prebuild-install)
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
+[![Test](https://img.shields.io/github/workflow/status/prebuild/prebuild-install/Test?label=test)](https://github.com/prebuild/prebuild-install/actions/workflows/test.yml)
+[![Standard](https://img.shields.io/badge/standard-informational?logo=javascript&logoColor=fff)](https://standardjs.com)
+[![Common Changelog](https://common-changelog.org/badge.svg)](https://common-changelog.org)
 
 ## Note
 
@@ -136,4 +136,4 @@ All prebuilt binaries are cached to minimize traffic. So first `prebuild-install
 
 ## License
 
-MIT
+[MIT](./LICENSE)
