@@ -15,6 +15,7 @@ import {
   InputGroup,
   Container,
   Row,
+  Alert,
   Col
 } from "reactstrap";
 
@@ -37,6 +38,8 @@ export const ContactUs = () => {
       }, (error) => {
           console.log(error.text);
       });
+    window.location.reload(false);
+    alert("Thank you for your message! I will get back to you shortly.");
   }
 
     return (
@@ -77,6 +80,7 @@ export const ContactUs = () => {
                             <Input
                               placeholder="Your name"
                               type="text"
+                              name="user_name"
                             />
                           </InputGroup>
                         </FormGroup>
@@ -92,6 +96,7 @@ export const ContactUs = () => {
                             </InputGroupAddon>
                             <Input
                               placeholder="Email address"
+                              name="user_email"
                               type="email"
                             />
                           </InputGroup>
@@ -100,7 +105,7 @@ export const ContactUs = () => {
                           <Input
                             className="form-control-alternative"
                             cols="80"
-                            name="name"
+                            name="user_message"
                             placeholder="Type a message..."
                             rows="4"
                             type="textarea"
