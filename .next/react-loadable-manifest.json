@@ -29,6 +29,12 @@
       "static/chunks/containers_Experience_jsx.js"
     ]
   },
+  "index.js -> ../containers/Feedbacks.jsx": {
+    "id": "./containers/Feedbacks.jsx",
+    "files": [
+      "static/chunks/containers_Feedbacks_jsx.js"
+    ]
+  },
   "index.js -> ../containers/Greetings": {
     "id": "./containers/Greetings.jsx",
     "files": [
