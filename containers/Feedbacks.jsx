@@ -12,11 +12,11 @@ const Feedbacks = () => {
           <div className="d-flex p-4">
             <div>
               <div className="icon icon-lg icon-shape bg-gradient-white shadow rounded-circle text-info">
-                <i className="fa fa-star text-info" />
+                <i className="fa fa-star text-primary" />
               </div>
             </div>
             <div className="pl-4">
-              <h4 className="display-3 text-info">Recommendations</h4>
+              <h4 className="display-3 text-primary">Recommendations</h4>
             </div>
           </div>
           <Row className="row-grid align-items-center">
