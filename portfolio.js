@@ -134,18 +134,21 @@ export const educationInfo = [
     desc: "Programming CIS degree, Current GPA: 3.8",
     descBullets: [
       "The Bachelor of Science in Computer Information Systems (CIS) - Programming degree option allows students to attain knowledge of effective software application development, client/server application development, and database application development and management for businesses.",
+      "The CIS - Programming degree option is designed to prepare students for careers in the field of software engineering and development.",
     ],
     github: "https://github.com/BrendanGlancy/akron/",
   },
   {
     schoolName: "Tech Elevator",
-    subHeader: "Full Stack Web Development",
+    subHeader: "Full Stack Development",
     duration: "September 2020 - December 2020",
-    desc: "Programming Bootcamp to learn Full Stack Web Development",
+    desc: "Programming Bootcamp to learn Full Stack Development",
     descBullets: [
       "  Object-Oriented Programming: Java",
       "  Web Application Development: HTML, CSS, JavaScript, Vue.js, APIs using Spring Boot, Tomcat",
       "  Database Programming: Spring JDBC/DAO, Table Design, SQL, PostgreSQL, E/R diagrams",
+      "  Completed 1000+ hours of Java, Spring, SQL, and JavaScript training",
+      "  Completed 100+ hours of pair programming on group projects",
     ],
     github: "https://github.com/BrendanGlancy/BreweryLocater",
   },

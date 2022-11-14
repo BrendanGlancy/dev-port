@@ -20,8 +20,8 @@ export default function Home({ githubProfileData }) {
     <div>
       <SEO
         data={{
-          title: "Brendan Glancy",
-          description: "Programming guy",
+          title: "Brendan's Portfolio",
+          description: "Full Stack Developer",
           image: "https://avatars.githubusercontent.com/u/61941978?v=4",
           url: "https://dev-port-lac.vercel.app/",
           keywords: [
