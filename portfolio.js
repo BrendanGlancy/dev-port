@@ -183,11 +183,11 @@ export const projects = [
     tags: ["python", "finace", "machine learning"],
   },
   {
-    name: "0xCoontz",
+    name: "Coontz-Web",
     desc: "Personal Website built with Astro, Svelte, and JavaScript. Collaborated with a fellow Akron University student to build a website for a friend. Contains a blog of writeups for challenges done by the CTF team",
-    link: "https://0xcoontz.vercel.app/",
-    Github: "https://github.com/Coontz1/0xCoontz",
-    tags: ["Astro", "Svelte", "JavaScript"],
+    Github: "https://github.com/Coontz1/myWebsite",
+    link: "https://austin-coontz.vercel.app/",
+    tags: ["Astro", "TypeScript", "JavaScript"],
   },
   {
     name: "University of Akron Security",
@@ -199,13 +199,8 @@ export const projects = [
 
 export const feedbacks = [
   {
-    name: "Joey Ferenchak",
-    feedback:
-      "I collaborated with Brendan on the University of Akron's first open source project UakronSec, I was very pleased with the design we were able to implement. Brendan was very professional and was able to work with me to get the project done on time.",
-  },
-  {
     name: "Austin Coontz",
     feedback:
-      "Brendan and I worked closely together in the development of my own personal website and I can say that he is a very talented developer. He is very knowledgeable in many different languages and frameworks and is able to work with a variety of different people. I would highly recommend Brendan for any development work.",
+      "I was trying to make a website that is blazingly fast. I had no idea where to start. What did I do? Called my friend Brendan. I had no fking Idea what i Was doing! He fixed it. Website? Fast. Blazingly. Done.",
   },
 ];
