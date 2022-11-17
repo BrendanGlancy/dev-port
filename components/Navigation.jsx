@@ -123,7 +123,7 @@ const Navigation = () => {
                   >
                     <i class="fa fa-pied-piper-alt" />
                     <span className="nav-link-inner--text d-lg-none ml-2">
-                      Discord
+                      Hackerrank
                     </span>
                   </NavLink>
                 </NavItem>
