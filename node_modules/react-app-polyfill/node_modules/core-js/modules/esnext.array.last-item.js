@@ -1,23 +1,24 @@
 'use strict';
+// TODO: Remove from `core-js@4`
 var DESCRIPTORS = require('../internals/descriptors');
 var addToUnscopables = require('../internals/add-to-unscopables');
 var toObject = require('../internals/to-object');
-var toLength = require('../internals/to-length');
-var defineProperty = require('../internals/object-define-property').f;
+var lengthOfArrayLike = require('../internals/length-of-array-like');
+var defineBuiltInAccessor = require('../internals/define-built-in-accessor');
 
 // `Array.prototype.lastIndex` accessor
 // https://github.com/keithamus/proposal-array-last
-if (DESCRIPTORS && !('lastItem' in [])) {
-  defineProperty(Array.prototype, 'lastItem', {
+if (DESCRIPTORS) {
+  defineBuiltInAccessor(Array.prototype, 'lastItem', {
     configurable: true,
     get: function lastItem() {
       var O = toObject(this);
-      var len = toLength(O.length);
+      var len = lengthOfArrayLike(O);
       return len == 0 ? undefined : O[len - 1];
     },
     set: function lastItem(value) {
       var O = toObject(this);
-      var len = toLength(O.length);
+      var len = lengthOfArrayLike(O);
       return O[len == 0 ? 0 : len - 1] = value;
     }
   });

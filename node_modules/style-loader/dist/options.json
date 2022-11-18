@@ -1,22 +1,28 @@
 {
+  "title": "Style Loader options",
   "type": "object",
   "properties": {
     "injectType": {
-      "description": "Allows to setup how styles will be injected into DOM (https://github.com/webpack-contrib/style-loader#injecttype).",
+      "description": "Allows to setup how styles will be injected into DOM.",
+      "link": "https://github.com/webpack-contrib/style-loader#injecttype",
       "enum": [
         "styleTag",
         "singletonStyleTag",
+        "autoStyleTag",
         "lazyStyleTag",
         "lazySingletonStyleTag",
+        "lazyAutoStyleTag",
         "linkTag"
       ]
     },
     "attributes": {
-      "description": "Adds custom attributes to tag (https://github.com/webpack-contrib/style-loader#attributes).",
+      "description": "Adds custom attributes to tag.",
+      "link": "https://github.com/webpack-contrib/style-loader#attributes",
       "type": "object"
     },
     "insert": {
-      "description": "Inserts `<style>`/`<link>` at the given position (https://github.com/webpack-contrib/style-loader#insert).",
+      "description": "Inserts `<style>`/`<link>` at the given position.",
+      "link": "https://github.com/webpack-contrib/style-loader#insert",
       "anyOf": [
         {
           "type": "string"
@@ -27,22 +33,26 @@
       ]
     },
     "base": {
-      "description": "Sets module ID base for DLLPlugin (https://github.com/webpack-contrib/style-loader#base).",
+      "description": "Sets module ID base for DLLPlugin.",
+      "link": "https://github.com/webpack-contrib/style-loader#base",
       "type": "number"
     },
     "esModule": {
-      "description": "Use the ES modules syntax (https://github.com/webpack-contrib/css-loader#esmodule).",
+      "description": "Use the ES modules syntax.",
+      "link": "https://github.com/webpack-contrib/css-loader#esmodule",
       "type": "boolean"
     },
-    "modules": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "namedExport": {
-          "description": "Enables/disables ES modules named export for locals (https://webpack.js.org/plugins/mini-css-extract-plugin/#namedexport).",
-          "type": "boolean"
+    "styleTagTransform": {
+      "description": "Transform tag and css when insert 'style' tag into the DOM",
+      "link": "https://github.com/webpack-contrib/style-loader#styleTagTransform",
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "instanceof": "Function"
         }
-      }
+      ]
     }
   },
   "additionalProperties": false

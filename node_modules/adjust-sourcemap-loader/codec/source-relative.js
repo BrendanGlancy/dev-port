@@ -4,7 +4,7 @@ var path = require('path'),
     fs   = require('fs');
 
 /**
- * Codec for relative paths with respect to the context of the file being compiled.
+ * Codec for relative paths with respect to the source directory.
  * @type {{name:string, decode: function, encode: function, root: function}}
  */
 module.exports = {
@@ -16,15 +16,14 @@ module.exports = {
 
 /**
  * Decode the given uri.
- * Any path with or without leading slash is tested against context directory.
- * Exclude module paths containing `~`.
+ * Any path without leading slash is tested against source directory.
  * @this {{options: object}} A loader or compilation
  * @param {string} uri A source uri to decode
  * @returns {boolean|string} False where unmatched else the decoded path
  */
 function decode(uri) {
   /* jshint validthis:true */
-  var base    = this.context,
+  var base    = !uri.startsWith('/') && this.context,
       absFile = !!base && path.normalize(path.join(base, uri)),
       isValid = !!absFile && fs.existsSync(absFile) && fs.statSync(absFile).isFile();
   return isValid && absFile;
@@ -34,7 +33,7 @@ function decode(uri) {
  * Encode the given file path.
  * @this {{options: object}} A loader or compilation
  * @param {string} absolute An absolute file path to encode
- * @returns {string} A uri
+ * @returns {string} A uri without leading slash
  */
 function encode(absolute) {
   /* jshint validthis:true */
