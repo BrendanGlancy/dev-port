@@ -1,11 +1,4 @@
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-
 "use strict";
-
-const NONE = Symbol("not sorted");
 
 /**
  * A subset of Set that offers sorting functionality
@@ -21,13 +14,13 @@ class SortableSet extends Set {
 	 */
 	constructor(initialIterable, defaultSort) {
 		super(initialIterable);
-		/** @private @type {undefined | function(T, T): number}} */
+		/** @private @type {function(T, T): number}} */
 		this._sortFn = defaultSort;
-		/** @private @type {typeof NONE | undefined | function(T, T): number}} */
-		this._lastActiveSortFn = NONE;
-		/** @private @type {Map<Function, any> | undefined} */
+		/** @private @type {function(T, T): number} | null} */
+		this._lastActiveSortFn = null;
+		/** @private @type {Map<Function, T[]> | undefined} */
 		this._cache = undefined;
-		/** @private @type {Map<Function, any> | undefined} */
+		/** @private @type {Map<Function, T[]|string|number> | undefined} */
 		this._cacheOrderIndependent = undefined;
 	}
 
@@ -36,7 +29,7 @@ class SortableSet extends Set {
 	 * @returns {this} returns itself
 	 */
 	add(value) {
-		this._lastActiveSortFn = NONE;
+		this._lastActiveSortFn = null;
 		this._invalidateCache();
 		this._invalidateOrderedCache();
 		super.add(value);
@@ -84,21 +77,18 @@ class SortableSet extends Set {
 
 	sort() {
 		this.sortWith(this._sortFn);
-		return this;
 	}
 
 	/**
 	 * Get data from cache
-	 * @template R
-	 * @param {function(SortableSet<T>): R} fn function to calculate value
-	 * @returns {R} returns result of fn(this), cached until set changes
+	 * @param {function(SortableSet<T>): T[]} fn function to calculate value
+	 * @returns {T[]} returns result of fn(this), cached until set changes
 	 */
 	getFromCache(fn) {
 		if (this._cache === undefined) {
 			this._cache = new Map();
 		} else {
-			const result = this._cache.get(fn);
-			const data = /** @type {R} */ (result);
+			const data = this._cache.get(fn);
 			if (data !== undefined) {
 				return data;
 			}
@@ -109,17 +99,14 @@ class SortableSet extends Set {
 	}
 
 	/**
-	 * Get data from cache (ignoring sorting)
-	 * @template R
-	 * @param {function(SortableSet<T>): R} fn function to calculate value
-	 * @returns {R} returns result of fn(this), cached until set changes
+	 * @param {function(SortableSet<T>): string|number|T[]} fn function to calculate value
+	 * @returns {any} returns result of fn(this), cached until set changes
 	 */
 	getFromUnorderedCache(fn) {
 		if (this._cacheOrderIndependent === undefined) {
 			this._cacheOrderIndependent = new Map();
 		} else {
-			const result = this._cacheOrderIndependent.get(fn);
-			const data = /** @type {R} */ (result);
+			const data = this._cacheOrderIndependent.get(fn);
 			if (data !== undefined) {
 				return data;
 			}
@@ -147,13 +134,6 @@ class SortableSet extends Set {
 		if (this._cacheOrderIndependent !== undefined) {
 			this._cacheOrderIndependent.clear();
 		}
-	}
-
-	/**
-	 * @returns {T[]} the raw array
-	 */
-	toJSON() {
-		return Array.from(this);
 	}
 }
 

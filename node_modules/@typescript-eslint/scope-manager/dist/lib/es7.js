@@ -1,8 +1,7 @@
 "use strict";
 // THIS CODE WAS AUTOMATICALLY GENERATED
 // DO NOT EDIT THIS CODE BY HAND
-// RUN THE FOLLOWING COMMAND FROM THE WORKSPACE ROOT TO REGENERATE:
-// npx nx generate-lib @typescript-eslint/scope-manager
+// YOU CAN REGENERATE IT USING yarn generate:lib
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.es7 = void 0;
 const es2015_1 = require("./es2015");

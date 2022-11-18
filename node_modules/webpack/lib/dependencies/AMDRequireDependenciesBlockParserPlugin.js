@@ -2,22 +2,19 @@
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
 */
-
 "use strict";
 
-const RuntimeGlobals = require("../RuntimeGlobals");
-const UnsupportedFeatureWarning = require("../UnsupportedFeatureWarning");
+const AMDRequireItemDependency = require("./AMDRequireItemDependency");
 const AMDRequireArrayDependency = require("./AMDRequireArrayDependency");
 const AMDRequireContextDependency = require("./AMDRequireContextDependency");
 const AMDRequireDependenciesBlock = require("./AMDRequireDependenciesBlock");
-const AMDRequireDependency = require("./AMDRequireDependency");
-const AMDRequireItemDependency = require("./AMDRequireItemDependency");
-const ConstDependency = require("./ConstDependency");
-const ContextDependencyHelpers = require("./ContextDependencyHelpers");
-const LocalModuleDependency = require("./LocalModuleDependency");
-const { getLocalModule } = require("./LocalModulesHelpers");
 const UnsupportedDependency = require("./UnsupportedDependency");
+const LocalModuleDependency = require("./LocalModuleDependency");
+const ContextDependencyHelpers = require("./ContextDependencyHelpers");
+const LocalModulesHelpers = require("./LocalModulesHelpers");
+const ConstDependency = require("./ConstDependency");
 const getFunctionExpression = require("./getFunctionExpression");
+const UnsupportedFeatureWarning = require("../UnsupportedFeatureWarning");
 
 class AMDRequireDependenciesBlockParserPlugin {
 	constructor(options) {
@@ -76,11 +73,15 @@ class AMDRequireDependenciesBlockParserPlugin {
 					dep = "__webpack_require__";
 				} else if (["exports", "module"].includes(request)) {
 					dep = request;
-				} else if ((localModule = getLocalModule(parser.state, request))) {
-					localModule.flagUsed();
+				} else if (
+					(localModule = LocalModulesHelpers.getLocalModule(
+						parser.state,
+						request
+					))
+				) {
 					dep = new LocalModuleDependency(localModule, undefined, false);
 					dep.loc = expr.loc;
-					parser.state.module.addPresentationalDependency(dep);
+					parser.state.current.addDependency(dep);
 				} else {
 					dep = this.newRequireItemDependency(request);
 					dep.loc = expr.loc;
@@ -92,7 +93,7 @@ class AMDRequireDependenciesBlockParserPlugin {
 			const dep = this.newRequireArrayDependency(deps, param.range);
 			dep.loc = expr.loc;
 			dep.optional = !!parser.scope.inTry;
-			parser.state.module.addPresentationalDependency(dep);
+			parser.state.current.addDependency(dep);
 			return true;
 		}
 	}
@@ -108,33 +109,30 @@ class AMDRequireDependenciesBlockParserPlugin {
 		} else if (param.isString()) {
 			let dep, localModule;
 			if (param.string === "require") {
-				dep = new ConstDependency("__webpack_require__", param.string, [
-					RuntimeGlobals.require
-				]);
+				dep = new ConstDependency("__webpack_require__", param.string);
 			} else if (param.string === "module") {
 				dep = new ConstDependency(
 					parser.state.module.buildInfo.moduleArgument,
-					param.range,
-					[RuntimeGlobals.module]
+					param.range
 				);
 			} else if (param.string === "exports") {
 				dep = new ConstDependency(
 					parser.state.module.buildInfo.exportsArgument,
-					param.range,
-					[RuntimeGlobals.exports]
+					param.range
 				);
-			} else if ((localModule = getLocalModule(parser.state, param.string))) {
-				localModule.flagUsed();
+			} else if (
+				(localModule = LocalModulesHelpers.getLocalModule(
+					parser.state,
+					param.string
+				))
+			) {
 				dep = new LocalModuleDependency(localModule, param.range, false);
 			} else {
 				dep = this.newRequireItemDependency(param.string, param.range);
-				dep.loc = expr.loc;
-				dep.optional = !!parser.scope.inTry;
-				parser.state.current.addDependency(dep);
-				return true;
 			}
 			dep.loc = expr.loc;
-			parser.state.module.addPresentationalDependency(dep);
+			dep.optional = !!parser.scope.inTry;
+			parser.state.current.addDependency(dep);
 			return true;
 		}
 	}
@@ -145,9 +143,7 @@ class AMDRequireDependenciesBlockParserPlugin {
 			param,
 			expr,
 			this.options,
-			{
-				category: "amd"
-			},
+			{},
 			parser
 		);
 		if (!dep) return;
@@ -181,7 +177,6 @@ class AMDRequireDependenciesBlockParserPlugin {
 
 	processCallRequire(parser, expr) {
 		let param;
-		let depBlock;
 		let dep;
 		let result;
 
@@ -189,20 +184,16 @@ class AMDRequireDependenciesBlockParserPlugin {
 
 		if (expr.arguments.length >= 1) {
 			param = parser.evaluateExpression(expr.arguments[0]);
-			depBlock = this.newRequireDependenciesBlock(
+			dep = this.newRequireDependenciesBlock(
+				expr,
+				param.range,
+				expr.arguments.length > 1 ? expr.arguments[1].range : null,
+				expr.arguments.length > 2 ? expr.arguments[2].range : null,
+				parser.state.module,
 				expr.loc,
 				this.processArrayForRequestString(param)
 			);
-			dep = this.newRequireDependency(
-				expr.range,
-				param.range,
-				expr.arguments.length > 1 ? expr.arguments[1].range : null,
-				expr.arguments.length > 2 ? expr.arguments[2].range : null
-			);
-			dep.loc = expr.loc;
-			depBlock.addDependency(dep);
-
-			parser.state.current = depBlock;
+			parser.state.current = dep;
 		}
 
 		if (expr.arguments.length === 1) {
@@ -211,7 +202,7 @@ class AMDRequireDependenciesBlockParserPlugin {
 			});
 			parser.state.current = old;
 			if (!result) return;
-			parser.state.current.addBlock(depBlock);
+			parser.state.current.addBlock(dep);
 			return true;
 		}
 
@@ -221,18 +212,19 @@ class AMDRequireDependenciesBlockParserPlugin {
 					result = this.processArray(parser, expr, param);
 				});
 				if (!result) {
-					const dep = new UnsupportedDependency("unsupported", expr.range);
-					old.addPresentationalDependency(dep);
+					dep = new UnsupportedDependency("unsupported", expr.range);
+					old.addDependency(dep);
 					if (parser.state.module) {
-						parser.state.module.addError(
+						parser.state.module.errors.push(
 							new UnsupportedFeatureWarning(
+								parser.state.module,
 								"Cannot statically analyse 'require(…, …)' in line " +
 									expr.loc.start.line,
 								expr.loc
 							)
 						);
 					}
-					depBlock = null;
+					dep = null;
 					return true;
 				}
 				dep.functionBindThis = this.processFunctionArgument(
@@ -247,26 +239,29 @@ class AMDRequireDependenciesBlockParserPlugin {
 				}
 			} finally {
 				parser.state.current = old;
-				if (depBlock) parser.state.current.addBlock(depBlock);
+				if (dep) parser.state.current.addBlock(dep);
 			}
 			return true;
 		}
 	}
 
-	newRequireDependenciesBlock(loc, request) {
-		return new AMDRequireDependenciesBlock(loc, request);
-	}
-	newRequireDependency(
-		outerRange,
+	newRequireDependenciesBlock(
+		expr,
 		arrayRange,
 		functionRange,
-		errorCallbackRange
+		errorCallbackRange,
+		module,
+		loc,
+		request
 	) {
-		return new AMDRequireDependency(
-			outerRange,
+		return new AMDRequireDependenciesBlock(
+			expr,
 			arrayRange,
 			functionRange,
-			errorCallbackRange
+			errorCallbackRange,
+			module,
+			loc,
+			request
 		);
 	}
 	newRequireItemDependency(request, range) {

@@ -1,8 +1,6 @@
-import type { ScopeManager } from '@typescript-eslint/scope-manager';
-import type { TSESTree } from '@typescript-eslint/types';
-import { ParserOptions } from '@typescript-eslint/types';
-import type { ParserServices } from '@typescript-eslint/typescript-estree';
-import { visitorKeys } from '@typescript-eslint/typescript-estree';
+import { ParserOptions, TSESTree } from '@typescript-eslint/types';
+import { ParserServices, visitorKeys } from '@typescript-eslint/typescript-estree';
+import { ScopeManager } from '@typescript-eslint/scope-manager';
 interface ParseForESLintResult {
     ast: TSESTree.Program & {
         range?: [number, number];

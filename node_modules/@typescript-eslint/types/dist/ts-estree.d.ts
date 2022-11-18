@@ -1,8 +1,8 @@
-import type * as TSESTree from './generated/ast-spec';
-declare module './generated/ast-spec' {
+import * as TSESTree from './ast-spec';
+declare module './ast-spec' {
     interface BaseNode {
         parent?: TSESTree.Node;
     }
 }
-export * as TSESTree from './generated/ast-spec';
+export * as TSESTree from './ast-spec';
 //# sourceMappingURL=ts-estree.d.ts.map

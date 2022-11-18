@@ -7,19 +7,14 @@
 
 const DelegatedModuleFactoryPlugin = require("./DelegatedModuleFactoryPlugin");
 const DelegatedSourceDependency = require("./dependencies/DelegatedSourceDependency");
-
-/** @typedef {import("./Compiler")} Compiler */
+const DelegatedExportsDependency = require("./dependencies/DelegatedExportsDependency");
+const NullFactory = require("./NullFactory");
 
 class DelegatedPlugin {
 	constructor(options) {
 		this.options = options;
 	}
 
-	/**
-	 * Apply the plugin
-	 * @param {Compiler} compiler the compiler instance
-	 * @returns {void}
-	 */
 	apply(compiler) {
 		compiler.hooks.compilation.tap(
 			"DelegatedPlugin",
@@ -28,14 +23,15 @@ class DelegatedPlugin {
 					DelegatedSourceDependency,
 					normalModuleFactory
 				);
+				compilation.dependencyFactories.set(
+					DelegatedExportsDependency,
+					new NullFactory()
+				);
 			}
 		);
 
 		compiler.hooks.compile.tap("DelegatedPlugin", ({ normalModuleFactory }) => {
-			new DelegatedModuleFactoryPlugin({
-				associatedObjectForCache: compiler.root,
-				...this.options
-			}).apply(normalModuleFactory);
+			new DelegatedModuleFactoryPlugin(this.options).apply(normalModuleFactory);
 		});
 	}
 }

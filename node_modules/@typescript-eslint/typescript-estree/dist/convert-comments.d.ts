@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import type { TSESTree } from './ts-estree';
+import { TSESTree } from './ts-estree';
 /**
  * Convert all comments for the given AST.
  * @param ast the AST object

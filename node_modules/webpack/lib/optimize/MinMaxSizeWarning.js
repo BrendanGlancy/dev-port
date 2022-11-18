@@ -2,11 +2,10 @@
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
 */
-
 "use strict";
 
-const SizeFormatHelpers = require("../SizeFormatHelpers");
 const WebpackError = require("../WebpackError");
+const SizeFormatHelpers = require("../SizeFormatHelpers");
 
 class MinMaxSizeWarning extends WebpackError {
 	constructor(keys, minSize, maxSize) {
@@ -22,7 +21,7 @@ class MinMaxSizeWarning extends WebpackError {
 				`${keysMessage}\n` +
 				`Configured minSize (${SizeFormatHelpers.formatSize(minSize)}) is ` +
 				`bigger than maxSize (${SizeFormatHelpers.formatSize(maxSize)}).\n` +
-				"This seem to be a invalid optimization.splitChunks configuration."
+				"This seem to be a invalid optimiziation.splitChunks configuration."
 		);
 	}
 }

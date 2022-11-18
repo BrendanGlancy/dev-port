@@ -1723,10 +1723,6 @@ export interface StylisticIssues extends Linter.RulesRecord {
                  * @default false
                  */
                 natural: boolean;
-                /**
-                 * @default false
-                 */
-                allowLineSeparatedGroups: boolean;
             }>,
         ]
     >;

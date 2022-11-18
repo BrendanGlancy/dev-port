@@ -1,5 +1,3 @@
-'use strict'
-
 /*
  * Traditional DNS header OPCODEs (4-bits) defined by IANA in
  * https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-5

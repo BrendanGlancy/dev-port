@@ -1,7 +1,3 @@
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-*/
-
 "use strict";
 
 /** @typedef {import("./Compiler")} Compiler */
@@ -17,7 +13,7 @@ class ContextExclusionPlugin {
 
 	/**
 	 * Apply the plugin
-	 * @param {Compiler} compiler the compiler instance
+	 * @param {Compiler} compiler Webpack Compiler
 	 * @returns {void}
 	 */
 	apply(compiler) {

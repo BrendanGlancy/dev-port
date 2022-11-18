@@ -2,13 +2,7 @@
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
 */
-
 "use strict";
-
-const { STAGE_ADVANCED } = require("../OptimizationStages");
-
-/** @typedef {import("../Chunk")} Chunk */
-/** @typedef {import("../Compiler")} Compiler */
 
 class AggressiveMergingPlugin {
 	constructor(options) {
@@ -23,11 +17,6 @@ class AggressiveMergingPlugin {
 		this.options = options || {};
 	}
 
-	/**
-	 * Apply the plugin
-	 * @param {Compiler} compiler the compiler instance
-	 * @returns {void}
-	 */
 	apply(compiler) {
 		const options = this.options;
 		const minSizeReduce = options.minSizeReduce || 1.5;
@@ -35,41 +24,46 @@ class AggressiveMergingPlugin {
 		compiler.hooks.thisCompilation.tap(
 			"AggressiveMergingPlugin",
 			compilation => {
-				compilation.hooks.optimizeChunks.tap(
-					{
-						name: "AggressiveMergingPlugin",
-						stage: STAGE_ADVANCED
-					},
+				compilation.hooks.optimizeChunksAdvanced.tap(
+					"AggressiveMergingPlugin",
 					chunks => {
-						const chunkGraph = compilation.chunkGraph;
-						/** @type {{a: Chunk, b: Chunk, improvement: number}[]} */
 						let combinations = [];
-						for (const a of chunks) {
-							if (a.canBeInitial()) continue;
-							for (const b of chunks) {
+						chunks.forEach((a, idx) => {
+							if (a.canBeInitial()) return;
+							for (let i = 0; i < idx; i++) {
+								const b = chunks[i];
 								if (b.canBeInitial()) continue;
-								if (b === a) break;
-								if (!chunkGraph.canChunksBeIntegrated(a, b)) {
-									continue;
-								}
-								const aSize = chunkGraph.getChunkSize(b, {
-									chunkOverhead: 0
-								});
-								const bSize = chunkGraph.getChunkSize(a, {
-									chunkOverhead: 0
-								});
-								const abSize = chunkGraph.getIntegratedChunksSize(b, a, {
-									chunkOverhead: 0
-								});
-								const improvement = (aSize + bSize) / abSize;
 								combinations.push({
 									a,
 									b,
-									improvement
+									improvement: undefined
 								});
 							}
-						}
+						});
 
+						for (const pair of combinations) {
+							const a = pair.b.size({
+								chunkOverhead: 0
+							});
+							const b = pair.a.size({
+								chunkOverhead: 0
+							});
+							const ab = pair.b.integratedSize(pair.a, {
+								chunkOverhead: 0
+							});
+							let newSize;
+							if (ab === false) {
+								pair.improvement = false;
+								return;
+							} else {
+								newSize = ab;
+							}
+
+							pair.improvement = (a + b) / newSize;
+						}
+						combinations = combinations.filter(pair => {
+							return pair.improvement !== false;
+						});
 						combinations.sort((a, b) => {
 							return b.improvement - a.improvement;
 						});
@@ -79,9 +73,10 @@ class AggressiveMergingPlugin {
 						if (!pair) return;
 						if (pair.improvement < minSizeReduce) return;
 
-						chunkGraph.integrateChunks(pair.b, pair.a);
-						compilation.chunks.delete(pair.a);
-						return true;
+						if (pair.b.integrate(pair.a, "aggressive-merge")) {
+							chunks.splice(chunks.indexOf(pair.a), 1);
+							return true;
+						}
 					}
 				);
 			}

@@ -1,11 +1,7 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -29,12 +25,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createSourceFile = void 0;
 const debug_1 = __importDefault(require("debug"));
 const ts = __importStar(require("typescript"));
-const getScriptKind_1 = require("./getScriptKind");
+const shared_1 = require("./shared");
 const log = (0, debug_1.default)('typescript-eslint:typescript-estree:createSourceFile');
-function createSourceFile(parseSettings) {
-    log('Getting AST without type information in %s mode for: %s', parseSettings.jsx ? 'TSX' : 'TS', parseSettings.filePath);
-    return ts.createSourceFile(parseSettings.filePath, parseSettings.code, ts.ScriptTarget.Latest, 
-    /* setParentNodes */ true, (0, getScriptKind_1.getScriptKind)(parseSettings.filePath, parseSettings.jsx));
+function createSourceFile(code, extra) {
+    log('Getting AST without type information in %s mode for: %s', extra.jsx ? 'TSX' : 'TS', extra.filePath);
+    return ts.createSourceFile(extra.filePath, code, ts.ScriptTarget.Latest, 
+    /* setParentNodes */ true, (0, shared_1.getScriptKind)(extra));
 }
 exports.createSourceFile = createSourceFile;
 //# sourceMappingURL=createSourceFile.js.map

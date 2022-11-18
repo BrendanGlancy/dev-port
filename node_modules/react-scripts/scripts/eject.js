@@ -109,7 +109,7 @@ prompts({
     }
   }
 
-  const folders = ['config', 'config/jest', 'scripts', 'config/webpack/persistentCache'];
+  const folders = ['config', 'config/jest', 'scripts'];
 
   // Make shallow array of files paths
   const files = folders.reduce((files, folder) => {
@@ -138,7 +138,7 @@ prompts({
   console.log(cyan(`Copying files into ${appPath}`));
 
   folders.forEach(folder => {
-    fs.mkdirSync(path.join(appPath, folder), {recursive: true});
+    fs.mkdirSync(path.join(appPath, folder));
   });
 
   files.forEach(file => {

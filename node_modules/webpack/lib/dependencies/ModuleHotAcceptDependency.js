@@ -2,10 +2,7 @@
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
 */
-
 "use strict";
-
-const makeSerializable = require("../util/makeSerializable");
 const ModuleDependency = require("./ModuleDependency");
 const ModuleDependencyTemplateAsId = require("./ModuleDependencyTemplateAsId");
 
@@ -19,16 +16,7 @@ class ModuleHotAcceptDependency extends ModuleDependency {
 	get type() {
 		return "module.hot.accept";
 	}
-
-	get category() {
-		return "commonjs";
-	}
 }
-
-makeSerializable(
-	ModuleHotAcceptDependency,
-	"webpack/lib/dependencies/ModuleHotAcceptDependency"
-);
 
 ModuleHotAcceptDependency.Template = ModuleDependencyTemplateAsId;
 

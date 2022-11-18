@@ -2,18 +2,17 @@
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
 */
-
 "use strict";
 
-const DllModuleFactory = require("./DllModuleFactory");
 const DllEntryDependency = require("./dependencies/DllEntryDependency");
-const EntryDependency = require("./dependencies/EntryDependency");
+const SingleEntryDependency = require("./dependencies/SingleEntryDependency");
+const DllModuleFactory = require("./DllModuleFactory");
 
 class DllEntryPlugin {
-	constructor(context, entries, options) {
+	constructor(context, entries, name) {
 		this.context = context;
 		this.entries = entries;
-		this.options = options;
+		this.name = name;
 	}
 
 	apply(compiler) {
@@ -26,7 +25,7 @@ class DllEntryPlugin {
 					dllModuleFactory
 				);
 				compilation.dependencyFactories.set(
-					EntryDependency,
+					SingleEntryDependency,
 					normalModuleFactory
 				);
 			}
@@ -36,16 +35,16 @@ class DllEntryPlugin {
 				this.context,
 				new DllEntryDependency(
 					this.entries.map((e, idx) => {
-						const dep = new EntryDependency(e);
+						const dep = new SingleEntryDependency(e);
 						dep.loc = {
-							name: this.options.name,
+							name: this.name,
 							index: idx
 						};
 						return dep;
 					}),
-					this.options.name
+					this.name
 				),
-				this.options,
+				this.name,
 				callback
 			);
 		});

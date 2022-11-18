@@ -1,7 +1,6 @@
 'use strict';
 
-var fromEntries = require('../');
-fromEntries.shim();
+require('../auto');
 
 var test = require('tape');
 var keys = require('object-keys');

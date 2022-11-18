@@ -1,6 +1,5 @@
 import * as ts from 'typescript';
-import type { TSESTree } from './ts-estree';
-import { AST_NODE_TYPES, AST_TOKEN_TYPES } from './ts-estree';
+import { AST_NODE_TYPES, AST_TOKEN_TYPES, TSESTree } from './ts-estree';
 declare const SyntaxKind: typeof ts.SyntaxKind;
 interface TokenToText extends TSESTree.PunctuatorTokenToText {
     [SyntaxKind.ImportKeyword]: 'import';
@@ -78,7 +77,7 @@ export declare function getBinaryExpressionType<T extends ts.SyntaxKind>(operato
  * @param ast the AST object
  * @returns line and column
  */
-export declare function getLineAndCharacterFor(pos: number, ast: ts.SourceFile): TSESTree.Position;
+export declare function getLineAndCharacterFor(pos: number, ast: ts.SourceFile): TSESTree.LineAndColumnData;
 /**
  * Returns line and column data for the given start and end positions,
  * for the given AST
@@ -221,8 +220,5 @@ export declare function nodeHasTokens(n: ts.Node, ast: ts.SourceFile): boolean;
  * @param callback
  */
 export declare function firstDefined<T, U>(array: readonly T[] | undefined, callback: (element: T, index: number) => U | undefined): U | undefined;
-export declare function identifierIsThisKeyword(id: ts.Identifier): boolean;
-export declare function isThisIdentifier(node: ts.Node | undefined): node is ts.Identifier;
-export declare function isThisInTypeQuery(node: ts.Node): boolean;
 export {};
 //# sourceMappingURL=node-utils.d.ts.map

@@ -2,16 +2,16 @@
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Naoyuki Kanezawa @nkzawa
 */
-
 "use strict";
 
-const EntryOptionPlugin = require("./EntryOptionPlugin");
-const EntryPlugin = require("./EntryPlugin");
-const EntryDependency = require("./dependencies/EntryDependency");
+const MultiEntryDependency = require("./dependencies/MultiEntryDependency");
+const SingleEntryDependency = require("./dependencies/SingleEntryDependency");
+const MultiModuleFactory = require("./MultiModuleFactory");
+const MultiEntryPlugin = require("./MultiEntryPlugin");
+const SingleEntryPlugin = require("./SingleEntryPlugin");
 
-/** @typedef {import("../declarations/WebpackOptions").EntryDynamicNormalized} EntryDynamic */
-/** @typedef {import("../declarations/WebpackOptions").EntryItem} EntryItem */
-/** @typedef {import("../declarations/WebpackOptions").EntryStaticNormalized} EntryStatic */
+/** @typedef {import("../declarations/WebpackOptions").EntryDynamic} EntryDynamic */
+/** @typedef {import("../declarations/WebpackOptions").EntryStatic} EntryStatic */
 /** @typedef {import("./Compiler")} Compiler */
 
 class DynamicEntryPlugin {
@@ -25,7 +25,6 @@ class DynamicEntryPlugin {
 	}
 
 	/**
-	 * Apply the plugin
 	 * @param {Compiler} compiler the compiler instance
 	 * @returns {void}
 	 */
@@ -33,47 +32,63 @@ class DynamicEntryPlugin {
 		compiler.hooks.compilation.tap(
 			"DynamicEntryPlugin",
 			(compilation, { normalModuleFactory }) => {
+				const multiModuleFactory = new MultiModuleFactory();
+
 				compilation.dependencyFactories.set(
-					EntryDependency,
+					MultiEntryDependency,
+					multiModuleFactory
+				);
+				compilation.dependencyFactories.set(
+					SingleEntryDependency,
 					normalModuleFactory
 				);
 			}
 		);
 
-		compiler.hooks.make.tapPromise(
+		compiler.hooks.make.tapAsync(
 			"DynamicEntryPlugin",
-			(compilation, callback) =>
-				Promise.resolve(this.entry())
-					.then(entry => {
-						const promises = [];
-						for (const name of Object.keys(entry)) {
-							const desc = entry[name];
-							const options = EntryOptionPlugin.entryDescriptionToOptions(
-								compiler,
-								name,
-								desc
-							);
-							for (const entry of desc.import) {
-								promises.push(
-									new Promise((resolve, reject) => {
-										compilation.addEntry(
-											this.context,
-											EntryPlugin.createDependency(entry, options),
-											options,
-											err => {
-												if (err) return reject(err);
-												resolve();
-											}
-										);
-									})
-								);
-							}
-						}
-						return Promise.all(promises);
-					})
-					.then(x => {})
+			(compilation, callback) => {
+				/**
+				 * @param {string|string[]} entry entry value or array of entry values
+				 * @param {string} name name of entry
+				 * @returns {Promise<EntryStatic>} returns the promise resolving the Compilation#addEntry function
+				 */
+				const addEntry = (entry, name) => {
+					const dep = DynamicEntryPlugin.createDependency(entry, name);
+					return new Promise((resolve, reject) => {
+						compilation.addEntry(this.context, dep, name, err => {
+							if (err) return reject(err);
+							resolve();
+						});
+					});
+				};
+
+				Promise.resolve(this.entry()).then(entry => {
+					if (typeof entry === "string" || Array.isArray(entry)) {
+						addEntry(entry, "main").then(() => callback(), callback);
+					} else if (typeof entry === "object") {
+						Promise.all(
+							Object.keys(entry).map(name => {
+								return addEntry(entry[name], name);
+							})
+						).then(() => callback(), callback);
+					}
+				});
+			}
 		);
 	}
 }
 
 module.exports = DynamicEntryPlugin;
+/**
+ * @param {string|string[]} entry entry value or array of entry paths
+ * @param {string} name name of entry
+ * @returns {SingleEntryDependency|MultiEntryDependency} returns dep
+ */
+DynamicEntryPlugin.createDependency = (entry, name) => {
+	if (Array.isArray(entry)) {
+		return MultiEntryPlugin.createDependency(entry, name);
+	} else {
+		return SingleEntryPlugin.createDependency(entry, name);
+	}
+};

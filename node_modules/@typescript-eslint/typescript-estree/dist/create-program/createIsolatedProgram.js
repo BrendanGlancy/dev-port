@@ -1,11 +1,7 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -29,21 +25,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createIsolatedProgram = void 0;
 const debug_1 = __importDefault(require("debug"));
 const ts = __importStar(require("typescript"));
-const getScriptKind_1 = require("./getScriptKind");
 const shared_1 = require("./shared");
 const log = (0, debug_1.default)('typescript-eslint:typescript-estree:createIsolatedProgram');
 /**
  * @param code The code of the file being linted
  * @returns Returns a new source file and program corresponding to the linted code
  */
-function createIsolatedProgram(parseSettings) {
-    log('Getting isolated program in %s mode for: %s', parseSettings.jsx ? 'TSX' : 'TS', parseSettings.filePath);
+function createIsolatedProgram(code, extra) {
+    log('Getting isolated program in %s mode for: %s', extra.jsx ? 'TSX' : 'TS', extra.filePath);
     const compilerHost = {
         fileExists() {
             return true;
         },
         getCanonicalFileName() {
-            return parseSettings.filePath;
+            return extra.filePath;
         },
         getCurrentDirectory() {
             return '';
@@ -59,8 +54,8 @@ function createIsolatedProgram(parseSettings) {
             return '\n';
         },
         getSourceFile(filename) {
-            return ts.createSourceFile(filename, parseSettings.code, ts.ScriptTarget.Latest, 
-            /* setParentNodes */ true, (0, getScriptKind_1.getScriptKind)(parseSettings.filePath, parseSettings.jsx));
+            return ts.createSourceFile(filename, code, ts.ScriptTarget.Latest, 
+            /* setParentNodes */ true, (0, shared_1.getScriptKind)(extra, filename));
         },
         readFile() {
             return undefined;
@@ -72,8 +67,8 @@ function createIsolatedProgram(parseSettings) {
             return null;
         },
     };
-    const program = ts.createProgram([parseSettings.filePath], Object.assign({ noResolve: true, target: ts.ScriptTarget.Latest, jsx: parseSettings.jsx ? ts.JsxEmit.Preserve : undefined }, (0, shared_1.createDefaultCompilerOptionsFromExtra)(parseSettings)), compilerHost);
-    const ast = program.getSourceFile(parseSettings.filePath);
+    const program = ts.createProgram([extra.filePath], Object.assign({ noResolve: true, target: ts.ScriptTarget.Latest, jsx: extra.jsx ? ts.JsxEmit.Preserve : undefined }, (0, shared_1.createDefaultCompilerOptionsFromExtra)(extra)), compilerHost);
+    const ast = program.getSourceFile(extra.filePath);
     if (!ast) {
         throw new Error('Expected an ast to be returned for the single-file isolated program.');
     }

@@ -1,4 +1,4 @@
-import type * as ts from 'typescript';
+import * as ts from 'typescript';
 interface DirectoryStructureHost {
     readDirectory?(path: string, extensions?: ReadonlyArray<string>, exclude?: ReadonlyArray<string>, include?: ReadonlyArray<string>, depth?: number): string[];
 }

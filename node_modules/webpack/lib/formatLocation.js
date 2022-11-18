@@ -8,27 +8,42 @@
 /** @typedef {import("./Dependency").DependencyLocation} DependencyLocation */
 /** @typedef {import("./Dependency").SourcePosition} SourcePosition */
 
+// TODO webpack 5: pos must be SourcePosition
 /**
- * @param {SourcePosition} pos position
+ * @param {SourcePosition|DependencyLocation|string} pos position
  * @returns {string} formatted position
  */
 const formatPosition = pos => {
-	if (pos && typeof pos === "object") {
+	if (pos === null) return "";
+	// TODO webpack 5: Simplify this
+	if (typeof pos === "string") return pos;
+	if (typeof pos === "number") return `${pos}`;
+	if (typeof pos === "object") {
 		if ("line" in pos && "column" in pos) {
 			return `${pos.line}:${pos.column}`;
 		} else if ("line" in pos) {
 			return `${pos.line}:?`;
+		} else if ("index" in pos) {
+			// TODO webpack 5 remove this case
+			return `+${pos.index}`;
+		} else {
+			return "";
 		}
 	}
 	return "";
 };
 
+// TODO webpack 5: loc must be DependencyLocation
 /**
- * @param {DependencyLocation} loc location
+ * @param {DependencyLocation|SourcePosition|string} loc location
  * @returns {string} formatted location
  */
 const formatLocation = loc => {
-	if (loc && typeof loc === "object") {
+	if (loc === null) return "";
+	// TODO webpack 5: Simplify this
+	if (typeof loc === "string") return loc;
+	if (typeof loc === "number") return `${loc}`;
+	if (typeof loc === "object") {
 		if ("start" in loc && loc.start && "end" in loc && loc.end) {
 			if (
 				typeof loc.start === "object" &&
@@ -39,15 +54,6 @@ const formatLocation = loc => {
 				loc.start.line === loc.end.line
 			) {
 				return `${formatPosition(loc.start)}-${loc.end.column}`;
-			} else if (
-				typeof loc.start === "object" &&
-				typeof loc.start.line === "number" &&
-				typeof loc.start.column !== "number" &&
-				typeof loc.end === "object" &&
-				typeof loc.end.line === "number" &&
-				typeof loc.end.column !== "number"
-			) {
-				return `${loc.start.line}-${loc.end.line}`;
 			} else {
 				return `${formatPosition(loc.start)}-${formatPosition(loc.end)}`;
 			}
@@ -61,6 +67,7 @@ const formatLocation = loc => {
 		if ("name" in loc) {
 			return loc.name;
 		}
+		return formatPosition(loc);
 	}
 	return "";
 };

@@ -2,7 +2,6 @@
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
 */
-
 "use strict";
 
 const ConstDependency = require("./dependencies/ConstDependency");
@@ -11,8 +10,7 @@ const ConstDependency = require("./dependencies/ConstDependency");
 
 class UseStrictPlugin {
 	/**
-	 * Apply the plugin
-	 * @param {Compiler} compiler the compiler instance
+	 * @param {Compiler} compiler Webpack Compiler
 	 * @returns {void}
 	 */
 	apply(compiler) {
@@ -33,7 +31,7 @@ class UseStrictPlugin {
 							// @see https://github.com/webpack/webpack/issues/1970
 							const dep = new ConstDependency("", firstNode.range);
 							dep.loc = firstNode.loc;
-							parser.state.module.addPresentationalDependency(dep);
+							parser.state.current.addDependency(dep);
 							parser.state.module.buildInfo.strict = true;
 						}
 					});

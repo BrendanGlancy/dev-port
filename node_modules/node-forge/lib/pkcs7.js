@@ -837,7 +837,7 @@ function _recipientFromAsn1(obj) {
     serialNumber: forge.util.createBuffer(capture.serial).toHex(),
     encryptedContent: {
       algorithm: asn1.derToOid(capture.encAlgorithm),
-      parameter: capture.encParameter ? capture.encParameter.value : undefined,
+      parameter: capture.encParameter.value,
       content: capture.encKey
     }
   };
@@ -1124,11 +1124,8 @@ function _encryptedContentToAsn1(ec) {
       asn1.create(asn1.Class.UNIVERSAL, asn1.Type.OID, false,
         asn1.oidToDer(ec.algorithm).getBytes()),
       // Parameters (IV)
-      !ec.parameter ?
-        undefined :
-        asn1.create(
-          asn1.Class.UNIVERSAL, asn1.Type.OCTETSTRING, false,
-          ec.parameter.getBytes())
+      asn1.create(asn1.Class.UNIVERSAL, asn1.Type.OCTETSTRING, false,
+        ec.parameter.getBytes())
     ]),
     // [0] EncryptedContent
     asn1.create(asn1.Class.CONTEXT_SPECIFIC, 0, true, [

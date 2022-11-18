@@ -1,9 +1,6 @@
-import type { TSESTree } from '@typescript-eslint/types';
-import type { Scope } from './scope';
-import { BlockScope, CatchScope, ClassScope, ConditionalTypeScope, ForScope, FunctionExpressionNameScope, FunctionScope, FunctionTypeScope, GlobalScope, MappedTypeScope, ModuleScope, SwitchScope, TSEnumScope, TSModuleScope, TypeScope, WithScope } from './scope';
-import { ClassFieldInitializerScope } from './scope/ClassFieldInitializerScope';
-import { ClassStaticBlockScope } from './scope/ClassStaticBlockScope';
-import type { Variable } from './variable';
+import { TSESTree } from '@typescript-eslint/types';
+import { BlockScope, CatchScope, ClassScope, ConditionalTypeScope, ForScope, FunctionExpressionNameScope, FunctionScope, FunctionTypeScope, GlobalScope, MappedTypeScope, ModuleScope, Scope, SwitchScope, TSEnumScope, TSModuleScope, TypeScope, WithScope } from './scope';
+import { Variable } from './variable';
 interface ScopeManagerOptions {
     globalReturn?: boolean;
     sourceType?: 'module' | 'script';
@@ -53,8 +50,6 @@ declare class ScopeManager {
     nestBlockScope(node: BlockScope['block']): BlockScope;
     nestCatchScope(node: CatchScope['block']): CatchScope;
     nestClassScope(node: ClassScope['block']): ClassScope;
-    nestClassFieldInitializerScope(node: ClassFieldInitializerScope['block']): ClassFieldInitializerScope;
-    nestClassStaticBlockScope(node: ClassStaticBlockScope['block']): ClassStaticBlockScope;
     nestConditionalTypeScope(node: ConditionalTypeScope['block']): ConditionalTypeScope;
     nestForScope(node: ForScope['block']): ForScope;
     nestFunctionExpressionNameScope(node: FunctionExpressionNameScope['block']): FunctionExpressionNameScope;

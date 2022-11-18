@@ -2,29 +2,19 @@
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
 */
-
 "use strict";
-
 const PrefetchDependency = require("./dependencies/PrefetchDependency");
-
-/** @typedef {import("./Compiler")} Compiler */
 
 class PrefetchPlugin {
 	constructor(context, request) {
-		if (request) {
+		if (!request) {
+			this.request = context;
+		} else {
 			this.context = context;
 			this.request = request;
-		} else {
-			this.context = null;
-			this.request = context;
 		}
 	}
 
-	/**
-	 * Apply the plugin
-	 * @param {Compiler} compiler the compiler instance
-	 * @returns {void}
-	 */
 	apply(compiler) {
 		compiler.hooks.compilation.tap(
 			"PrefetchPlugin",
@@ -36,15 +26,12 @@ class PrefetchPlugin {
 			}
 		);
 		compiler.hooks.make.tapAsync("PrefetchPlugin", (compilation, callback) => {
-			compilation.addModuleChain(
+			compilation.prefetch(
 				this.context || compiler.context,
 				new PrefetchDependency(this.request),
-				err => {
-					callback(err);
-				}
+				callback
 			);
 		});
 	}
 }
-
 module.exports = PrefetchPlugin;

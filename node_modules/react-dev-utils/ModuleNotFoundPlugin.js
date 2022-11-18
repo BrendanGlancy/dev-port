@@ -100,7 +100,9 @@ class ModuleNotFoundPlugin {
     const { prettierError } = this;
     compiler.hooks.make.intercept({
       register(tap) {
-        if (!(tap.name === 'MultiEntryPlugin' || tap.name === 'EntryPlugin')) {
+        if (
+          !(tap.name === 'MultiEntryPlugin' || tap.name === 'SingleEntryPlugin')
+        ) {
           return tap;
         }
         return Object.assign({}, tap, {

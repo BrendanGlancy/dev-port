@@ -397,8 +397,7 @@ p7v.recipientInfoValidator = {
       name: 'RecipientInfo.keyEncryptionAlgorithm.parameter',
       tagClass: asn1.Class.UNIVERSAL,
       constructed: false,
-      captureAsn1: 'encParameter',
-      optional: true
+      captureAsn1: 'encParameter'
     }]
   }, {
     name: 'RecipientInfo.encryptedKey',

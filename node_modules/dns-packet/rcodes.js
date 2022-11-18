@@ -1,5 +1,3 @@
-'use strict'
-
 /*
  * Traditional DNS header RCODEs (4-bits) defined by IANA in
  * https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml

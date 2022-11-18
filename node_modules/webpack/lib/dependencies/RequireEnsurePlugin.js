@@ -2,18 +2,16 @@
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
 */
-
 "use strict";
 
-const RequireEnsureDependency = require("./RequireEnsureDependency");
 const RequireEnsureItemDependency = require("./RequireEnsureItemDependency");
+const RequireEnsureDependency = require("./RequireEnsureDependency");
+
+const NullFactory = require("../NullFactory");
 
 const RequireEnsureDependenciesBlockParserPlugin = require("./RequireEnsureDependenciesBlockParserPlugin");
 
-const {
-	evaluateToString,
-	toConstantDependency
-} = require("../javascript/JavascriptParserHelpers");
+const ParserHelpers = require("../ParserHelpers");
 
 class RequireEnsurePlugin {
 	apply(compiler) {
@@ -29,6 +27,10 @@ class RequireEnsurePlugin {
 					new RequireEnsureItemDependency.Template()
 				);
 
+				compilation.dependencyFactories.set(
+					RequireEnsureDependency,
+					new NullFactory()
+				);
 				compilation.dependencyTemplates.set(
 					RequireEnsureDependency,
 					new RequireEnsureDependency.Template()
@@ -44,12 +46,18 @@ class RequireEnsurePlugin {
 					new RequireEnsureDependenciesBlockParserPlugin().apply(parser);
 					parser.hooks.evaluateTypeof
 						.for("require.ensure")
-						.tap("RequireEnsurePlugin", evaluateToString("function"));
+						.tap(
+							"RequireEnsurePlugin",
+							ParserHelpers.evaluateToString("function")
+						);
 					parser.hooks.typeof
 						.for("require.ensure")
 						.tap(
 							"RequireEnsurePlugin",
-							toConstantDependency(parser, JSON.stringify("function"))
+							ParserHelpers.toConstantDependency(
+								parser,
+								JSON.stringify("function")
+							)
 						);
 				};
 

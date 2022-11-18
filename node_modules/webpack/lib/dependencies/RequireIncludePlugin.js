@@ -2,11 +2,12 @@
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
 */
-
 "use strict";
 
 const RequireIncludeDependency = require("./RequireIncludeDependency");
 const RequireIncludeDependencyParserPlugin = require("./RequireIncludeDependencyParserPlugin");
+
+const ParserHelpers = require("../ParserHelpers");
 
 class RequireIncludePlugin {
 	apply(compiler) {
@@ -23,10 +24,28 @@ class RequireIncludePlugin {
 				);
 
 				const handler = (parser, parserOptions) => {
-					if (parserOptions.requireInclude === false) return;
-					const warn = parserOptions.requireInclude === undefined;
+					if (
+						parserOptions.requireInclude !== undefined &&
+						!parserOptions.requireInclude
+					)
+						return;
 
-					new RequireIncludeDependencyParserPlugin(warn).apply(parser);
+					new RequireIncludeDependencyParserPlugin().apply(parser);
+					parser.hooks.evaluateTypeof
+						.for("require.include")
+						.tap(
+							"RequireIncludePlugin",
+							ParserHelpers.evaluateToString("function")
+						);
+					parser.hooks.typeof
+						.for("require.include")
+						.tap(
+							"RequireIncludePlugin",
+							ParserHelpers.toConstantDependency(
+								parser,
+								JSON.stringify("function")
+							)
+						);
 				};
 
 				normalModuleFactory.hooks.parser

@@ -1,15 +1,9 @@
 /*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
+ MIT License http://www.opensource.org/licenses/mit-license.php
+ Author Tobias Koppers @sokra
+ */
 
 "use strict";
-
-const arraySum = array => {
-	let sum = 0;
-	for (const item of array) sum += item;
-	return sum;
-};
 
 /**
  * @param {any[]} args items to be truncated
@@ -31,14 +25,14 @@ const truncateArgs = (args, maxLength) => {
 	}
 
 	// Check if there is space for at least 4 chars per arg
-	if (availableLength < arraySum(lengths.map(i => Math.min(i, 6)))) {
+	if (availableLength < lengths.reduce((s, i) => s + Math.min(i, 6), 0)) {
 		// remove args
 		if (args.length > 1)
 			return truncateArgs(args.slice(0, args.length - 1), maxLength);
 		return [];
 	}
 
-	let currentLength = arraySum(lengths);
+	let currentLength = lengths.reduce((a, b) => a + b, 0);
 
 	// Check if all fits into maxLength
 	if (currentLength <= availableLength) return args;

@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # To make it work on OSX (provided gnu-sed in installed)
-if type gsed
+if type gsed 2> /dev/null
 then
   alias sed=gsed
 fi
