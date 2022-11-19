@@ -4,7 +4,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.validatePluginObject = validatePluginObject;
+
 var _optionAssertions = require("./option-assertions");
+
 const VALIDATORS = {
   name: _optionAssertions.assertString,
   manipulateOptions: _optionAssertions.assertFunction,
@@ -15,16 +17,21 @@ const VALIDATORS = {
   parserOverride: _optionAssertions.assertFunction,
   generatorOverride: _optionAssertions.assertFunction
 };
+
 function assertVisitorMap(loc, value) {
   const obj = (0, _optionAssertions.assertObject)(loc, value);
+
   if (obj) {
     Object.keys(obj).forEach(prop => assertVisitorHandler(prop, obj[prop]));
+
     if (obj.enter || obj.exit) {
       throw new Error(`${(0, _optionAssertions.msg)(loc)} cannot contain catch-all "enter" or "exit" handlers. Please target individual nodes.`);
     }
   }
+
   return obj;
 }
+
 function assertVisitorHandler(key, value) {
   if (value && typeof value === "object") {
     Object.keys(value).forEach(handler => {
@@ -35,8 +42,10 @@ function assertVisitorHandler(key, value) {
   } else if (typeof value !== "function") {
     throw new Error(`.visitor["${key}"] must be a function`);
   }
+
   return value;
 }
+
 function validatePluginObject(obj) {
   const rootPath = {
     type: "root",
@@ -44,6 +53,7 @@ function validatePluginObject(obj) {
   };
   Object.keys(obj).forEach(key => {
     const validator = VALIDATORS[key];
+
     if (validator) {
       const optLoc = {
         type: "option",
@@ -59,6 +69,3 @@ function validatePluginObject(obj) {
   });
   return obj;
 }
-0 && 0;
-
-//# sourceMappingURL=plugins.js.map

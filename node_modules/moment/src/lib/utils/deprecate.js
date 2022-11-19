@@ -23,9 +23,8 @@ export function deprecate(msg, fn) {
             var args = [],
                 arg,
                 i,
-                key,
-                argLen = arguments.length;
-            for (i = 0; i < argLen; i++) {
+                key;
+            for (i = 0; i < arguments.length; i++) {
                 arg = '';
                 if (typeof arguments[i] === 'object') {
                     arg += '\n[' + i + '] ';

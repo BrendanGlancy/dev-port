@@ -31,7 +31,7 @@ If you use Create React App, you don't need to configure anything, as this rule 
 If you maintain your own ESLint configuration, you can do this:
 
 ```js
-const restrictedGlobals = require('confusing-browser-globals');
+var restrictedGlobals = require('confusing-browser-globals');
 
 module.exports = {
   rules: {

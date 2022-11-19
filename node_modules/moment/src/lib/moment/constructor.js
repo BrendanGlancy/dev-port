@@ -8,10 +8,7 @@ var momentProperties = (hooks.momentProperties = []),
     updateInProgress = false;
 
 export function copyConfig(to, from) {
-    var i,
-        prop,
-        val,
-        momentPropertiesLen = momentProperties.length;
+    var i, prop, val;
 
     if (!isUndefined(from._isAMomentObject)) {
         to._isAMomentObject = from._isAMomentObject;
@@ -44,8 +41,8 @@ export function copyConfig(to, from) {
         to._locale = from._locale;
     }
 
-    if (momentPropertiesLen > 0) {
-        for (i = 0; i < momentPropertiesLen; i++) {
+    if (momentProperties.length > 0) {
+        for (i = 0; i < momentProperties.length; i++) {
             prop = momentProperties[i];
             val = from[prop];
             if (!isUndefined(val)) {

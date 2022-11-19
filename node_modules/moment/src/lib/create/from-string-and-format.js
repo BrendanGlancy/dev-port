@@ -41,13 +41,12 @@ export function configFromStringAndFormat(config) {
         skipped,
         stringLength = string.length,
         totalParsedInputLength = 0,
-        era,
-        tokenLen;
+        era;
 
     tokens =
         expandFormat(config._f, config._locale).match(formattingTokens) || [];
-    tokenLen = tokens.length;
-    for (i = 0; i < tokenLen; i++) {
+
+    for (i = 0; i < tokens.length; i++) {
         token = tokens[i];
         parsedInput = (string.match(getParseRegexForToken(token, config)) ||
             [])[0];

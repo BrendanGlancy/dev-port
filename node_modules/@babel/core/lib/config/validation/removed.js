@@ -64,6 +64,3 @@ var _default = {
   }
 };
 exports.default = _default;
-0 && 0;
-
-//# sourceMappingURL=removed.js.map

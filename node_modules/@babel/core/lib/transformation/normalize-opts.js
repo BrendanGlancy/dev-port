@@ -4,13 +4,17 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = normalizeOptions;
+
 function _path() {
   const data = require("path");
+
   _path = function () {
     return data;
   };
+
   return data;
 }
+
 function normalizeOptions(config) {
   const {
     filename,
@@ -45,6 +49,7 @@ function normalizeOptions(config) {
       sourceFileName
     }, opts.generatorOpts)
   });
+
   for (const plugins of config.passes) {
     for (const plugin of plugins) {
       if (plugin.manipulateOptions) {
@@ -52,8 +57,6 @@ function normalizeOptions(config) {
       }
     }
   }
+
   return options;
 }
-0 && 0;
-
-//# sourceMappingURL=normalize-opts.js.map

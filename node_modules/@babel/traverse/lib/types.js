@@ -1,3 +1,5 @@
+"use strict";
 
+var _index = require("./index");
 
-//# sourceMappingURL=types.js.map
+var _virtualTypes = require("./path/generated/virtual-types");

@@ -16,44 +16,32 @@
         words: {
             //Different grammatical cases
             ss: ['секунда', 'секунде', 'секунди'],
-            m: ['један минут', 'једног минута'],
-            mm: ['минут', 'минута', 'минута'],
+            m: ['један минут', 'једне минуте'],
+            mm: ['минут', 'минуте', 'минута'],
             h: ['један сат', 'једног сата'],
             hh: ['сат', 'сата', 'сати'],
-            d: ['један дан', 'једног дана'],
             dd: ['дан', 'дана', 'дана'],
-            M: ['један месец', 'једног месеца'],
             MM: ['месец', 'месеца', 'месеци'],
-            y: ['једну годину', 'једне године'],
-            yy: ['годину', 'године', 'година'],
+            yy: ['година', 'године', 'година'],
         },
         correctGrammaticalCase: function (number, wordKey) {
-            if (
-                number % 10 >= 1 &&
-                number % 10 <= 4 &&
-                (number % 100 < 10 || number % 100 >= 20)
-            ) {
-                return number % 10 === 1 ? wordKey[0] : wordKey[1];
-            }
-            return wordKey[2];
+            return number === 1
+                ? wordKey[0]
+                : number >= 2 && number <= 4
+                ? wordKey[1]
+                : wordKey[2];
         },
-        translate: function (number, withoutSuffix, key, isFuture) {
-            var wordKey = translator.words[key],
-                word;
-
+        translate: function (number, withoutSuffix, key) {
+            var wordKey = translator.words[key];
             if (key.length === 1) {
-                // Nominativ
-                if (key === 'y' && withoutSuffix) return 'једна година';
-                return isFuture || withoutSuffix ? wordKey[0] : wordKey[1];
+                return withoutSuffix ? wordKey[0] : wordKey[1];
+            } else {
+                return (
+                    number +
+                    ' ' +
+                    translator.correctGrammaticalCase(number, wordKey)
+                );
             }
-
-            word = translator.correctGrammaticalCase(number, wordKey);
-            // Nominativ
-            if (key === 'yy' && withoutSuffix && word === 'годину') {
-                return number + ' година';
-            }
-
-            return number + ' ' + word;
         },
     };
 
@@ -61,8 +49,9 @@
         months: 'јануар_фебруар_март_април_мај_јун_јул_август_септембар_октобар_новембар_децембар'.split(
             '_'
         ),
-        monthsShort:
-            'јан._феб._мар._апр._мај_јун_јул_авг._сеп._окт._нов._дец.'.split('_'),
+        monthsShort: 'јан._феб._мар._апр._мај_јун_јул_авг._сеп._окт._нов._дец.'.split(
+            '_'
+        ),
         monthsParseExact: true,
         weekdays: 'недеља_понедељак_уторак_среда_четвртак_петак_субота'.split('_'),
         weekdaysShort: 'нед._пон._уто._сре._чет._пет._суб.'.split('_'),
@@ -118,11 +107,11 @@
             mm: translator.translate,
             h: translator.translate,
             hh: translator.translate,
-            d: translator.translate,
+            d: 'дан',
             dd: translator.translate,
-            M: translator.translate,
+            M: 'месец',
             MM: translator.translate,
-            y: translator.translate,
+            y: 'годину',
             yy: translator.translate,
         },
         dayOfMonthOrdinalParse: /\d{1,2}\./,

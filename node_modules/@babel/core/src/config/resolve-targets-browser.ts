@@ -1,7 +1,5 @@
 import type { ValidatedOptions } from "./validation/options";
-import getTargets, {
-  type InputTargets,
-} from "@babel/helper-compilation-targets";
+import getTargets from "@babel/helper-compilation-targets";
 
 import type { Targets } from "@babel/helper-compilation-targets";
 
@@ -19,18 +17,13 @@ export function resolveTargets(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   root: string,
 ): Targets {
-  const optTargets = options.targets;
-  let targets: InputTargets;
-
-  if (typeof optTargets === "string" || Array.isArray(optTargets)) {
-    targets = { browsers: optTargets };
-  } else if (optTargets) {
-    if ("esmodules" in optTargets) {
-      targets = { ...optTargets, esmodules: "intersect" };
-    } else {
-      // https://github.com/microsoft/TypeScript/issues/17002
-      targets = optTargets as InputTargets;
-    }
+  // todo(flow->ts) remove any and refactor to not assign different types into same variable
+  let targets: any = options.targets;
+  if (typeof targets === "string" || Array.isArray(targets)) {
+    targets = { browsers: targets };
+  }
+  if (targets && targets.esmodules) {
+    targets = { ...targets, esmodules: "intersect" };
   }
 
   return getTargets(targets, {

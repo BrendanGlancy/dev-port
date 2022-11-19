@@ -61,7 +61,7 @@ declare type SubRange = number | WrappedSubRange;
 interface Range {
     min: SubRange;
     max: SubRange;
-    [key: `${number}%`]: SubRange;
+    [key: string]: SubRange;
 }
 interface BasePips {
     mode: PipsMode;

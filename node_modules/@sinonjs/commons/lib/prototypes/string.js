@@ -1,5 +1,5 @@
 "use strict";
 
-var copyPrototype = require("./copy-prototype-methods");
+var copyPrototype = require("./copy-prototype");
 
 module.exports = copyPrototype(String.prototype);

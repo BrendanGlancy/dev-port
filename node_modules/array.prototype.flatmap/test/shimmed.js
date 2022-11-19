@@ -1,10 +1,10 @@
 'use strict';
 
-require('../auto');
+require('../shim')();
 
 var test = require('tape');
 var defineProperties = require('define-properties');
-var callBind = require('call-bind');
+var bind = require('function-bind');
 var isEnumerable = Object.prototype.propertyIsEnumerable;
 var functionsHaveNames = function f() {}.name === 'f';
 
@@ -30,7 +30,7 @@ test('shimmed', function (t) {
 		st.end();
 	});
 
-	runTests(callBind(Array.prototype.flatMap), t);
+	runTests(bind.call(Function.call, Array.prototype.flatMap), t);
 
 	t.end();
 });

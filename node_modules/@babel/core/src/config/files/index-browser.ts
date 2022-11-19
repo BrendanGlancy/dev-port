@@ -35,7 +35,7 @@ export function* findRelativeConfig(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   envName: string,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  caller: CallerMetadata | undefined,
+  caller: CallerMetadata | void,
 ): Handler<RelativeConfig> {
   return { config: null, ignore: null };
 }
@@ -47,7 +47,7 @@ export function* findRootConfig(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   envName: string,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  caller: CallerMetadata | undefined,
+  caller: CallerMetadata | void,
 ): Handler<ConfigFile | null> {
   return null;
 }
@@ -59,7 +59,7 @@ export function* loadConfig(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   envName: string,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  caller: CallerMetadata | undefined,
+  caller: CallerMetadata | void,
 ): Handler<ConfigFile> {
   throw new Error(`Cannot load ${name} relative to ${dirname} in a browser`);
 }
@@ -72,7 +72,7 @@ export function* resolveShowConfigPath(
   return null;
 }
 
-export const ROOT_CONFIG_FILENAMES: string[] = [];
+export const ROOT_CONFIG_FILENAMES = [];
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function resolvePlugin(name: string, dirname: string): string | null {

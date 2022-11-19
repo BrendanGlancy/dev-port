@@ -1,5 +1,5 @@
 //! moment.js locale configuration
-//! locale : Arabic (Libya) [ar-ly]
+//! locale : Arabic (Lybia) [ar-ly]
 //! author : Ali Hmer: https://github.com/kikoanis
 
 ;(function (global, factory) {
