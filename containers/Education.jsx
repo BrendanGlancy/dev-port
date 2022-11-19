@@ -1,16 +1,16 @@
 import React from "react";
-import EdutionCard from "../components/EdutionCard";
+import EducationCard from "../components/EducationCard";
 import { educationInfo } from "../portfolio";
 import { Container, Row, Col } from "reactstrap";
 
-const Edution = () => {
-	return (
-		<section className="section pb-250 bg-gradient-warning">
+const Education = () => {
+	return educationInfo && (
+		<section className="section pb-0 bg-gradient-info my-5">
 			<Container>
 				<div className="d-flex px-3">
 					<div>
 						<div className="icon icon-lg icon-shape bg-gradient-white shadow rounded-circle text-info">
-							<i className="ni ni-books text-warning" />
+							<i className="ni ni-books text-info" />
 						</div>
 					</div>
 					<div className="pl-4">
@@ -25,7 +25,7 @@ const Edution = () => {
 								lg="6"
 								key={info.schoolName}
 							>
-								<EdutionCard education={info} />
+								<EducationCard education={info} />
 							</Col>
 						);
 					})}
@@ -50,4 +50,4 @@ const Edution = () => {
 	);
 };
 
-export default Edution;
+export default Education;

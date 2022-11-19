@@ -1,15 +1,15 @@
 {
   "short_name": "Portfolio",
-  "name": "Brendan Glancy portfolio",
-  "description": "Full Stack Web Developer",
+  "name": "Hanzla's Portfolio",
+  "description": "A passionate Full Stack Web Developer and Mobile App Developer.",
     "icons": [
       {
-        "src": "./favicon.svg",
+        "src": "./favicon.png",
         "type": "image/png",
         "sizes": "192x192"
       },
       {
-        "src": "./favicon.svg",
+        "src": "./favicon.png",
         "type": "image/png",
         "sizes": "512x512"
       }

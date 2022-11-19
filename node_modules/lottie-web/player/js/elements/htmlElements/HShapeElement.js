@@ -1,5 +1,21 @@
-/* global createNS, extendPrototype, BaseElement, TransformElement, HSolidElement, SVGShapeElement, HBaseElement,
-HierarchyElement, FrameElement, RenderableElement, createNS, bmMin, bmSqrt, bmMin, bmMax, bmPow */
+import {
+  bmPow,
+  bmMax,
+  bmMin,
+  bmSqrt,
+} from '../../utils/common';
+import {
+  extendPrototype,
+} from '../../utils/functionExtensions';
+import createNS from '../../utils/helpers/svg_elements';
+import RenderableElement from '../helpers/RenderableElement';
+import BaseElement from '../BaseElement';
+import TransformElement from '../helpers/TransformElement';
+import HierarchyElement from '../helpers/HierarchyElement';
+import FrameElement from '../helpers/FrameElement';
+import HBaseElement from './HBaseElement';
+import HSolidElement from './HSolidElement';
+import SVGShapeElement from '../svgElements/SVGShapeElement';
 
 function HShapeElement(data, globalData, comp) {
   // List of drawable elements
@@ -166,8 +182,30 @@ HShapeElement.prototype.calculateBoundingBox = function (itemsData, boundingBox)
       this.calculateShapeBoundingBox(itemsData[i], boundingBox);
     } else if (itemsData[i] && itemsData[i].it) {
       this.calculateBoundingBox(itemsData[i].it, boundingBox);
+    } else if (itemsData[i] && itemsData[i].style && itemsData[i].w) {
+      this.expandStrokeBoundingBox(itemsData[i].w, boundingBox);
     }
   }
+};
+
+HShapeElement.prototype.expandStrokeBoundingBox = function (widthProperty, boundingBox) {
+  var width = 0;
+  if (widthProperty.keyframes) {
+    for (var i = 0; i < widthProperty.keyframes.length; i += 1) {
+      var kfw = widthProperty.keyframes[i].s;
+      if (kfw > width) {
+        width = kfw;
+      }
+    }
+    width *= widthProperty.mult;
+  } else {
+    width = widthProperty.v * widthProperty.mult;
+  }
+
+  boundingBox.x -= width;
+  boundingBox.xMax += width;
+  boundingBox.y -= width;
+  boundingBox.yMax += width;
 };
 
 HShapeElement.prototype.currentBoxContains = function (box) {
@@ -219,3 +257,5 @@ HShapeElement.prototype.renderInnerContent = function () {
     }
   }
 };
+
+export default HShapeElement;

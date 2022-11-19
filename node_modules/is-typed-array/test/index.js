@@ -6,7 +6,7 @@ var isCallable = require('is-callable');
 var hasToStringTag = require('has-tostringtag/shams')();
 var generators = require('make-generator-function')();
 var arrowFn = require('make-arrow-function')();
-var forEach = require('foreach');
+var forEach = require('for-each');
 var inspect = require('object-inspect');
 
 var typedArrayNames = [

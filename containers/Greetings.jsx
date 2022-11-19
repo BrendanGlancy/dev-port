@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { greetings, socialLinks } from "../portfolio";
+import { greetings } from "../portfolio";
 
 import { Button, Container, Row, Col } from "reactstrap";
 
@@ -15,14 +15,7 @@ const Greetings = () => {
 		<main>
 			<div className="position-relative">
 				<section className="section section-lg section-shaped pb-250">
-					<div className="shape shape-style-1 shape-primary">
-						<span />
-						<span />
-						<span />
-						<span />
-						<span />
-						<span />
-						<span />
+					<div className="shape shape-style-1 bg-gradient-info">
 						<span />
 						<span />
 						<span />
@@ -57,42 +50,6 @@ const Greetings = () => {
 												See My Resume
 											</span>
 										</Button>
-									<Button
-										className="btn-icon-only rounded-circle ml-1"
-										color="instagram"
-										href={socialLinks.instagram}
-										target="_blank"
-										rel="noopener"
-										aria-label="Instagram"
-									>
-										<span className="btn-inner--icon">
-											<i className="fa fa-instagram" />
-										</span>
-									</Button>
-									<Button
-										className="btn-icon-only rounded-circle ml-1"
-										color="github"
-										href={socialLinks.github}
-										rel="noopener"
-										aria-label="Github"
-										target="_blank"
-									>
-										<span className="btn-inner--icon">
-											<i className="fa fa-github" />
-										</span>
-									</Button>
-									<Button
-										className="btn-icon-only rounded-circle ml-1"
-										color="twitter"
-										rel="noopener"
-										aria-label="Linkedin"
-										href={socialLinks.linkedin}
-										target="_blank"
-									>
-										<span className="btn-inner--icon">
-											<i className="fa fa-linkedin" />
-										</span>
-									</Button>
 									</div>
 								</Col>
 								<Col lg="6">

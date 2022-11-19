@@ -24,89 +24,116 @@ export const socialLinks = {
 
 export const skillsSection = {
   title: "What I do",
-  subTitle: "FULL STACK DEVELOPER WHO WANTS TO EXPLORE EVERY TECH STACK",
-  skills: [
-    emoji(
-      "⚡ Develop highly interactive Front end / User Interfaces for your web and mobile applications."
-    ),
-    emoji("⚡ Progressive Web Applications ( PWA ) in normal and SPA Stacks."),
-    emoji(
-      "⚡ Cyber Security, HackTheBox Globally Ranked 534, Top 2% in PicoCTF 2022"
-    ),
-  ],
-
-  softwareSkills: [
+  subTitle: "CRAZY FULL STACK DEVELOPER WHO WANTS TO EXPLORE EVERY TECH STACK",
+  data: [
     {
-      skillName: "python",
-      fontAwesomeClassname: "logos:python",
+      title: "Full Stack Development",
+      lottieAnimationFile: "/lottie/webdev.json", // Path of Lottie Animation JSON File
+      skills: [
+        emoji(
+          "⚡ Develop highly interactive Front end / User Interfaces for your web and mobile applications."
+        ),
+        emoji(
+          "⚡ Progressive Web Applications ( PWA ) in normal and SPA Stacks."
+        ),
+        emoji(
+          "⚡ Cyber Security, HackTheBox Globally Ranked 534, Top 2% in PicoCTF 2022"
+        ),
+      ],
+      softwareSkills: [
+        {
+          skillName: "python",
+          fontAwesomeClassname: "logos:python",
+        },
+        {
+          skillName: "Java",
+          fontAwesomeClassname: "logos:java",
+        },
+        {
+          skillName: "reactjs",
+          fontAwesomeClassname: "vscode-icons:file-type-reactjs",
+        },
+        {
+          skillName: "vuejs",
+          fontAwesomeClassname: "logos:vue",
+        },
+        {
+          skillName: "nodejs",
+          fontAwesomeClassname: "logos:nodejs-icon",
+        },
+        {
+          skillName: "astro",
+          fontAwesomeClassname: "vscode-icons:file-type-astro",
+        },
+        {
+          skillName: "npm",
+          fontAwesomeClassname: "logos:npm-icon",
+        },
+        {
+          skillName: "cpp",
+          fontAwesomeClassname: "logos:c-plusplus",
+        },
+        {
+          skillName: "php",
+          fontAwesomeClassname: "logos:php",
+        },
+        {
+          skillName: "yarn",
+          fontAwesomeClassname: "logos:yarn",
+        },
+      ],
     },
     {
-      skillName: "html-5",
-      fontAwesomeClassname: "vscode-icons:file-type-html",
-    },
-    {
-      skillName: "css3",
-      fontAwesomeClassname: "vscode-icons:file-type-css",
-    },
-    {
-      skillName: "JavaScript",
-      fontAwesomeClassname: "logos:javascript",
-    },
-    {
-      skillName: "Java",
-      fontAwesomeClassname: "logos:java",
-    },
-    {
-      skillName: "reactjs",
-      fontAwesomeClassname: "vscode-icons:file-type-reactjs",
-    },
-    {
-      skillName: "vuejs",
-      fontAwesomeClassname: "logos:vue",
-    },
-    {
-      skillName: "nodejs",
-      fontAwesomeClassname: "logos:nodejs-icon",
-    },
-    {
-      skillName: "astro",
-      fontAwesomeClassname: "vscode-icons:file-type-astro",
-    },
-    {
-      skillName: "c",
-      fontAwesomeClassname: "logos:c",
-    },
-    {
-      skillName: "visual-basic",
-      fontAwesomeClassname: "vscode-icons:file-type-vb",
-    },
-    {
-      skillName: "Vim",
-      fontAwesomeClassname: "logos:vim",
-    },
-    {
-      skillName: "cpp",
-      fontAwesomeClassname: "vscode-icons:file-type-cpp",
-    },
-    {
-      skillName: "npm",
-      fontAwesomeClassname: "vscode-icons:file-type-npm",
-    },
-    {
-      skillName: "spring-boot",
-      fontAwesomeClassname: "logos:spring",
-    },
-    {
-      skillName: "PostgreSQL",
-      fontAwesomeClassname: "logos:postgresql",
-    },
-    {
-      skillName: "git",
-      fontAwesomeClassname: "logos:git-icon",
-    },
-    {
-      skillName: "php",
-      fontAwesomeClassname: "logos:php",
+      title: "Cloud Infra-Architecture",
+      lottieAnimationFile: "/lottie/skills/cloudinfra.json", // Path of Lottie Animation JSON File
+      skills: [
+        emoji("⚡ Experience of working on multiple cloud platforms"),
+        emoji(
+          "⚡ Hosting and maintaining websites on virtual machine instances along with integration of databases"
+        ),
+        emoji(
+          "⚡ Building CI/CD pipelines for automated testing & deployment using Github Actions"
+        ),
+      ],
+      softwareSkills: [
+        // ? Check README To get icon details
+        {
+          skillName: "PostgreSQL",
+          fontAwesomeClassname: "logos:postgresql",
+        },
+        {
+          skillName: "MySQL",
+          fontAwesomeClassname: "logos:mysql",
+        },
+        {
+          skillName: "XAMPP",
+          fontAwesomeClassname: "logos:xampp",
+        },
+        {
+          skillName: "AWS",
+          fontAwesomeClassname: "logos:aws",
+        },
+        {
+          skillName: "spring-boot",
+          fontAwesomeClassname: "logos:spring",
+        },
+        {
+          skillName: "Github",
+          fontAwesomeClassname: "akar-icons:github-fill",
+        },
+        {
+          skillName: "Docker",
+          fontAwesomeClassname: "logos:docker-icon",
+        },
+        {
+          skillName: "Github Actions",
+          fontAwesomeClassname: "logos:github-actions",
+        },
+        {
+          skillName: "Nginx",
+          fontAwesomeClassname: "logos:nginx",
+        },
+      ],
     },
   ],
 };
@@ -207,3 +234,64 @@ export const feedbacks = [
       "I was trying to make a website that is blazingly fast. I had no idea where to start. What did I do? Called my friend Brendan. I had no fking Idea what i Was doing! He fixed it. Website? Fast. Blazingly. Done.",
   },
 ];
+
+export const seoData = {
+  title: "Brendan's Portfolio",
+  description: "Full Stack Developer",
+  image: "https://avatars.githubusercontent.com/u/61941978?v=4",
+  url: "https://dev-port-lac.vercel.app/",
+  keywords: [
+    "Brendan",
+    "Brendan Glancy",
+    "brendanglancy",
+    "brendan glancy",
+    "Portfolio",
+    "Jon",
+    "Jon Hetu",
+    "Jonathan",
+    "Jonathan Hetu",
+    "Austin Coontz",
+    "Brendan Portfolio ",
+    "Brendan Glancy Portfolio",
+    "web developer",
+    "empyrial",
+    "Empyrial",
+    "ssantoshp/Empyrial",
+    "landscaping",
+    "LinkedIn",
+    "Github",
+    "canton",
+    "Canton",
+    "crytpo",
+    "crypto tracker",
+    "stocks",
+    "svelte",
+    "astro",
+    "blazingly fast",
+    "api",
+    "bitcoin",
+    "ethereum",
+    "Cardano",
+    "Football",
+    "Hall of Fame",
+    "AWS",
+    "Stock price prediction",
+    "Neural Networks",
+    "Machine Learning",
+    "full stack",
+    "full stack web developer",
+    "mobile app developer",
+    "android developer",
+    "django",
+    "flask",
+    "django rest framework",
+    "nodejs ",
+    "expressjs",
+    "reactjs ",
+    "contextapi",
+    "redux",
+    "dev-port",
+    "vercel",
+    "flutter",
+  ],
+};

@@ -4,7 +4,7 @@ import typescript from "@rollup/plugin-typescript";
 export default {
   input: "./tests/index.ts",
   output: {
-    file: "./tests/bundle.js",
+    file: "./tests/bundle.cjs",
     format: "cjs",
   },
   plugins: [

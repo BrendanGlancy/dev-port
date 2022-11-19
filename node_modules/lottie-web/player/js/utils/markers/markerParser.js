@@ -1,6 +1,4 @@
-/* exported markerParser */
-
-var markerParser = (
+const markerParser = (
 
   function () {
     function parsePayloadLines(payload) {
@@ -36,7 +34,7 @@ var markerParser = (
             markerData.payload = parsePayloadLines(_markers[i].cm);
           } catch (__) {
             markerData.payload = {
-              name: _markers[i],
+              name: _markers[i].cm,
             };
           }
         }
@@ -45,3 +43,5 @@ var markerParser = (
       return markers;
     };
   }());
+
+export default markerParser;
