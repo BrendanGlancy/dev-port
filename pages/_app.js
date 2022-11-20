@@ -8,7 +8,7 @@ import "../styles/vendor/nucleo/css/nucleo.css";
 function MyApp({ Component, pageProps }) {
   return (
     <>
-      <Component {...pageProps} />;
+      <Component {...pageProps} />
       <Analytics />
     </>
   );

@@ -81,22 +81,6 @@ export const skillsSection = {
           skillName: "yarn",
           fontAwesomeClassname: "logos:yarn",
         },
-      ],
-    },
-    {
-      title: "Cloud Infra-Architecture",
-      lottieAnimationFile: "/lottie/skills/cloudinfra.json", // Path of Lottie Animation JSON File
-      skills: [
-        emoji("⚡ Experience of working on multiple cloud platforms"),
-        emoji(
-          "⚡ Hosting and maintaining websites on virtual machine instances along with integration of databases"
-        ),
-        emoji(
-          "⚡ Building CI/CD pipelines for automated testing & deployment using Github Actions"
-        ),
-      ],
-      softwareSkills: [
-        // ? Check README To get icon details
         {
           skillName: "PostgreSQL",
           fontAwesomeClassname: "logos:postgresql",
@@ -116,22 +100,6 @@ export const skillsSection = {
         {
           skillName: "spring-boot",
           fontAwesomeClassname: "logos:spring",
-        },
-        {
-          skillName: "Github",
-          fontAwesomeClassname: "akar-icons:github-fill",
-        },
-        {
-          skillName: "Docker",
-          fontAwesomeClassname: "logos:docker-icon",
-        },
-        {
-          skillName: "Github Actions",
-          fontAwesomeClassname: "logos:github-actions",
-        },
-        {
-          skillName: "Nginx",
-          fontAwesomeClassname: "logos:nginx",
         },
       ],
     },
@@ -158,7 +126,8 @@ export const educationInfo = [
     schoolName: "Akron University",
     subHeader: "Bachelor of Science in Computer Science",
     duration: "August 2021 - Present",
-    desc: "Programming CIS degree, Current GPA: 3.8",
+    grade: "3.8 GPA",
+    desc: "Programming CIS degree",
     descBullets: [
       "The Bachelor of Science in Computer Information Systems (CIS) - Programming degree option allows students to attain knowledge of effective software application development, client/server application development, and database application development and management for businesses.",
       "The CIS - Programming degree option is designed to prepare students for careers in the field of software engineering and development.",
@@ -246,10 +215,10 @@ export const seoData = {
     "brendanglancy",
     "brendan glancy",
     "Portfolio",
-    "Jon",
-    "Jon Hetu",
-    "Jonathan",
-    "Jonathan Hetu",
+    "Full Stack Developer",
+    "Full Stack",
+    "Open to work",
+    "Developer",
     "Austin Coontz",
     "Brendan Portfolio ",
     "Brendan Glancy Portfolio",
@@ -262,36 +231,6 @@ export const seoData = {
     "Github",
     "canton",
     "Canton",
-    "crytpo",
-    "crypto tracker",
-    "stocks",
-    "svelte",
-    "astro",
-    "blazingly fast",
-    "api",
-    "bitcoin",
-    "ethereum",
-    "Cardano",
-    "Football",
-    "Hall of Fame",
-    "AWS",
-    "Stock price prediction",
-    "Neural Networks",
-    "Machine Learning",
-    "full stack",
-    "full stack web developer",
-    "mobile app developer",
-    "android developer",
-    "django",
-    "flask",
-    "django rest framework",
-    "nodejs ",
-    "expressjs",
-    "reactjs ",
-    "contextapi",
-    "redux",
-    "dev-port",
-    "vercel",
-    "flutter",
+    "Ohio",
   ],
 };
