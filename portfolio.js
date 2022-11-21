@@ -161,7 +161,7 @@ export const experience = [
   {
     role: "Intern",
     company: "CodeMash 2022",
-    companylogo: "/img/icons/common/codemash.svg",
+    companylogo: "/img/icons/common/codemash-logo.png",
     date: "January 2022",
     desc: " Top 15 in CTF CodeMash is a unique event that educates developers on current practices, methodologies and technology trends in a variety of platforms and development languages. Attendees will be able to attend a world-class technical conference.",
   },
