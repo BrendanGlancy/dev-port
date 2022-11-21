@@ -25,6 +25,7 @@
     "moment": "^2.29.1",
     "next": "11.1.2",
     "nouislider": "^15.2.0",
+    "particles-bg": "^2.5.5",
     "prop-types": "^15.7.2",
     "react": "17.0.2",
     "react-datetime": "^3.0.4",
