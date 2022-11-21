@@ -154,9 +154,9 @@ export const experience = [
   {
     role: "Information Technology",
     company: "Chamber of Commerce",
-    companylogo: "/img/icons/common/program.svg",
+    companylogo: "/img/icons/common/chamber.jpeg",
     date: "June 2019 – Present",
-    desc: "Attract users to websites with attractive, user-friendly designs and clean code for high-performance operation. Work on multiple high traffic domains, deployed to AWS.",
+    desc: "Communicate with managers to set up computers used on in the office, Assess and troubleshoot computer problems brought by managers, faculty a. Maintain upkeep of computers, servers, and 20+ websites used by the Chamber and local businesses",
   },
   {
     role: "Intern",

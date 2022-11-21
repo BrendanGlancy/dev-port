@@ -6,12 +6,12 @@ import { Container, Row, Col } from "reactstrap";
 const Education = () => {
   return (
     educationInfo && (
-      <section className="section pb-5 bg-gradient-warning my-5">
+      <section className="section pb-5 bg-gradient-info my-5">
         <Container>
           <div className="d-flex px-3">
             <div>
               <div className="icon icon-lg icon-shape bg-gradient-white shadow rounded-circle text-info">
-                <i className="ni ni-books text-warning" />
+                <i className="ni ni-books text-info" />
               </div>
             </div>
             <div className="pl-4">

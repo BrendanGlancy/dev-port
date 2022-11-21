@@ -20,7 +20,12 @@ const Greetings = () => {
     <main>
       <div className="position-relative">
         <section className="section section-lg section-shaped pb-250">
-          <div className="shape shape-style-1 bg-gradient-primary">
+          <div className="shape shape-style-1 bg-gradient-warning">
+            <span />
+            <span />
+            <span />
+            <span />
+            <span />
             <ParticleBg type="polygon" bg={true} num={1} />
           </div>
           <Container className="py-lg-md d-flex">
