@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import emailjs from "@emailjs/browser";
 import classnames from "classnames";
-import Alerts from "./Alert";
+import Alert from "./Alerts";
 
 import {
   Button,
@@ -19,7 +19,19 @@ import {
 
 export const ContactUs = () => {
   const form = useRef();
-  const isSent = React.useState(false);
+  const [alert, setAlert] = React.useState(null);
+
+  const successAlert = {
+    color: "success",
+    icon: "ni ni-like-2",
+    message: " Your message has been sent successfully!",
+  };
+
+  const errorAlert = {
+    color: "danger",
+    icon: "ni ni-bell-55",
+    message: " Oops! Something went wrong. Please try again later.",
+  };
 
   const sendEmail = (e) => {
     e.preventDefault();
@@ -35,10 +47,11 @@ export const ContactUs = () => {
       .then(
         (result) => {
           console.log(result.text);
-          isSent[1](true);
+          setAlert(successAlert);
         },
         (error) => {
           console.log(error.text);
+          setAlert(errorAlert);
         }
       );
   };
@@ -46,6 +59,7 @@ export const ContactUs = () => {
   return (
     <>
       <section className="section section-lg section-shaped">
+
         <div className="shape shape-style-3 shape-primary">
           <span />
           <span />
@@ -56,8 +70,13 @@ export const ContactUs = () => {
           <span />
           <span />
         </div>
-        {/* If the email was sent, show a success message */}
-        {isSent[0] && <Alerts />}
+          {alert && (
+            <Alert
+              color={alert.color}
+              icon={alert.icon}
+              message={alert.message}
+            />
+          )}
         <form ref={form} onSubmit={sendEmail}>
           <Container>
             <Row className="justify-content-center">
