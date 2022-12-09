@@ -200,7 +200,7 @@ export const feedbacks = [
   {
     name: "Austin Coontz",
     feedback:
-      "I was trying to make a website that is blazingly fast. I had no idea where to start. What did I do? Called my friend Brendan. I had no fking Idea what i Was doing! He fixed it. Website? Fast. Blazingly. Done.",
+      "I was trying to make a website that is blazingly fast. I had no idea where to start. What did I do? Called my friend Brendan. I had no Idea what i Was doing! He fixed it. Website? Fast. Blazingly. Done.",
   },
 ];
 
