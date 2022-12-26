@@ -159,11 +159,14 @@ export const experience = [
     desc: "Communicate with managers to set up computers used on in the office, Assess and troubleshoot computer problems brought by managers, faculty a. Maintain upkeep of computers, servers, and 20+ websites used by the Chamber and local businesses",
   },
   {
-    role: "Intern",
-    company: "CodeMash 2022",
-    companylogo: "/img/icons/common/codemash-logo.png",
-    date: "January 2022",
-    desc: " Top 15 in CTF CodeMash is a unique event that educates developers on current practices, methodologies and technology trends in a variety of platforms and development languages. Attendees will be able to attend a world-class technical conference.",
+    role: "Software Developer Intern",
+    company: "OVS Knife Co.",
+    companylogo: "/img/icons/common/ovs.png",
+    date: "December 2022",
+    descBullets: [
+      "  Developed two web applications using React and Next.js for the company's expansion into the residential knife market",
+      "  Implemented responsive design and user-friendly interfaces to improve user experience",
+    ],
   },
 ];
 
@@ -226,11 +229,12 @@ export const seoData = {
     "empyrial",
     "Empyrial",
     "ssantoshp/Empyrial",
-    "landscaping",
     "LinkedIn",
     "Github",
     "canton",
+    "Akron",
     "Canton",
     "Ohio",
+    "OVS Knife Co.",
   ],
 };
