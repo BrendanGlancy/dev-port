@@ -90,12 +90,8 @@ export const skillsSection = {
           fontAwesomeClassname: "logos:mysql",
         },
         {
-          skillName: "XAMPP",
-          fontAwesomeClassname: "logos:xampp",
-        },
-        {
-          skillName: "AWS",
-          fontAwesomeClassname: "logos:aws",
+          skillName: "NextJS",
+          fontAwesomeClassname: "logos:vercel",
         },
         {
           skillName: "spring-boot",
