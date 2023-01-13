@@ -188,10 +188,10 @@ export const projects = [
     tags: ["Astro", "TypeScript", "JavaScript"],
   },
   {
-    name: "University of Akron Security",
-    desc: "A website for everything cyber security at University of Akron. The development is student led and is the university's first open source project.",
-    github: "https://github.com/avrha/uakronsec",
-    tags: ["College", "Cybersecurity", "Open Source"],
+    name: "OVS Knife Co.",
+    desc: "Current Job, working on a website for a local knife company. The website is built with Next.js, React, NodeJS. The website is currently in development and will be released in Feburary 2023",
+    link: "https://ovsgrinding.com/",
+    tags: ["Intern", "Full Stack", "E-Commerce"],
   },
 ];
 
