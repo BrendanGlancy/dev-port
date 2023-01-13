@@ -215,7 +215,7 @@ export const seoData = {
     "brendan glancy",
     "Portfolio",
     "Codemash",
-    "Codemash Conference"
+    "Codemash Conference",
     "Full Stack Developer",
     "Full Stack",
     "Open to work",
