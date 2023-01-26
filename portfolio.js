@@ -91,19 +91,19 @@ export const skillsSection = {
         },
         {
           skillName: "Vercel",
-          fontAwesomeClassname: "logos:vercel",
+          fontAwesomeClassname: "logos:vercel-icon",
         },
         {
           skillName: "NextJS",
-          fontAwesomeClassname: "logos:nextjs",
+          fontAwesomeClassname: "logos:nextjs-icon",
         },
         {
           skillName: "MongoDB",
-          fontAwesomeClassname: "logos:mongodb",
+          fontAwesomeClassname: "logos:mongodb-icon",
         }, 
         {
           skillName: "Django",
-          fontAwesomeClassname: "logos:django",
+          fontAwesomeClassname: "logos:django-icon",
         },
         {
           skillName: "spring-boot",
