@@ -63,7 +63,7 @@ export const skillsSection = {
         },
         {
           skillName: "expressjs",
-          fontAwesomeClassname: "logos:expressjs-icon",
+          fontAwesomeClassname: "logos:expressjs",
         },
         {
           skillName: "astro",
