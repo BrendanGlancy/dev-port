@@ -62,6 +62,10 @@ export const skillsSection = {
           fontAwesomeClassname: "logos:nodejs-icon",
         },
         {
+          skillName: "expressjs",
+          fontAwesomeClassname: "logos:expressjs-icon",
+        },
+        {
           skillName: "astro",
           fontAwesomeClassname: "vscode-icons:file-type-astro",
         },
