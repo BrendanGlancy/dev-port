@@ -106,8 +106,8 @@ export const skillsSection = {
           fontAwesomeClassname: "logos:django-icon",
         },
         {
-          skillName: "spring-boot-icon",
-          fontAwesomeClassname: "logos:spring",
+          skillName: "spring-boot",
+          fontAwesomeClassname: "logos:spring-icon",
         },
       ],
     },
