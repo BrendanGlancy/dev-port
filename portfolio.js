@@ -86,8 +86,8 @@ export const skillsSection = {
           fontAwesomeClassname: "logos:postgresql",
         },
         {
-          skillName: "MySQL",
-          fontAwesomeClassname: "logos:mysql",
+          skillName: "MySQL-icon",
+          fontAwesomeClassname: "logos:mysql-icon",
         },
         {
           skillName: "Vercel",
@@ -106,7 +106,7 @@ export const skillsSection = {
           fontAwesomeClassname: "logos:django-icon",
         },
         {
-          skillName: "spring-boot",
+          skillName: "spring-boot-icon",
           fontAwesomeClassname: "logos:spring",
         },
       ],
