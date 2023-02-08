@@ -202,7 +202,7 @@ export const projects = [
   {
     name: "OVS Knife Co.",
     desc: "Current Job, working on a website for a local knife company. The website is built with Next.js, React, NodeJS. The website is currently in development and will be released in Feburary 2023",
-    link: "https://ovsgrinding.com/",
+    link: "https://granulatorknife.com/home",
     tags: ["Intern", "Full Stack", "E-Commerce"],
   },
 ];
