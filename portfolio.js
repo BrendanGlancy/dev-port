@@ -172,8 +172,8 @@ export const experience = [
     companylogo: "/img/icons/common/ovs.png",
     date: "December 2022",
     descBullets: [
-      "  Developed two web applications using React and Next.js for the company's expansion into the residential knife market",
-      "  Implemented responsive design and user-friendly interfaces to improve user experience",
+      "  As a Software Developer Intern at OVS Knife Co, I am responsible for the development and maintenance of the company's web application. Utilizing my skills in Next.js, React, MongoDB, Node.js, Django, and Express.js.",
+      "  I work independently to implement new features, improve the overall user experience and make sure the platform is reliable and fast for our customers.",
     ],
   },
 ];
@@ -201,7 +201,7 @@ export const projects = [
   },
   {
     name: "OVS Knife Co.",
-    desc: "Current Job, working on a website for a local knife company. The website is built with Next.js, React, NodeJS. The website is currently in development and will be released in Feburary 2023",
+    desc: "As a Software Developer Intern at OVS Knife Co, I am responsible for the development and maintenance of the company's web application. Utilizing my skills in Next.js, React, MongoDB, Node.js, Django, and Express.js, I work independently to implement new features, improve the overall user experience and make sure the platform is reliable and fast for our customers.",
     link: "https://granulatorknife.com/home",
     tags: ["Intern", "Full Stack", "E-Commerce"],
   },
@@ -246,5 +246,6 @@ export const seoData = {
     "Canton",
     "Ohio",
     "OVS Knife Co.",
+    "Ohio Valley Saw",
   ],
 };
