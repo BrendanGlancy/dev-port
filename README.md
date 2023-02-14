@@ -1,4 +1,4 @@
-<h1 align="center">Welcome to developer-portfolio 👋</h1>
+<h1 align="center">Welcome to my portfolio 👋</h1>
 
 ## Software Developer Portfolio Template built with Next.js bootstrap that helps you showcase your work and skills as a software developer.
 
@@ -42,6 +42,7 @@ For adding emoji 😃 into the texts in `Portfolio.js`, use the `emoji()` functi
 -   [react-easy-emoji](https://github.com/appfigures/react-easy-emoji)
 -   [react-headroom](https://github.com/KyleAMathews/react-headroom)
 -   [color-thief](https://github.com/lokesh/color-thief)
+-   [emailjs](https://www.emailjs.com/)
 
 ## Illustrations
 
