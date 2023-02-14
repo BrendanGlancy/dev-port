@@ -215,7 +215,7 @@ export const feedbacks = [
   },
 ];
 
-const seoData = {
+export const seoData = {
   title: "Brendan's Portfolio",
   description: "Full Stack Developer showcasing my work and experience.",
   image: "https://avatars.githubusercontent.com/u/61941978?v=4",
