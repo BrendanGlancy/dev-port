@@ -1,6 +1,10 @@
 <h1 align="center">Welcome to my portfolio 👋</h1>
 
-## Software Developer Portfolio Template built with Next.js bootstrap that helps you showcase your work and skills as a software developer.
+<br>
+<h3>
+Welcome to my software developer portfolio template built with Next.js and Bootstrap, which helps you showcase your work and skills as a software developer. With this portfolio, you'll be able to impress potential employers or clients with your work and expertise.
+</h3>
+<br>
 
 <p align="center">
   <kbd>
@@ -8,21 +12,20 @@
   </kbd>
 </p>
 
-## To view a live example, **[click here](https://brendanglancy.software/)**.
+## Demo
+
+To view a live demo, click here: https://brendanglancy.software/
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+To get a local copy up and running, follow these simple example steps.
 
-You'll need [Git](https://git-scm.com) and [Node.js](https://nodejs.org/en/download/) (which comes with [npm](http://npmjs.com)) installed on your computer.
-<br>
-**For Windows** Install Visual C++ Build Environment: [Visual Studio Build Tools](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=BuildTools)
+### Prerequisites
 
-```
-node@v10.16.0 or higher
-npm@6.9.0 or higher
-git@2.17.1 or higher
-```
+You'll need the following software installed on your computer:
+
+- Git
+- Node.js (which comes with npm)
 
 ## How To Use
 
@@ -43,6 +46,8 @@ $ yarn dev
 ```
 
 ## Linking Portfolio to Github
+
+You can link your portfolio to your Github account by changing the githubUserName in `portfolio.js` file.
 
 ```javascript
   //  portfolio.js
@@ -69,3 +74,4 @@ For adding emoji 😃 into the texts in `Portfolio.js`, use the `emoji()` functi
 
 -   [Lottie File Source](https://lottiefiles.com)
 
+Please don't forget to give my repository a star! ⭐️
