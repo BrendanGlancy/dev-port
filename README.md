@@ -2,6 +2,8 @@
 
 ## Software Developer Portfolio Template built with Next.js bootstrap that helps you showcase your work and skills as a software developer.
 
+![image](https://user-images.githubusercontent.com/61941978/218782582-2109dfb4-3625-42f7-8857-365c538e4319.png)
+
 
 ## How To Use
 
