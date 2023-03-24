@@ -202,7 +202,7 @@ export const projects = [
   {
     name: "OVS Knife Co.",
     desc: "As a Software Developer Intern at OVS Knife Co, I am responsible for the development and maintenance of the company's web application. Utilizing my skills in Next.js, React, MongoDB, Node.js, Django, and Express.js, I work independently to implement new features, improve the overall user experience and make sure the platform is reliable and fast for our customers.",
-    link: "https://granulatorknife.com/home",
+    link: "https://ovsknife.com/home",
     tags: ["Intern", "Full Stack", "E-Commerce"],
   },
 ];
@@ -228,6 +228,7 @@ export const seoData = {
     "Developer",
     "web developer",
     "Empyrial",
+    "OVS Grinding",
     "OVS Knife Co.",
     "Canton Regional Chamber of Commerce",
     "Akron",
