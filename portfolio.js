@@ -180,9 +180,9 @@ export const experience = [
 
 export const projects = [
   {
-    name: "Brewery Locator",
-    desc: "A web application that allows users to search and review breweries in the United States. Users can search for breweries by name, city, state, or zip code. Users can also add breweries to their favorites list and leave reviews for breweries.",
-    github: "https://github.com/BrendanGlancy/BreweryLocater",
+    name: "Ronis Hair Forum",
+    desc: "Custom website for a local hair salon",
+    link: "https://ronishair.com/",
     tags: ["Java", "VueJS", "PostgreSQL"],
   },
   {
@@ -225,6 +225,7 @@ export const seoData = {
     "Portfolio",
     "Full Stack Developer",
     "Open to work",
+    "Ronis Hair Forum",
     "Developer",
     "web developer",
     "Empyrial",
