@@ -100,7 +100,7 @@ export const skillsSection = {
         {
           skillName: "MongoDB",
           fontAwesomeClassname: "logos:mongodb-icon",
-        }, 
+        },
         {
           skillName: "Django",
           fontAwesomeClassname: "logos:django-icon",
@@ -212,6 +212,11 @@ export const feedbacks = [
     name: "Austin Coontz",
     feedback:
       "I was trying to make a website that is blazingly fast. I had no idea where to start. What did I do? Called my friend Brendan. I had no Idea what i Was doing! He fixed it. Website? Fast. Blazingly. Done.",
+  },
+  {
+    name: "Andrew Rose",
+    feedback:
+      "Brendan Glancy, the website developer I worked with was exceptional. He took the time to understand my needs and goals, and created a website that not only met, but exceeded my expectations. Their communication was clear and timely throughout the process, and I would highly recommend them to anyone in need of an exceptional website.",
   },
 ];
 
