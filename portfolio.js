@@ -15,6 +15,7 @@ export const openSource = {
 export const contact = {};
 
 export const socialLinks = {
+  url: 'https://www.ovsknife.com/home',
   instagram: "https://www.instagram.com/brendanglance/",
   github: "https://github.com/brendanglancy",
   linkedin: "https://www.linkedin.com/in/brendan-glancy/",
