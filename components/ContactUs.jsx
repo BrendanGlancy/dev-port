@@ -59,7 +59,6 @@ export const ContactUs = () => {
   return (
     <>
       <section className="section section-lg section-shaped">
-
         <div className="shape shape-style-3 shape-primary">
           <span />
           <span />
@@ -70,13 +69,13 @@ export const ContactUs = () => {
           <span />
           <span />
         </div>
-          {alert && (
-            <Alert
-              color={alert.color}
-              icon={alert.icon}
-              message={alert.message}
-            />
-          )}
+        {alert && (
+          <Alert
+            color={alert.color}
+            icon={alert.icon}
+            message={alert.message}
+          />
+        )}
         <form ref={form} onSubmit={sendEmail}>
           <Container>
             <Row className="justify-content-center">
@@ -135,7 +134,6 @@ export const ContactUs = () => {
                         color="default"
                         size="lg"
                         type="submit"
-                        onClick={sendEmail}
                       >
                         Send Message
                       </Button>
