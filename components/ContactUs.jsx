@@ -57,95 +57,96 @@ export const ContactUs = () => {
   };
 
   return (
-    <>
-      <section className="section section-lg section-shaped">
-
-        <div className="shape shape-style-3 shape-primary">
-          <span />
-          <span />
-          <span />
-          <span />
-          <span />
-          <span />
-          <span />
-          <span />
-        </div>
-          {alert && (
-            <Alert
-              color={alert.color}
-              icon={alert.icon}
-              message={alert.message}
-            />
-          )}
-        <form ref={form} onSubmit={sendEmail}>
-          <Container>
-            <Row className="justify-content-center">
-              <Col lg="8">
-                <Card className="bg-gradient-secondary shadow">
-                  <CardBody className="p-lg-5">
-                    <h4 className="mb-1">Want to work with me?</h4>
-                    <p className="mt-0">
-                      Your project is very important to me.
-                    </p>
-                    <FormGroup className={classnames("mt-5", {})}>
-                      <InputGroup className="input-group-alternative">
-                        <InputGroupAddon addonType="prepend">
-                          <InputGroupText>
-                            <i className="ni ni-user-run" />
-                          </InputGroupText>
-                        </InputGroupAddon>
-                        <Input
-                          placeholder="Your name"
-                          type="text"
-                          name="user_name"
-                        />
-                      </InputGroup>
-                    </FormGroup>
-                    <FormGroup className={classnames({})}>
-                      <InputGroup className="input-group-alternative">
-                        <InputGroupAddon addonType="prepend">
-                          <InputGroupText>
-                            <i className="ni ni-email-83" />
-                          </InputGroupText>
-                        </InputGroupAddon>
-                        <Input
-                          placeholder="Email address"
-                          name="user_email"
-                          type="email"
-                        />
-                      </InputGroup>
-                    </FormGroup>
-                    <FormGroup className="mb-4">
+  <>
+    <section className="section section-lg section-shaped">
+      <div className="shape shape-style-3 shape-primary">
+        <span />
+        <span />
+        <span />
+        <span />
+        <span />
+        <span />
+        <span />
+        <span />
+      </div>
+      {alert && (
+        <Alert
+          color={alert.color}
+          icon={alert.icon}
+          message={alert.message}
+        />
+      )}
+      <form ref={form} onSubmit={sendEmail}>
+        <Container>
+          <Row className="justify-content-center">
+            <Col lg="8">
+              <Card className="bg-gradient-secondary shadow">
+                <CardBody className="p-lg-5">
+                  <h4 className="mb-1">Want to work with me?</h4>
+                  <p className="mt-0">
+                    Your project is very important to me.
+                  </p>
+                  <FormGroup className={classnames("mt-5", {})}>
+                    <InputGroup className="input-group-alternative">
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <i className="ni ni-user-run" />
+                        </InputGroupText>
+                      </InputGroupAddon>
                       <Input
-                        className="form-control-alternative"
-                        cols="80"
-                        name="user_message"
-                        placeholder="Type a message..."
-                        rows="4"
-                        type="textarea"
+                        placeholder="Your name"
+                        type="text"
+                        name="user_name"
+                        required  // Added required attribute
                       />
-                    </FormGroup>
-                    <div>
-                      <Button
-                        block
-                        className="btn-round"
-                        color="default"
-                        size="lg"
-                        type="submit"
-                        onClick={sendEmail}
-                      >
-                        Send Message
-                      </Button>
-                    </div>
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
-          </Container>
-        </form>
-      </section>
-    </>
-  );
-};
+                    </InputGroup>
+                  </FormGroup>
+                  <FormGroup className={classnames({})}>
+                    <InputGroup className="input-group-alternative">
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <i className="ni ni-email-83" />
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        placeholder="Email address"
+                        name="user_email"
+                        type="email"
+                        required  // Added required attribute
+                      />
+                    </InputGroup>
+                  </FormGroup>
+                  <FormGroup className="mb-4">
+                    <Input
+                      className="form-control-alternative"
+                      cols="80"
+                      name="user_message"
+                      placeholder="Type a message..."
+                      rows="4"
+                      type="textarea"
+                      required  // Added required attribute
+                    />
+                  </FormGroup>
+                  <div>
+                    <Button
+                      block
+                      className="btn-round"
+                      color="default"
+                      size="lg"
+                      type="submit"
+                      onClick={sendEmail}
+                    >
+                      Send Message
+                    </Button>
+                  </div>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
+      </form>
+    </section>
+  </>
+);
 
 export default ContactUs;
