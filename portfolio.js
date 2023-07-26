@@ -182,7 +182,7 @@ export const experience = [
 export const projects = [
   {
     name: "Ronis Hair Forum",
-    desc: "Custom website for a local hair salon",
+    desc: "Custom website for a local hair salon, Responsive Ready, Powered by Bootstrap 4, Dedicated portfolio and blog page, Easy Customization",
     link: "https://ronishair.com/",
     tags: ["Java", "VueJS", "PostgreSQL"],
   },
