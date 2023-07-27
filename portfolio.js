@@ -194,11 +194,10 @@ export const projects = [
     tags: ["python", "finace", "machine learning"],
   },
   {
-    name: "Coontz-Web",
-    desc: "Personal Website built with Astro, Svelte, and JavaScript. Collaborated with a fellow Akron University student to build a website for a friend. Contains a blog of writeups for challenges done by the CTF team",
-    github: "https://github.com/Coontz1/myWebsite",
-    link: "https://austin-coontz.vercel.app/",
-    tags: ["Astro", "TypeScript", "JavaScript"],
+    name: "Knifely",
+    desc: "Professional Knife Sharpening site for our company. Looking for a reliable and professional residential knife sharpening service in Akron? Look no further than Knifely!",
+    link: "https://www.knifely.com/",
+    tags: ["NextJS", "Gatsby", "JavaScript"],
   },
   {
     name: "OVS Knife Co.",
