@@ -195,7 +195,8 @@ export const projects = [
   },
   {
     name: "Knifely",
-    desc: "Professional Knife Sharpening site for our company. Looking for a reliable and professional residential knife sharpening service in Akron? Look no further than Knifely!",
+    desc: "Professional Knife Sharpening site for our company. Made with Tailwind CSS, Gatsby v3, and NextJS. Looking for a reliable and professional residential knife sharpening service in Akron? Look no further than Knifely!",
+    github: "https://github.com/OVS-Knife",
     link: "https://www.knifely.com/",
     tags: ["NextJS", "Gatsby", "JavaScript"],
   },
@@ -236,6 +237,7 @@ export const seoData = {
     "Empyrial",
     "OVS Grinding",
     "OVS Knife Co.",
+    "Knifely",
     "Canton Regional Chamber of Commerce",
     "Akron",
     "Ohio",
