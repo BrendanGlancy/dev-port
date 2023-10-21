@@ -15,7 +15,7 @@ export const openSource = {
 export const contact = {};
 
 export const socialLinks = {
-  url: 'https://www.ovsknife.com/home',
+  url: "https://www.ovsknife.com/home",
   instagram: "https://www.instagram.com/brendanglance/",
   github: "https://github.com/brendanglancy",
   linkedin: "https://www.linkedin.com/in/brendan-glancy/",
@@ -32,13 +32,13 @@ export const skillsSection = {
       lottieAnimationFile: "/lottie/webdev.json", // Path of Lottie Animation JSON File
       skills: [
         emoji(
-          "⚡ Develop highly interactive Front end / User Interfaces for your web and mobile applications."
+          "⚡ Develop highly interactive Front end / User Interfaces for your web and mobile applications.",
         ),
         emoji(
-          "⚡ Progressive Web Applications ( PWA ) in normal and SPA Stacks."
+          "⚡ Progressive Web Applications ( PWA ) in normal and SPA Stacks.",
         ),
         emoji(
-          "⚡ Cyber Security, HackTheBox Globally Ranked 534, Top 2% in PicoCTF 2022"
+          "⚡ Cyber Security, HackTheBox Globally Ranked 534, Top 2% in PicoCTF 2022",
         ),
       ],
       softwareSkills: [
@@ -49,6 +49,14 @@ export const skillsSection = {
         {
           skillName: "Java",
           fontAwesomeClassname: "logos:java",
+        },
+        {
+          skillName: "JavaScript",
+          fontAwesomeClassname: "logos:javascript",
+        },
+        {
+          skillName: "cpp",
+          fontAwesomeClassname: "logos:c-plusplus",
         },
         {
           skillName: "reactjs",
@@ -69,10 +77,6 @@ export const skillsSection = {
         {
           skillName: "npm",
           fontAwesomeClassname: "logos:npm-icon",
-        },
-        {
-          skillName: "cpp",
-          fontAwesomeClassname: "logos:c-plusplus",
         },
         {
           skillName: "php",
@@ -165,7 +169,8 @@ export const experience = [
     company: "Chamber of Commerce",
     companylogo: "/img/icons/common/chamber.jpeg",
     date: "June 2019 – Present",
-    desc: "Communicate with managers to set up computers used on in the office, Assess and troubleshoot computer problems brought by managers, faculty a. Maintain upkeep of computers, servers, and 20+ websites used by the Chamber and local businesses",
+    desc:
+      "Communicate with managers to set up computers used on in the office, Assess and troubleshoot computer problems brought by managers, faculty a. Maintain upkeep of computers, servers, and 20+ websites used by the Chamber and local businesses",
   },
   {
     role: "Software Developer Intern",
@@ -182,27 +187,31 @@ export const experience = [
 export const projects = [
   {
     name: "Ronis Hair Forum",
-    desc: "Custom website for a local hair salon, Responsive Ready, Powered by Bootstrap 4, Dedicated portfolio and blog page, Easy Customization",
+    desc:
+      "Custom website for a local hair salon, Responsive Ready, Powered by Bootstrap 4, Dedicated portfolio and blog page, Easy Customization",
     link: "https://ronishair.com/",
     tags: ["Java", "VueJS", "PostgreSQL"],
   },
   {
     name: "Empyrial",
-    desc: "Contributor on Empyrial, Empyrial is a Python-based open-source quantitative investment library dedicated to financial institutions and retail investors, officially released in March 2021. Already used by thousands of people working in the finance industry, Empyrial aims to become an all-in-one platform for portfolio management, analysis, and optimization.",
+    desc:
+      "Contributor on Empyrial, Empyrial is a Python-based open-source quantitative investment library dedicated to financial institutions and retail investors, officially released in March 2021. Already used by thousands of people working in the finance industry, Empyrial aims to become an all-in-one platform for portfolio management, analysis, and optimization.",
     github: "https://github.com/ssantoshp/Empyrial",
     link: "https://ssantoshp.github.io/Empyrial/",
     tags: ["python", "finace", "machine learning"],
   },
   {
     name: "Knifely",
-    desc: "Professional Knife Sharpening site for our company. Made with Tailwind CSS, Gatsby v3, and NextJS. Looking for a reliable and professional residential knife sharpening service in Akron? Look no further than Knifely!",
+    desc:
+      "Professional Knife Sharpening site for our company. Made with Tailwind CSS, Gatsby v3, and NextJS. Looking for a reliable and professional residential knife sharpening service in Akron? Look no further than Knifely!",
     github: "https://github.com/OVS-Knife",
     link: "https://www.knifely.com/",
     tags: ["NextJS", "Gatsby", "JavaScript"],
   },
   {
     name: "OVS Knife Co.",
-    desc: "As a Software Developer Intern at OVS Knife Co, I am responsible for the development and maintenance of the company's web application. Utilizing my skills in Next.js, React, MongoDB, Node.js, Django, and Express.js, I work independently to implement new features, improve the overall user experience and make sure the platform is reliable and fast for our customers.",
+    desc:
+      "As a Software Developer Intern at OVS Knife Co, I am responsible for the development and maintenance of the company's web application. Utilizing my skills in Next.js, React, MongoDB, Node.js, Django, and Express.js, I work independently to implement new features, improve the overall user experience and make sure the platform is reliable and fast for our customers.",
     link: "https://ovsknife.com/home",
     tags: ["Intern", "Full Stack", "E-Commerce"],
   },
