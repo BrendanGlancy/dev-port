@@ -69,13 +69,13 @@ a {
   right: 0;
   bottom: 0;
   left: 0;
-  background-color: #111;
+  background-color: #111c35;
   transform-origin: bottom;
   z-index: 111111;
 
   .black_wall {
     height: 100%;
-    background-color: #222;
+    background-color: #0f172a;
     transform-origin: top;
     animation: preloader_slide 0.5s ease-in-out 0s 1 normal both;
   }
@@ -419,8 +419,7 @@ ol {
       box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.1);
       color: #ffffff;
-      transition: 0.3s;
-
+      transition: 0.4s;
       &:hover {
         background: #ffffff;
         color: #0f0f0f;
