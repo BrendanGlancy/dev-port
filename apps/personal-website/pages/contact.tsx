@@ -5,7 +5,8 @@ import { useEffect, useState } from 'react';
 import { Alert, Form } from 'reactstrap';
 
 const ContactPage = () => {
-  const [state, handleSubmit] = useForm('xeqbqqwj');
+  // formspree.io/register get a code and chang the below
+  const [state, handleSubmit] = useForm('xbjnwpob');
   const [displayBanner, setDisplayBanner] = useState(false);
 
   useEffect(() => {
