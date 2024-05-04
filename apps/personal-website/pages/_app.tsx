@@ -99,6 +99,7 @@ const CustomApp = ({ Component, pageProps }: AppProps) => {
           <AnimatePresence mode="wait" initial={false}>
             <main className={font.className}>
               {loading ? <Preloader /> : <Component {...pageProps} />}
+              {registerVercelAnalytics()}
             </main>
           </AnimatePresence>
         </ThemeProvider>
