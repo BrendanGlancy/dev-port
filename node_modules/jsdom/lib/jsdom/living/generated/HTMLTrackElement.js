@@ -21,24 +21,24 @@ exports.is = value => {
 exports.isImpl = value => {
   return utils.isObject(value) && value instanceof Impl.implementation;
 };
-exports.convert = (value, { context = "The provided value" } = {}) => {
+exports.convert = (globalObject, value, { context = "The provided value" } = {}) => {
   if (exports.is(value)) {
     return utils.implForWrapper(value);
   }
-  throw new TypeError(`${context} is not of type 'HTMLTrackElement'.`);
+  throw new globalObject.TypeError(`${context} is not of type 'HTMLTrackElement'.`);
 };
 
-function makeWrapper(globalObject) {
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    throw new Error("Internal error: invalid global object");
+function makeWrapper(globalObject, newTarget) {
+  let proto;
+  if (newTarget !== undefined) {
+    proto = newTarget.prototype;
   }
 
-  const ctor = globalObject[ctorRegistrySymbol]["HTMLTrackElement"];
-  if (ctor === undefined) {
-    throw new Error("Internal error: constructor HTMLTrackElement is not installed on the passed global object");
+  if (!utils.isObject(proto)) {
+    proto = globalObject[ctorRegistrySymbol]["HTMLTrackElement"].prototype;
   }
 
-  return Object.create(ctor.prototype);
+  return Object.create(proto);
 }
 
 exports.create = (globalObject, constructorArgs, privateData) => {
@@ -71,8 +71,8 @@ exports.setup = (wrapper, globalObject, constructorArgs = [], privateData = {}) 
   return wrapper;
 };
 
-exports.new = globalObject => {
-  const wrapper = makeWrapper(globalObject);
+exports.new = (globalObject, newTarget) => {
+  const wrapper = makeWrapper(globalObject, newTarget);
 
   exports._internalSetup(wrapper, globalObject);
   Object.defineProperty(wrapper, implSymbol, {
@@ -94,9 +94,7 @@ exports.install = (globalObject, globalNames) => {
     return;
   }
 
-  if (globalObject.HTMLElement === undefined) {
-    throw new Error("Internal error: attempting to evaluate HTMLTrackElement before HTMLElement");
-  }
+  const ctorRegistry = utils.initCtorRegistry(globalObject);
   class HTMLTrackElement extends globalObject.HTMLElement {
     constructor() {
       return HTMLConstructor_helpers_html_constructor(globalObject, interfaceName, new.target);
@@ -106,7 +104,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get kind' called on an object that is not a valid instance of HTMLTrackElement.");
+        throw new globalObject.TypeError(
+          "'get kind' called on an object that is not a valid instance of HTMLTrackElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -122,11 +122,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set kind' called on an object that is not a valid instance of HTMLTrackElement.");
+        throw new globalObject.TypeError(
+          "'set kind' called on an object that is not a valid instance of HTMLTrackElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'kind' property on 'HTMLTrackElement': The provided value"
+        context: "Failed to set the 'kind' property on 'HTMLTrackElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -141,7 +144,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get src' called on an object that is not a valid instance of HTMLTrackElement.");
+        throw new globalObject.TypeError(
+          "'get src' called on an object that is not a valid instance of HTMLTrackElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -167,11 +172,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set src' called on an object that is not a valid instance of HTMLTrackElement.");
+        throw new globalObject.TypeError(
+          "'set src' called on an object that is not a valid instance of HTMLTrackElement."
+        );
       }
 
       V = conversions["USVString"](V, {
-        context: "Failed to set the 'src' property on 'HTMLTrackElement': The provided value"
+        context: "Failed to set the 'src' property on 'HTMLTrackElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -186,7 +194,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get srclang' called on an object that is not a valid instance of HTMLTrackElement.");
+        throw new globalObject.TypeError(
+          "'get srclang' called on an object that is not a valid instance of HTMLTrackElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -202,11 +212,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set srclang' called on an object that is not a valid instance of HTMLTrackElement.");
+        throw new globalObject.TypeError(
+          "'set srclang' called on an object that is not a valid instance of HTMLTrackElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'srclang' property on 'HTMLTrackElement': The provided value"
+        context: "Failed to set the 'srclang' property on 'HTMLTrackElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -221,7 +234,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get label' called on an object that is not a valid instance of HTMLTrackElement.");
+        throw new globalObject.TypeError(
+          "'get label' called on an object that is not a valid instance of HTMLTrackElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -237,11 +252,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set label' called on an object that is not a valid instance of HTMLTrackElement.");
+        throw new globalObject.TypeError(
+          "'set label' called on an object that is not a valid instance of HTMLTrackElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'label' property on 'HTMLTrackElement': The provided value"
+        context: "Failed to set the 'label' property on 'HTMLTrackElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -256,7 +274,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get default' called on an object that is not a valid instance of HTMLTrackElement.");
+        throw new globalObject.TypeError(
+          "'get default' called on an object that is not a valid instance of HTMLTrackElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -271,11 +291,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set default' called on an object that is not a valid instance of HTMLTrackElement.");
+        throw new globalObject.TypeError(
+          "'set default' called on an object that is not a valid instance of HTMLTrackElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'default' property on 'HTMLTrackElement': The provided value"
+        context: "Failed to set the 'default' property on 'HTMLTrackElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -294,7 +317,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get readyState' called on an object that is not a valid instance of HTMLTrackElement.");
+        throw new globalObject.TypeError(
+          "'get readyState' called on an object that is not a valid instance of HTMLTrackElement."
+        );
       }
 
       return esValue[implSymbol]["readyState"];
@@ -319,10 +344,7 @@ exports.install = (globalObject, globalNames) => {
     LOADED: { value: 2, enumerable: true },
     ERROR: { value: 3, enumerable: true }
   });
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    globalObject[ctorRegistrySymbol] = Object.create(null);
-  }
-  globalObject[ctorRegistrySymbol][interfaceName] = HTMLTrackElement;
+  ctorRegistry[interfaceName] = HTMLTrackElement;
 
   Object.defineProperty(globalObject, interfaceName, {
     configurable: true,

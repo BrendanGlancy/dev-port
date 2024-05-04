@@ -31,15 +31,15 @@ function isNaNIdentifier(node) {
 // Rule Definition
 //------------------------------------------------------------------------------
 
+/** @type {import('../shared/types').Rule} */
 module.exports = {
     meta: {
         type: "problem",
 
         docs: {
-            description: "require calls to `isNaN()` when checking for `NaN`",
-            category: "Possible Errors",
+            description: "Require calls to `isNaN()` when checking for `NaN`",
             recommended: true,
-            url: "https://eslint.org/docs/rules/use-isnan"
+            url: "https://eslint.org/docs/latest/rules/use-isnan"
         },
 
         schema: [

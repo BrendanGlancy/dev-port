@@ -18,24 +18,24 @@ exports.is = value => {
 exports.isImpl = value => {
   return utils.isObject(value) && value instanceof Impl.implementation;
 };
-exports.convert = (value, { context = "The provided value" } = {}) => {
+exports.convert = (globalObject, value, { context = "The provided value" } = {}) => {
   if (exports.is(value)) {
     return utils.implForWrapper(value);
   }
-  throw new TypeError(`${context} is not of type 'HTMLHRElement'.`);
+  throw new globalObject.TypeError(`${context} is not of type 'HTMLHRElement'.`);
 };
 
-function makeWrapper(globalObject) {
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    throw new Error("Internal error: invalid global object");
+function makeWrapper(globalObject, newTarget) {
+  let proto;
+  if (newTarget !== undefined) {
+    proto = newTarget.prototype;
   }
 
-  const ctor = globalObject[ctorRegistrySymbol]["HTMLHRElement"];
-  if (ctor === undefined) {
-    throw new Error("Internal error: constructor HTMLHRElement is not installed on the passed global object");
+  if (!utils.isObject(proto)) {
+    proto = globalObject[ctorRegistrySymbol]["HTMLHRElement"].prototype;
   }
 
-  return Object.create(ctor.prototype);
+  return Object.create(proto);
 }
 
 exports.create = (globalObject, constructorArgs, privateData) => {
@@ -68,8 +68,8 @@ exports.setup = (wrapper, globalObject, constructorArgs = [], privateData = {}) 
   return wrapper;
 };
 
-exports.new = globalObject => {
-  const wrapper = makeWrapper(globalObject);
+exports.new = (globalObject, newTarget) => {
+  const wrapper = makeWrapper(globalObject, newTarget);
 
   exports._internalSetup(wrapper, globalObject);
   Object.defineProperty(wrapper, implSymbol, {
@@ -91,9 +91,7 @@ exports.install = (globalObject, globalNames) => {
     return;
   }
 
-  if (globalObject.HTMLElement === undefined) {
-    throw new Error("Internal error: attempting to evaluate HTMLHRElement before HTMLElement");
-  }
+  const ctorRegistry = utils.initCtorRegistry(globalObject);
   class HTMLHRElement extends globalObject.HTMLElement {
     constructor() {
       return HTMLConstructor_helpers_html_constructor(globalObject, interfaceName, new.target);
@@ -103,7 +101,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get align' called on an object that is not a valid instance of HTMLHRElement.");
+        throw new globalObject.TypeError(
+          "'get align' called on an object that is not a valid instance of HTMLHRElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -119,11 +119,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set align' called on an object that is not a valid instance of HTMLHRElement.");
+        throw new globalObject.TypeError(
+          "'set align' called on an object that is not a valid instance of HTMLHRElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'align' property on 'HTMLHRElement': The provided value"
+        context: "Failed to set the 'align' property on 'HTMLHRElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -138,7 +141,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get color' called on an object that is not a valid instance of HTMLHRElement.");
+        throw new globalObject.TypeError(
+          "'get color' called on an object that is not a valid instance of HTMLHRElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -154,11 +159,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set color' called on an object that is not a valid instance of HTMLHRElement.");
+        throw new globalObject.TypeError(
+          "'set color' called on an object that is not a valid instance of HTMLHRElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'color' property on 'HTMLHRElement': The provided value"
+        context: "Failed to set the 'color' property on 'HTMLHRElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -173,7 +181,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get noShade' called on an object that is not a valid instance of HTMLHRElement.");
+        throw new globalObject.TypeError(
+          "'get noShade' called on an object that is not a valid instance of HTMLHRElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -188,11 +198,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set noShade' called on an object that is not a valid instance of HTMLHRElement.");
+        throw new globalObject.TypeError(
+          "'set noShade' called on an object that is not a valid instance of HTMLHRElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'noShade' property on 'HTMLHRElement': The provided value"
+        context: "Failed to set the 'noShade' property on 'HTMLHRElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -211,7 +224,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get size' called on an object that is not a valid instance of HTMLHRElement.");
+        throw new globalObject.TypeError(
+          "'get size' called on an object that is not a valid instance of HTMLHRElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -227,11 +242,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set size' called on an object that is not a valid instance of HTMLHRElement.");
+        throw new globalObject.TypeError(
+          "'set size' called on an object that is not a valid instance of HTMLHRElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'size' property on 'HTMLHRElement': The provided value"
+        context: "Failed to set the 'size' property on 'HTMLHRElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -246,7 +264,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get width' called on an object that is not a valid instance of HTMLHRElement.");
+        throw new globalObject.TypeError(
+          "'get width' called on an object that is not a valid instance of HTMLHRElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -262,11 +282,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set width' called on an object that is not a valid instance of HTMLHRElement.");
+        throw new globalObject.TypeError(
+          "'set width' called on an object that is not a valid instance of HTMLHRElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'width' property on 'HTMLHRElement': The provided value"
+        context: "Failed to set the 'width' property on 'HTMLHRElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -285,10 +308,7 @@ exports.install = (globalObject, globalNames) => {
     width: { enumerable: true },
     [Symbol.toStringTag]: { value: "HTMLHRElement", configurable: true }
   });
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    globalObject[ctorRegistrySymbol] = Object.create(null);
-  }
-  globalObject[ctorRegistrySymbol][interfaceName] = HTMLHRElement;
+  ctorRegistry[interfaceName] = HTMLHRElement;
 
   Object.defineProperty(globalObject, interfaceName, {
     configurable: true,

@@ -23,24 +23,24 @@ exports.is = value => {
 exports.isImpl = value => {
   return utils.isObject(value) && value instanceof Impl.implementation;
 };
-exports.convert = (value, { context = "The provided value" } = {}) => {
+exports.convert = (globalObject, value, { context = "The provided value" } = {}) => {
   if (exports.is(value)) {
     return utils.implForWrapper(value);
   }
-  throw new TypeError(`${context} is not of type 'HTMLInputElement'.`);
+  throw new globalObject.TypeError(`${context} is not of type 'HTMLInputElement'.`);
 };
 
-function makeWrapper(globalObject) {
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    throw new Error("Internal error: invalid global object");
+function makeWrapper(globalObject, newTarget) {
+  let proto;
+  if (newTarget !== undefined) {
+    proto = newTarget.prototype;
   }
 
-  const ctor = globalObject[ctorRegistrySymbol]["HTMLInputElement"];
-  if (ctor === undefined) {
-    throw new Error("Internal error: constructor HTMLInputElement is not installed on the passed global object");
+  if (!utils.isObject(proto)) {
+    proto = globalObject[ctorRegistrySymbol]["HTMLInputElement"].prototype;
   }
 
-  return Object.create(ctor.prototype);
+  return Object.create(proto);
 }
 
 exports.create = (globalObject, constructorArgs, privateData) => {
@@ -73,8 +73,8 @@ exports.setup = (wrapper, globalObject, constructorArgs = [], privateData = {}) 
   return wrapper;
 };
 
-exports.new = globalObject => {
-  const wrapper = makeWrapper(globalObject);
+exports.new = (globalObject, newTarget) => {
+  const wrapper = makeWrapper(globalObject, newTarget);
 
   exports._internalSetup(wrapper, globalObject);
   Object.defineProperty(wrapper, implSymbol, {
@@ -96,9 +96,7 @@ exports.install = (globalObject, globalNames) => {
     return;
   }
 
-  if (globalObject.HTMLElement === undefined) {
-    throw new Error("Internal error: attempting to evaluate HTMLInputElement before HTMLElement");
-  }
+  const ctorRegistry = utils.initCtorRegistry(globalObject);
   class HTMLInputElement extends globalObject.HTMLElement {
     constructor() {
       return HTMLConstructor_helpers_html_constructor(globalObject, interfaceName, new.target);
@@ -107,14 +105,17 @@ exports.install = (globalObject, globalNames) => {
     stepUp() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'stepUp' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'stepUp' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
       const args = [];
       {
         let curArg = arguments[0];
         if (curArg !== undefined) {
           curArg = conversions["long"](curArg, {
-            context: "Failed to execute 'stepUp' on 'HTMLInputElement': parameter 1"
+            context: "Failed to execute 'stepUp' on 'HTMLInputElement': parameter 1",
+            globals: globalObject
           });
         } else {
           curArg = 1;
@@ -127,14 +128,17 @@ exports.install = (globalObject, globalNames) => {
     stepDown() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'stepDown' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'stepDown' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
       const args = [];
       {
         let curArg = arguments[0];
         if (curArg !== undefined) {
           curArg = conversions["long"](curArg, {
-            context: "Failed to execute 'stepDown' on 'HTMLInputElement': parameter 1"
+            context: "Failed to execute 'stepDown' on 'HTMLInputElement': parameter 1",
+            globals: globalObject
           });
         } else {
           curArg = 1;
@@ -147,7 +151,9 @@ exports.install = (globalObject, globalNames) => {
     checkValidity() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'checkValidity' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'checkValidity' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       return esValue[implSymbol].checkValidity();
@@ -156,7 +162,9 @@ exports.install = (globalObject, globalNames) => {
     reportValidity() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'reportValidity' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'reportValidity' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       return esValue[implSymbol].reportValidity();
@@ -165,23 +173,22 @@ exports.install = (globalObject, globalNames) => {
     setCustomValidity(error) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'setCustomValidity' called on an object that is not a valid instance of HTMLInputElement."
         );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'setCustomValidity' on 'HTMLInputElement': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'setCustomValidity' on 'HTMLInputElement': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'setCustomValidity' on 'HTMLInputElement': parameter 1"
+          context: "Failed to execute 'setCustomValidity' on 'HTMLInputElement': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -191,7 +198,9 @@ exports.install = (globalObject, globalNames) => {
     select() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'select' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'select' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       return esValue[implSymbol].select();
@@ -200,14 +209,14 @@ exports.install = (globalObject, globalNames) => {
     setRangeText(replacement) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'setRangeText' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'setRangeText' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'setRangeText' on 'HTMLInputElement': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'setRangeText' on 'HTMLInputElement': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
@@ -216,35 +225,39 @@ exports.install = (globalObject, globalNames) => {
           {
             let curArg = arguments[0];
             curArg = conversions["DOMString"](curArg, {
-              context: "Failed to execute 'setRangeText' on 'HTMLInputElement': parameter 1"
+              context: "Failed to execute 'setRangeText' on 'HTMLInputElement': parameter 1",
+              globals: globalObject
             });
             args.push(curArg);
           }
           break;
         case 2:
-          throw new TypeError(
-            "Failed to execute 'setRangeText' on 'HTMLInputElement': only " + arguments.length + " arguments present."
+          throw new globalObject.TypeError(
+            `Failed to execute 'setRangeText' on 'HTMLInputElement': only ${arguments.length} arguments present.`
           );
           break;
         case 3:
           {
             let curArg = arguments[0];
             curArg = conversions["DOMString"](curArg, {
-              context: "Failed to execute 'setRangeText' on 'HTMLInputElement': parameter 1"
+              context: "Failed to execute 'setRangeText' on 'HTMLInputElement': parameter 1",
+              globals: globalObject
             });
             args.push(curArg);
           }
           {
             let curArg = arguments[1];
             curArg = conversions["unsigned long"](curArg, {
-              context: "Failed to execute 'setRangeText' on 'HTMLInputElement': parameter 2"
+              context: "Failed to execute 'setRangeText' on 'HTMLInputElement': parameter 2",
+              globals: globalObject
             });
             args.push(curArg);
           }
           {
             let curArg = arguments[2];
             curArg = conversions["unsigned long"](curArg, {
-              context: "Failed to execute 'setRangeText' on 'HTMLInputElement': parameter 3"
+              context: "Failed to execute 'setRangeText' on 'HTMLInputElement': parameter 3",
+              globals: globalObject
             });
             args.push(curArg);
           }
@@ -253,28 +266,31 @@ exports.install = (globalObject, globalNames) => {
           {
             let curArg = arguments[0];
             curArg = conversions["DOMString"](curArg, {
-              context: "Failed to execute 'setRangeText' on 'HTMLInputElement': parameter 1"
+              context: "Failed to execute 'setRangeText' on 'HTMLInputElement': parameter 1",
+              globals: globalObject
             });
             args.push(curArg);
           }
           {
             let curArg = arguments[1];
             curArg = conversions["unsigned long"](curArg, {
-              context: "Failed to execute 'setRangeText' on 'HTMLInputElement': parameter 2"
+              context: "Failed to execute 'setRangeText' on 'HTMLInputElement': parameter 2",
+              globals: globalObject
             });
             args.push(curArg);
           }
           {
             let curArg = arguments[2];
             curArg = conversions["unsigned long"](curArg, {
-              context: "Failed to execute 'setRangeText' on 'HTMLInputElement': parameter 3"
+              context: "Failed to execute 'setRangeText' on 'HTMLInputElement': parameter 3",
+              globals: globalObject
             });
             args.push(curArg);
           }
           {
             let curArg = arguments[3];
             if (curArg !== undefined) {
-              curArg = SelectionMode.convert(curArg, {
+              curArg = SelectionMode.convert(globalObject, curArg, {
                 context: "Failed to execute 'setRangeText' on 'HTMLInputElement': parameter 4"
               });
             } else {
@@ -289,30 +305,30 @@ exports.install = (globalObject, globalNames) => {
     setSelectionRange(start, end) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'setSelectionRange' called on an object that is not a valid instance of HTMLInputElement."
         );
       }
 
       if (arguments.length < 2) {
-        throw new TypeError(
-          "Failed to execute 'setSelectionRange' on 'HTMLInputElement': 2 arguments required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'setSelectionRange' on 'HTMLInputElement': 2 arguments required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["unsigned long"](curArg, {
-          context: "Failed to execute 'setSelectionRange' on 'HTMLInputElement': parameter 1"
+          context: "Failed to execute 'setSelectionRange' on 'HTMLInputElement': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
       {
         let curArg = arguments[1];
         curArg = conversions["unsigned long"](curArg, {
-          context: "Failed to execute 'setSelectionRange' on 'HTMLInputElement': parameter 2"
+          context: "Failed to execute 'setSelectionRange' on 'HTMLInputElement': parameter 2",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -320,7 +336,8 @@ exports.install = (globalObject, globalNames) => {
         let curArg = arguments[2];
         if (curArg !== undefined) {
           curArg = conversions["DOMString"](curArg, {
-            context: "Failed to execute 'setSelectionRange' on 'HTMLInputElement': parameter 3"
+            context: "Failed to execute 'setSelectionRange' on 'HTMLInputElement': parameter 3",
+            globals: globalObject
           });
         }
         args.push(curArg);
@@ -332,7 +349,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get accept' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get accept' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -348,11 +367,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set accept' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set accept' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'accept' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'accept' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -367,7 +389,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get alt' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get alt' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -383,11 +407,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set alt' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set alt' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'alt' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'alt' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -402,7 +429,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get autocomplete' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get autocomplete' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -418,11 +447,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set autocomplete' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set autocomplete' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'autocomplete' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'autocomplete' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -437,7 +469,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get autofocus' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get autofocus' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -452,11 +486,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set autofocus' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set autofocus' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'autofocus' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'autofocus' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -475,7 +512,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get defaultChecked' called on an object that is not a valid instance of HTMLInputElement."
         );
       }
@@ -492,13 +529,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'set defaultChecked' called on an object that is not a valid instance of HTMLInputElement."
         );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'defaultChecked' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'defaultChecked' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -517,7 +555,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get checked' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get checked' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       return esValue[implSymbol]["checked"];
@@ -527,11 +567,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set checked' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set checked' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'checked' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'checked' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       esValue[implSymbol]["checked"] = V;
@@ -541,7 +584,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get dirName' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get dirName' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -557,11 +602,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set dirName' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set dirName' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'dirName' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'dirName' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -576,7 +624,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get disabled' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get disabled' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -591,11 +641,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set disabled' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set disabled' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'disabled' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'disabled' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -614,7 +667,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get form' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get form' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["form"]);
@@ -624,7 +679,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get files' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get files' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["files"]);
@@ -634,13 +691,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set files' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set files' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       if (V === null || V === undefined) {
         V = null;
       } else {
-        V = FileList.convert(V, {
+        V = FileList.convert(globalObject, V, {
           context: "Failed to set the 'files' property on 'HTMLInputElement': The provided value"
         });
       }
@@ -651,7 +710,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get formNoValidate' called on an object that is not a valid instance of HTMLInputElement."
         );
       }
@@ -668,13 +727,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'set formNoValidate' called on an object that is not a valid instance of HTMLInputElement."
         );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'formNoValidate' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'formNoValidate' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -693,7 +753,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get formTarget' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get formTarget' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -709,11 +771,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set formTarget' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set formTarget' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'formTarget' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'formTarget' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -728,7 +793,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get indeterminate' called on an object that is not a valid instance of HTMLInputElement."
         );
       }
@@ -740,13 +805,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'set indeterminate' called on an object that is not a valid instance of HTMLInputElement."
         );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'indeterminate' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'indeterminate' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       esValue[implSymbol]["indeterminate"] = V;
@@ -756,7 +822,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get inputMode' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get inputMode' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -772,11 +840,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set inputMode' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set inputMode' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'inputMode' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'inputMode' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -791,7 +862,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get list' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get list' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["list"]);
@@ -801,7 +874,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get max' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get max' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -817,11 +892,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set max' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set max' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'max' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'max' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -836,7 +914,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get maxLength' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get maxLength' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -851,11 +931,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set maxLength' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set maxLength' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["long"](V, {
-        context: "Failed to set the 'maxLength' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'maxLength' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -870,7 +953,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get min' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get min' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -886,11 +971,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set min' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set min' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'min' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'min' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -905,7 +993,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get minLength' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get minLength' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -920,11 +1010,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set minLength' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set minLength' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["long"](V, {
-        context: "Failed to set the 'minLength' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'minLength' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -939,7 +1032,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get multiple' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get multiple' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -954,11 +1049,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set multiple' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set multiple' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'multiple' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'multiple' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -977,7 +1075,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get name' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get name' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -993,11 +1093,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set name' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set name' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'name' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'name' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1012,7 +1115,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get pattern' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get pattern' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1028,11 +1133,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set pattern' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set pattern' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'pattern' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'pattern' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1047,7 +1155,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get placeholder' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get placeholder' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1063,11 +1173,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set placeholder' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set placeholder' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'placeholder' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'placeholder' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1082,7 +1195,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get readOnly' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get readOnly' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1097,11 +1212,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set readOnly' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set readOnly' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'readOnly' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'readOnly' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1120,7 +1238,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get required' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get required' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1135,11 +1255,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set required' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set required' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'required' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'required' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1158,7 +1281,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get size' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get size' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1173,11 +1298,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set size' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set size' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["unsigned long"](V, {
-        context: "Failed to set the 'size' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'size' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1192,7 +1320,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get src' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get src' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1218,11 +1348,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set src' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set src' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["USVString"](V, {
-        context: "Failed to set the 'src' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'src' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1237,7 +1370,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get step' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get step' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1253,11 +1388,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set step' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set step' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'step' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'step' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1272,7 +1410,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get type' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get type' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1287,11 +1427,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set type' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set type' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'type' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'type' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1306,7 +1449,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get defaultValue' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get defaultValue' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1322,11 +1467,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set defaultValue' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set defaultValue' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'defaultValue' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'defaultValue' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1341,7 +1489,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get value' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get value' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1356,11 +1506,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set value' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set value' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
         context: "Failed to set the 'value' property on 'HTMLInputElement': The provided value",
+        globals: globalObject,
         treatNullAsEmptyString: true
       });
 
@@ -1376,7 +1529,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get valueAsDate' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get valueAsDate' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       return esValue[implSymbol]["valueAsDate"];
@@ -1386,14 +1541,17 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set valueAsDate' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set valueAsDate' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       if (V === null || V === undefined) {
         V = null;
       } else {
         V = conversions["object"](V, {
-          context: "Failed to set the 'valueAsDate' property on 'HTMLInputElement': The provided value"
+          context: "Failed to set the 'valueAsDate' property on 'HTMLInputElement': The provided value",
+          globals: globalObject
         });
       }
       esValue[implSymbol]["valueAsDate"] = V;
@@ -1403,7 +1561,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get valueAsNumber' called on an object that is not a valid instance of HTMLInputElement."
         );
       }
@@ -1415,13 +1573,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'set valueAsNumber' called on an object that is not a valid instance of HTMLInputElement."
         );
       }
 
       V = conversions["unrestricted double"](V, {
-        context: "Failed to set the 'valueAsNumber' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'valueAsNumber' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       esValue[implSymbol]["valueAsNumber"] = V;
@@ -1431,7 +1590,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get willValidate' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get willValidate' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       return esValue[implSymbol]["willValidate"];
@@ -1441,7 +1602,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get validity' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get validity' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["validity"]);
@@ -1451,7 +1614,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get validationMessage' called on an object that is not a valid instance of HTMLInputElement."
         );
       }
@@ -1463,7 +1626,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get labels' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get labels' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["labels"]);
@@ -1473,7 +1638,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get selectionStart' called on an object that is not a valid instance of HTMLInputElement."
         );
       }
@@ -1485,7 +1650,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'set selectionStart' called on an object that is not a valid instance of HTMLInputElement."
         );
       }
@@ -1494,7 +1659,8 @@ exports.install = (globalObject, globalNames) => {
         V = null;
       } else {
         V = conversions["unsigned long"](V, {
-          context: "Failed to set the 'selectionStart' property on 'HTMLInputElement': The provided value"
+          context: "Failed to set the 'selectionStart' property on 'HTMLInputElement': The provided value",
+          globals: globalObject
         });
       }
       esValue[implSymbol]["selectionStart"] = V;
@@ -1504,7 +1670,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get selectionEnd' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get selectionEnd' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       return esValue[implSymbol]["selectionEnd"];
@@ -1514,14 +1682,17 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set selectionEnd' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set selectionEnd' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       if (V === null || V === undefined) {
         V = null;
       } else {
         V = conversions["unsigned long"](V, {
-          context: "Failed to set the 'selectionEnd' property on 'HTMLInputElement': The provided value"
+          context: "Failed to set the 'selectionEnd' property on 'HTMLInputElement': The provided value",
+          globals: globalObject
         });
       }
       esValue[implSymbol]["selectionEnd"] = V;
@@ -1531,7 +1702,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get selectionDirection' called on an object that is not a valid instance of HTMLInputElement."
         );
       }
@@ -1543,7 +1714,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'set selectionDirection' called on an object that is not a valid instance of HTMLInputElement."
         );
       }
@@ -1552,7 +1723,8 @@ exports.install = (globalObject, globalNames) => {
         V = null;
       } else {
         V = conversions["DOMString"](V, {
-          context: "Failed to set the 'selectionDirection' property on 'HTMLInputElement': The provided value"
+          context: "Failed to set the 'selectionDirection' property on 'HTMLInputElement': The provided value",
+          globals: globalObject
         });
       }
       esValue[implSymbol]["selectionDirection"] = V;
@@ -1562,7 +1734,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get align' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get align' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1578,11 +1752,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set align' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set align' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'align' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'align' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1597,7 +1774,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get useMap' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'get useMap' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1613,11 +1792,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set useMap' called on an object that is not a valid instance of HTMLInputElement.");
+        throw new globalObject.TypeError(
+          "'set useMap' called on an object that is not a valid instance of HTMLInputElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'useMap' property on 'HTMLInputElement': The provided value"
+        context: "Failed to set the 'useMap' property on 'HTMLInputElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1681,10 +1863,7 @@ exports.install = (globalObject, globalNames) => {
     useMap: { enumerable: true },
     [Symbol.toStringTag]: { value: "HTMLInputElement", configurable: true }
   });
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    globalObject[ctorRegistrySymbol] = Object.create(null);
-  }
-  globalObject[ctorRegistrySymbol][interfaceName] = HTMLInputElement;
+  ctorRegistry[interfaceName] = HTMLInputElement;
 
   Object.defineProperty(globalObject, interfaceName, {
     configurable: true,

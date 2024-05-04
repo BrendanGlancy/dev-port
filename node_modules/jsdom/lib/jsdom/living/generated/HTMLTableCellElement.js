@@ -18,24 +18,24 @@ exports.is = value => {
 exports.isImpl = value => {
   return utils.isObject(value) && value instanceof Impl.implementation;
 };
-exports.convert = (value, { context = "The provided value" } = {}) => {
+exports.convert = (globalObject, value, { context = "The provided value" } = {}) => {
   if (exports.is(value)) {
     return utils.implForWrapper(value);
   }
-  throw new TypeError(`${context} is not of type 'HTMLTableCellElement'.`);
+  throw new globalObject.TypeError(`${context} is not of type 'HTMLTableCellElement'.`);
 };
 
-function makeWrapper(globalObject) {
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    throw new Error("Internal error: invalid global object");
+function makeWrapper(globalObject, newTarget) {
+  let proto;
+  if (newTarget !== undefined) {
+    proto = newTarget.prototype;
   }
 
-  const ctor = globalObject[ctorRegistrySymbol]["HTMLTableCellElement"];
-  if (ctor === undefined) {
-    throw new Error("Internal error: constructor HTMLTableCellElement is not installed on the passed global object");
+  if (!utils.isObject(proto)) {
+    proto = globalObject[ctorRegistrySymbol]["HTMLTableCellElement"].prototype;
   }
 
-  return Object.create(ctor.prototype);
+  return Object.create(proto);
 }
 
 exports.create = (globalObject, constructorArgs, privateData) => {
@@ -68,8 +68,8 @@ exports.setup = (wrapper, globalObject, constructorArgs = [], privateData = {}) 
   return wrapper;
 };
 
-exports.new = globalObject => {
-  const wrapper = makeWrapper(globalObject);
+exports.new = (globalObject, newTarget) => {
+  const wrapper = makeWrapper(globalObject, newTarget);
 
   exports._internalSetup(wrapper, globalObject);
   Object.defineProperty(wrapper, implSymbol, {
@@ -91,9 +91,7 @@ exports.install = (globalObject, globalNames) => {
     return;
   }
 
-  if (globalObject.HTMLElement === undefined) {
-    throw new Error("Internal error: attempting to evaluate HTMLTableCellElement before HTMLElement");
-  }
+  const ctorRegistry = utils.initCtorRegistry(globalObject);
   class HTMLTableCellElement extends globalObject.HTMLElement {
     constructor() {
       return HTMLConstructor_helpers_html_constructor(globalObject, interfaceName, new.target);
@@ -103,7 +101,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get colSpan' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'get colSpan' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -118,11 +118,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set colSpan' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'set colSpan' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       V = conversions["unsigned long"](V, {
-        context: "Failed to set the 'colSpan' property on 'HTMLTableCellElement': The provided value"
+        context: "Failed to set the 'colSpan' property on 'HTMLTableCellElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -137,7 +140,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get rowSpan' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'get rowSpan' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -152,11 +157,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set rowSpan' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'set rowSpan' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       V = conversions["unsigned long"](V, {
-        context: "Failed to set the 'rowSpan' property on 'HTMLTableCellElement': The provided value"
+        context: "Failed to set the 'rowSpan' property on 'HTMLTableCellElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -171,7 +179,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get headers' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'get headers' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -187,11 +197,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set headers' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'set headers' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'headers' property on 'HTMLTableCellElement': The provided value"
+        context: "Failed to set the 'headers' property on 'HTMLTableCellElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -206,7 +219,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get cellIndex' called on an object that is not a valid instance of HTMLTableCellElement."
         );
       }
@@ -218,7 +231,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get scope' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'get scope' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -233,11 +248,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set scope' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'set scope' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'scope' property on 'HTMLTableCellElement': The provided value"
+        context: "Failed to set the 'scope' property on 'HTMLTableCellElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -252,7 +270,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get abbr' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'get abbr' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -268,11 +288,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set abbr' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'set abbr' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'abbr' property on 'HTMLTableCellElement': The provided value"
+        context: "Failed to set the 'abbr' property on 'HTMLTableCellElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -287,7 +310,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get align' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'get align' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -303,11 +328,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set align' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'set align' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'align' property on 'HTMLTableCellElement': The provided value"
+        context: "Failed to set the 'align' property on 'HTMLTableCellElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -322,7 +350,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get axis' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'get axis' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -338,11 +368,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set axis' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'set axis' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'axis' property on 'HTMLTableCellElement': The provided value"
+        context: "Failed to set the 'axis' property on 'HTMLTableCellElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -357,7 +390,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get height' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'get height' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -373,11 +408,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set height' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'set height' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'height' property on 'HTMLTableCellElement': The provided value"
+        context: "Failed to set the 'height' property on 'HTMLTableCellElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -392,7 +430,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get width' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'get width' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -408,11 +448,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set width' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'set width' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'width' property on 'HTMLTableCellElement': The provided value"
+        context: "Failed to set the 'width' property on 'HTMLTableCellElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -427,7 +470,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ch' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'get ch' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -443,11 +488,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ch' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'set ch' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'ch' property on 'HTMLTableCellElement': The provided value"
+        context: "Failed to set the 'ch' property on 'HTMLTableCellElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -462,7 +510,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get chOff' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'get chOff' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -478,11 +528,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set chOff' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'set chOff' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'chOff' property on 'HTMLTableCellElement': The provided value"
+        context: "Failed to set the 'chOff' property on 'HTMLTableCellElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -497,7 +550,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get noWrap' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'get noWrap' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -512,11 +567,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set noWrap' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'set noWrap' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'noWrap' property on 'HTMLTableCellElement': The provided value"
+        context: "Failed to set the 'noWrap' property on 'HTMLTableCellElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -535,7 +593,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get vAlign' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'get vAlign' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -551,11 +611,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set vAlign' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'set vAlign' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'vAlign' property on 'HTMLTableCellElement': The provided value"
+        context: "Failed to set the 'vAlign' property on 'HTMLTableCellElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -570,7 +633,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get bgColor' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'get bgColor' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -586,11 +651,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set bgColor' called on an object that is not a valid instance of HTMLTableCellElement.");
+        throw new globalObject.TypeError(
+          "'set bgColor' called on an object that is not a valid instance of HTMLTableCellElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
         context: "Failed to set the 'bgColor' property on 'HTMLTableCellElement': The provided value",
+        globals: globalObject,
         treatNullAsEmptyString: true
       });
 
@@ -620,10 +688,7 @@ exports.install = (globalObject, globalNames) => {
     bgColor: { enumerable: true },
     [Symbol.toStringTag]: { value: "HTMLTableCellElement", configurable: true }
   });
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    globalObject[ctorRegistrySymbol] = Object.create(null);
-  }
-  globalObject[ctorRegistrySymbol][interfaceName] = HTMLTableCellElement;
+  ctorRegistry[interfaceName] = HTMLTableCellElement;
 
   Object.defineProperty(globalObject, interfaceName, {
     configurable: true,

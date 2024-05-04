@@ -21,24 +21,24 @@ exports.is = value => {
 exports.isImpl = value => {
   return utils.isObject(value) && value instanceof Impl.implementation;
 };
-exports.convert = (value, { context = "The provided value" } = {}) => {
+exports.convert = (globalObject, value, { context = "The provided value" } = {}) => {
   if (exports.is(value)) {
     return utils.implForWrapper(value);
   }
-  throw new TypeError(`${context} is not of type 'HTMLIFrameElement'.`);
+  throw new globalObject.TypeError(`${context} is not of type 'HTMLIFrameElement'.`);
 };
 
-function makeWrapper(globalObject) {
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    throw new Error("Internal error: invalid global object");
+function makeWrapper(globalObject, newTarget) {
+  let proto;
+  if (newTarget !== undefined) {
+    proto = newTarget.prototype;
   }
 
-  const ctor = globalObject[ctorRegistrySymbol]["HTMLIFrameElement"];
-  if (ctor === undefined) {
-    throw new Error("Internal error: constructor HTMLIFrameElement is not installed on the passed global object");
+  if (!utils.isObject(proto)) {
+    proto = globalObject[ctorRegistrySymbol]["HTMLIFrameElement"].prototype;
   }
 
-  return Object.create(ctor.prototype);
+  return Object.create(proto);
 }
 
 exports.create = (globalObject, constructorArgs, privateData) => {
@@ -71,8 +71,8 @@ exports.setup = (wrapper, globalObject, constructorArgs = [], privateData = {}) 
   return wrapper;
 };
 
-exports.new = globalObject => {
-  const wrapper = makeWrapper(globalObject);
+exports.new = (globalObject, newTarget) => {
+  const wrapper = makeWrapper(globalObject, newTarget);
 
   exports._internalSetup(wrapper, globalObject);
   Object.defineProperty(wrapper, implSymbol, {
@@ -94,9 +94,7 @@ exports.install = (globalObject, globalNames) => {
     return;
   }
 
-  if (globalObject.HTMLElement === undefined) {
-    throw new Error("Internal error: attempting to evaluate HTMLIFrameElement before HTMLElement");
-  }
+  const ctorRegistry = utils.initCtorRegistry(globalObject);
   class HTMLIFrameElement extends globalObject.HTMLElement {
     constructor() {
       return HTMLConstructor_helpers_html_constructor(globalObject, interfaceName, new.target);
@@ -105,7 +103,9 @@ exports.install = (globalObject, globalNames) => {
     getSVGDocument() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'getSVGDocument' called on an object that is not a valid instance of HTMLIFrameElement.");
+        throw new globalObject.TypeError(
+          "'getSVGDocument' called on an object that is not a valid instance of HTMLIFrameElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol].getSVGDocument());
@@ -115,7 +115,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get src' called on an object that is not a valid instance of HTMLIFrameElement.");
+        throw new globalObject.TypeError(
+          "'get src' called on an object that is not a valid instance of HTMLIFrameElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -141,11 +143,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set src' called on an object that is not a valid instance of HTMLIFrameElement.");
+        throw new globalObject.TypeError(
+          "'set src' called on an object that is not a valid instance of HTMLIFrameElement."
+        );
       }
 
       V = conversions["USVString"](V, {
-        context: "Failed to set the 'src' property on 'HTMLIFrameElement': The provided value"
+        context: "Failed to set the 'src' property on 'HTMLIFrameElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -160,7 +165,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get srcdoc' called on an object that is not a valid instance of HTMLIFrameElement.");
+        throw new globalObject.TypeError(
+          "'get srcdoc' called on an object that is not a valid instance of HTMLIFrameElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -176,11 +183,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set srcdoc' called on an object that is not a valid instance of HTMLIFrameElement.");
+        throw new globalObject.TypeError(
+          "'set srcdoc' called on an object that is not a valid instance of HTMLIFrameElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'srcdoc' property on 'HTMLIFrameElement': The provided value"
+        context: "Failed to set the 'srcdoc' property on 'HTMLIFrameElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -195,7 +205,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get name' called on an object that is not a valid instance of HTMLIFrameElement.");
+        throw new globalObject.TypeError(
+          "'get name' called on an object that is not a valid instance of HTMLIFrameElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -211,11 +223,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set name' called on an object that is not a valid instance of HTMLIFrameElement.");
+        throw new globalObject.TypeError(
+          "'set name' called on an object that is not a valid instance of HTMLIFrameElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'name' property on 'HTMLIFrameElement': The provided value"
+        context: "Failed to set the 'name' property on 'HTMLIFrameElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -230,7 +245,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get allowFullscreen' called on an object that is not a valid instance of HTMLIFrameElement."
         );
       }
@@ -247,13 +262,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'set allowFullscreen' called on an object that is not a valid instance of HTMLIFrameElement."
         );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'allowFullscreen' property on 'HTMLIFrameElement': The provided value"
+        context: "Failed to set the 'allowFullscreen' property on 'HTMLIFrameElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -272,7 +288,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get width' called on an object that is not a valid instance of HTMLIFrameElement.");
+        throw new globalObject.TypeError(
+          "'get width' called on an object that is not a valid instance of HTMLIFrameElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -288,11 +306,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set width' called on an object that is not a valid instance of HTMLIFrameElement.");
+        throw new globalObject.TypeError(
+          "'set width' called on an object that is not a valid instance of HTMLIFrameElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'width' property on 'HTMLIFrameElement': The provided value"
+        context: "Failed to set the 'width' property on 'HTMLIFrameElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -307,7 +328,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get height' called on an object that is not a valid instance of HTMLIFrameElement.");
+        throw new globalObject.TypeError(
+          "'get height' called on an object that is not a valid instance of HTMLIFrameElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -323,11 +346,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set height' called on an object that is not a valid instance of HTMLIFrameElement.");
+        throw new globalObject.TypeError(
+          "'set height' called on an object that is not a valid instance of HTMLIFrameElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'height' property on 'HTMLIFrameElement': The provided value"
+        context: "Failed to set the 'height' property on 'HTMLIFrameElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -342,7 +368,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get contentDocument' called on an object that is not a valid instance of HTMLIFrameElement."
         );
       }
@@ -354,7 +380,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get contentWindow' called on an object that is not a valid instance of HTMLIFrameElement."
         );
       }
@@ -366,7 +392,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get align' called on an object that is not a valid instance of HTMLIFrameElement.");
+        throw new globalObject.TypeError(
+          "'get align' called on an object that is not a valid instance of HTMLIFrameElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -382,11 +410,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set align' called on an object that is not a valid instance of HTMLIFrameElement.");
+        throw new globalObject.TypeError(
+          "'set align' called on an object that is not a valid instance of HTMLIFrameElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'align' property on 'HTMLIFrameElement': The provided value"
+        context: "Failed to set the 'align' property on 'HTMLIFrameElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -401,7 +432,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get scrolling' called on an object that is not a valid instance of HTMLIFrameElement.");
+        throw new globalObject.TypeError(
+          "'get scrolling' called on an object that is not a valid instance of HTMLIFrameElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -417,11 +450,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set scrolling' called on an object that is not a valid instance of HTMLIFrameElement.");
+        throw new globalObject.TypeError(
+          "'set scrolling' called on an object that is not a valid instance of HTMLIFrameElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'scrolling' property on 'HTMLIFrameElement': The provided value"
+        context: "Failed to set the 'scrolling' property on 'HTMLIFrameElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -436,7 +472,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get frameBorder' called on an object that is not a valid instance of HTMLIFrameElement.");
+        throw new globalObject.TypeError(
+          "'get frameBorder' called on an object that is not a valid instance of HTMLIFrameElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -452,11 +490,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set frameBorder' called on an object that is not a valid instance of HTMLIFrameElement.");
+        throw new globalObject.TypeError(
+          "'set frameBorder' called on an object that is not a valid instance of HTMLIFrameElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'frameBorder' property on 'HTMLIFrameElement': The provided value"
+        context: "Failed to set the 'frameBorder' property on 'HTMLIFrameElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -471,7 +512,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get longDesc' called on an object that is not a valid instance of HTMLIFrameElement.");
+        throw new globalObject.TypeError(
+          "'get longDesc' called on an object that is not a valid instance of HTMLIFrameElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -497,11 +540,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set longDesc' called on an object that is not a valid instance of HTMLIFrameElement.");
+        throw new globalObject.TypeError(
+          "'set longDesc' called on an object that is not a valid instance of HTMLIFrameElement."
+        );
       }
 
       V = conversions["USVString"](V, {
-        context: "Failed to set the 'longDesc' property on 'HTMLIFrameElement': The provided value"
+        context: "Failed to set the 'longDesc' property on 'HTMLIFrameElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -516,7 +562,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get marginHeight' called on an object that is not a valid instance of HTMLIFrameElement."
         );
       }
@@ -534,13 +580,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'set marginHeight' called on an object that is not a valid instance of HTMLIFrameElement."
         );
       }
 
       V = conversions["DOMString"](V, {
         context: "Failed to set the 'marginHeight' property on 'HTMLIFrameElement': The provided value",
+        globals: globalObject,
         treatNullAsEmptyString: true
       });
 
@@ -556,7 +603,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get marginWidth' called on an object that is not a valid instance of HTMLIFrameElement.");
+        throw new globalObject.TypeError(
+          "'get marginWidth' called on an object that is not a valid instance of HTMLIFrameElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -572,11 +621,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set marginWidth' called on an object that is not a valid instance of HTMLIFrameElement.");
+        throw new globalObject.TypeError(
+          "'set marginWidth' called on an object that is not a valid instance of HTMLIFrameElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
         context: "Failed to set the 'marginWidth' property on 'HTMLIFrameElement': The provided value",
+        globals: globalObject,
         treatNullAsEmptyString: true
       });
 
@@ -606,10 +658,7 @@ exports.install = (globalObject, globalNames) => {
     marginWidth: { enumerable: true },
     [Symbol.toStringTag]: { value: "HTMLIFrameElement", configurable: true }
   });
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    globalObject[ctorRegistrySymbol] = Object.create(null);
-  }
-  globalObject[ctorRegistrySymbol][interfaceName] = HTMLIFrameElement;
+  ctorRegistry[interfaceName] = HTMLIFrameElement;
 
   Object.defineProperty(globalObject, interfaceName, {
     configurable: true,

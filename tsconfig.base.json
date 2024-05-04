@@ -1,0 +1,24 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["es2020", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@brendanglancy/core-components": ["libs/core-components/src/index.ts"],
+      "@brendanglancy/i18n": ["libs/i18n/src/index.ts"],
+      "@brendanglancy/store": ["libs/store/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

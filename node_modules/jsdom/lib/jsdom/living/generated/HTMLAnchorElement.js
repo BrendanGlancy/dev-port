@@ -18,24 +18,24 @@ exports.is = value => {
 exports.isImpl = value => {
   return utils.isObject(value) && value instanceof Impl.implementation;
 };
-exports.convert = (value, { context = "The provided value" } = {}) => {
+exports.convert = (globalObject, value, { context = "The provided value" } = {}) => {
   if (exports.is(value)) {
     return utils.implForWrapper(value);
   }
-  throw new TypeError(`${context} is not of type 'HTMLAnchorElement'.`);
+  throw new globalObject.TypeError(`${context} is not of type 'HTMLAnchorElement'.`);
 };
 
-function makeWrapper(globalObject) {
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    throw new Error("Internal error: invalid global object");
+function makeWrapper(globalObject, newTarget) {
+  let proto;
+  if (newTarget !== undefined) {
+    proto = newTarget.prototype;
   }
 
-  const ctor = globalObject[ctorRegistrySymbol]["HTMLAnchorElement"];
-  if (ctor === undefined) {
-    throw new Error("Internal error: constructor HTMLAnchorElement is not installed on the passed global object");
+  if (!utils.isObject(proto)) {
+    proto = globalObject[ctorRegistrySymbol]["HTMLAnchorElement"].prototype;
   }
 
-  return Object.create(ctor.prototype);
+  return Object.create(proto);
 }
 
 exports.create = (globalObject, constructorArgs, privateData) => {
@@ -68,8 +68,8 @@ exports.setup = (wrapper, globalObject, constructorArgs = [], privateData = {}) 
   return wrapper;
 };
 
-exports.new = globalObject => {
-  const wrapper = makeWrapper(globalObject);
+exports.new = (globalObject, newTarget) => {
+  const wrapper = makeWrapper(globalObject, newTarget);
 
   exports._internalSetup(wrapper, globalObject);
   Object.defineProperty(wrapper, implSymbol, {
@@ -91,9 +91,7 @@ exports.install = (globalObject, globalNames) => {
     return;
   }
 
-  if (globalObject.HTMLElement === undefined) {
-    throw new Error("Internal error: attempting to evaluate HTMLAnchorElement before HTMLElement");
-  }
+  const ctorRegistry = utils.initCtorRegistry(globalObject);
   class HTMLAnchorElement extends globalObject.HTMLElement {
     constructor() {
       return HTMLConstructor_helpers_html_constructor(globalObject, interfaceName, new.target);
@@ -103,7 +101,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get target' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'get target' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -119,11 +119,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set target' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'set target' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'target' property on 'HTMLAnchorElement': The provided value"
+        context: "Failed to set the 'target' property on 'HTMLAnchorElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -138,7 +141,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get download' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'get download' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -154,11 +159,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set download' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'set download' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'download' property on 'HTMLAnchorElement': The provided value"
+        context: "Failed to set the 'download' property on 'HTMLAnchorElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -173,7 +181,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get rel' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'get rel' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -189,11 +199,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set rel' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'set rel' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'rel' property on 'HTMLAnchorElement': The provided value"
+        context: "Failed to set the 'rel' property on 'HTMLAnchorElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -208,7 +221,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get relList' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'get relList' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       return utils.getSameObject(this, "relList", () => {
@@ -220,12 +235,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set relList' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'set relList' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       const Q = esValue["relList"];
       if (!utils.isObject(Q)) {
-        throw new TypeError("Property 'relList' is not an object");
+        throw new globalObject.TypeError("Property 'relList' is not an object");
       }
       Reflect.set(Q, "value", V);
     }
@@ -234,7 +251,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get hreflang' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'get hreflang' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -250,11 +269,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set hreflang' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'set hreflang' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'hreflang' property on 'HTMLAnchorElement': The provided value"
+        context: "Failed to set the 'hreflang' property on 'HTMLAnchorElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -269,7 +291,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get type' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'get type' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -285,11 +309,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set type' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'set type' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'type' property on 'HTMLAnchorElement': The provided value"
+        context: "Failed to set the 'type' property on 'HTMLAnchorElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -304,7 +331,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get text' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'get text' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -319,11 +348,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set text' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'set text' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'text' property on 'HTMLAnchorElement': The provided value"
+        context: "Failed to set the 'text' property on 'HTMLAnchorElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -338,7 +370,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get coords' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'get coords' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -354,11 +388,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set coords' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'set coords' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'coords' property on 'HTMLAnchorElement': The provided value"
+        context: "Failed to set the 'coords' property on 'HTMLAnchorElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -373,7 +410,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get charset' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'get charset' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -389,11 +428,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set charset' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'set charset' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'charset' property on 'HTMLAnchorElement': The provided value"
+        context: "Failed to set the 'charset' property on 'HTMLAnchorElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -408,7 +450,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get name' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'get name' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -424,11 +468,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set name' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'set name' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'name' property on 'HTMLAnchorElement': The provided value"
+        context: "Failed to set the 'name' property on 'HTMLAnchorElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -443,7 +490,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get rev' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'get rev' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -459,11 +508,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set rev' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'set rev' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'rev' property on 'HTMLAnchorElement': The provided value"
+        context: "Failed to set the 'rev' property on 'HTMLAnchorElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -478,7 +530,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get shape' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'get shape' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -494,11 +548,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set shape' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'set shape' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'shape' property on 'HTMLAnchorElement': The provided value"
+        context: "Failed to set the 'shape' property on 'HTMLAnchorElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -513,7 +570,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get href' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'get href' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -528,11 +587,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set href' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'set href' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       V = conversions["USVString"](V, {
-        context: "Failed to set the 'href' property on 'HTMLAnchorElement': The provided value"
+        context: "Failed to set the 'href' property on 'HTMLAnchorElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -546,7 +608,9 @@ exports.install = (globalObject, globalNames) => {
     toString() {
       const esValue = this;
       if (!exports.is(esValue)) {
-        throw new TypeError("'toString' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'toString' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -561,7 +625,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get origin' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'get origin' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       return esValue[implSymbol]["origin"];
@@ -571,7 +637,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get protocol' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'get protocol' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -586,11 +654,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set protocol' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'set protocol' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       V = conversions["USVString"](V, {
-        context: "Failed to set the 'protocol' property on 'HTMLAnchorElement': The provided value"
+        context: "Failed to set the 'protocol' property on 'HTMLAnchorElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -605,7 +676,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get username' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'get username' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -620,11 +693,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set username' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'set username' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       V = conversions["USVString"](V, {
-        context: "Failed to set the 'username' property on 'HTMLAnchorElement': The provided value"
+        context: "Failed to set the 'username' property on 'HTMLAnchorElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -639,7 +715,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get password' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'get password' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -654,11 +732,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set password' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'set password' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       V = conversions["USVString"](V, {
-        context: "Failed to set the 'password' property on 'HTMLAnchorElement': The provided value"
+        context: "Failed to set the 'password' property on 'HTMLAnchorElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -673,7 +754,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get host' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'get host' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -688,11 +771,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set host' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'set host' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       V = conversions["USVString"](V, {
-        context: "Failed to set the 'host' property on 'HTMLAnchorElement': The provided value"
+        context: "Failed to set the 'host' property on 'HTMLAnchorElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -707,7 +793,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get hostname' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'get hostname' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -722,11 +810,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set hostname' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'set hostname' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       V = conversions["USVString"](V, {
-        context: "Failed to set the 'hostname' property on 'HTMLAnchorElement': The provided value"
+        context: "Failed to set the 'hostname' property on 'HTMLAnchorElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -741,7 +832,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get port' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'get port' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -756,11 +849,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set port' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'set port' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       V = conversions["USVString"](V, {
-        context: "Failed to set the 'port' property on 'HTMLAnchorElement': The provided value"
+        context: "Failed to set the 'port' property on 'HTMLAnchorElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -775,7 +871,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get pathname' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'get pathname' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -790,11 +888,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set pathname' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'set pathname' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       V = conversions["USVString"](V, {
-        context: "Failed to set the 'pathname' property on 'HTMLAnchorElement': The provided value"
+        context: "Failed to set the 'pathname' property on 'HTMLAnchorElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -809,7 +910,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get search' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'get search' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -824,11 +927,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set search' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'set search' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       V = conversions["USVString"](V, {
-        context: "Failed to set the 'search' property on 'HTMLAnchorElement': The provided value"
+        context: "Failed to set the 'search' property on 'HTMLAnchorElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -843,7 +949,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get hash' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'get hash' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -858,11 +966,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set hash' called on an object that is not a valid instance of HTMLAnchorElement.");
+        throw new globalObject.TypeError(
+          "'set hash' called on an object that is not a valid instance of HTMLAnchorElement."
+        );
       }
 
       V = conversions["USVString"](V, {
-        context: "Failed to set the 'hash' property on 'HTMLAnchorElement': The provided value"
+        context: "Failed to set the 'hash' property on 'HTMLAnchorElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -900,10 +1011,7 @@ exports.install = (globalObject, globalNames) => {
     hash: { enumerable: true },
     [Symbol.toStringTag]: { value: "HTMLAnchorElement", configurable: true }
   });
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    globalObject[ctorRegistrySymbol] = Object.create(null);
-  }
-  globalObject[ctorRegistrySymbol][interfaceName] = HTMLAnchorElement;
+  ctorRegistry[interfaceName] = HTMLAnchorElement;
 
   Object.defineProperty(globalObject, interfaceName, {
     configurable: true,

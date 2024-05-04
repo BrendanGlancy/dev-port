@@ -1,0 +1,9 @@
+{
+  "heading": "Portfolio",
+  "button": {
+    "icon": {
+      "light": "/assets/icons/icon-2.svg",
+      "dark": "/assets/icons/icon.svg"
+    }
+  }
+}

@@ -4,33 +4,25 @@ import classNames from 'classnames';
 import { mapToCssModules, tagPropType } from './utils';
 
 const propTypes = {
-  tag: tagPropType,
+  /** Add custom class */
   className: PropTypes.string,
-  cssModule: PropTypes.object
-};
-
-const defaultProps ={
-  tag: 'li'
+  /** Change underlying component's CSS base class name */
+  cssModule: PropTypes.object,
+  /** Set a custom element for this component */
+  tag: tagPropType,
 };
 
 const ListInlineItem = forwardRef((props, ref) => {
-  const {
-    className,
+  const { className, cssModule, tag: Tag = 'li', ...attributes } = props;
+  const classes = mapToCssModules(
+    classNames(className, 'list-inline-item'),
     cssModule,
-    tag: Tag,
-    ...attributes
-  } = props;
-  const classes = mapToCssModules(classNames(
-    className,
-    'list-inline-item'
-  ), cssModule);
-
-  return (
-    <Tag {...attributes} className={classes} ref={ref} />
   );
+
+  return <Tag {...attributes} className={classes} ref={ref} />;
 });
 
+ListInlineItem.name = 'ListInlineItem';
 ListInlineItem.propTypes = propTypes;
-ListInlineItem.defaultProps = defaultProps;
 
 export default ListInlineItem;

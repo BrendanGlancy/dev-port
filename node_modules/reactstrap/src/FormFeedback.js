@@ -9,21 +9,16 @@ const propTypes = {
   className: PropTypes.string,
   cssModule: PropTypes.object,
   valid: PropTypes.bool,
-  tooltip: PropTypes.bool
+  tooltip: PropTypes.bool,
 };
 
-const defaultProps = {
-  tag: 'div',
-  valid: undefined
-};
-
-const FormFeedback = (props) => {
+function FormFeedback(props) {
   const {
     className,
     cssModule,
-    valid,
+    valid = undefined,
     tooltip,
-    tag: Tag,
+    tag: Tag = 'div',
     ...attributes
   } = props;
 
@@ -32,15 +27,14 @@ const FormFeedback = (props) => {
   const classes = mapToCssModules(
     classNames(
       className,
-      valid ? `valid-${validMode}` : `invalid-${validMode}`
+      valid ? `valid-${validMode}` : `invalid-${validMode}`,
     ),
-    cssModule
+    cssModule,
   );
 
   return <Tag {...attributes} className={classes} />;
-};
+}
 
 FormFeedback.propTypes = propTypes;
-FormFeedback.defaultProps = defaultProps;
 
 export default FormFeedback;

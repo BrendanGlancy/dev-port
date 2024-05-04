@@ -4,24 +4,25 @@ import classNames from 'classnames';
 import { mapToCssModules, tagPropType } from './utils';
 
 const propTypes = {
-  tag: tagPropType,
-  top: PropTypes.bool,
+  /** Add `bottom` prop if image is at bottom of card */
   bottom: PropTypes.bool,
+  /** Add custom class */
   className: PropTypes.string,
+  /** Change existing className with a new className */
   cssModule: PropTypes.object,
+  /** Set a custom element for this component */
+  tag: tagPropType,
+  /** Add `top` prop if image is at top of card */
+  top: PropTypes.bool,
 };
 
-const defaultProps = {
-  tag: 'img'
-};
-
-const CardImg = (props) => {
+function CardImg(props) {
   const {
     className,
     cssModule,
     top,
     bottom,
-    tag: Tag,
+    tag: Tag = 'img',
     ...attributes
   } = props;
 
@@ -33,17 +34,14 @@ const CardImg = (props) => {
     cardImgClassName = 'card-img-bottom';
   }
 
-  const classes = mapToCssModules(classNames(
-    className,
-    cardImgClassName
-  ), cssModule);
-
-  return (
-    <Tag {...attributes} className={classes} />
+  const classes = mapToCssModules(
+    classNames(className, cardImgClassName),
+    cssModule,
   );
-};
+
+  return <Tag {...attributes} className={classes} />;
+}
 
 CardImg.propTypes = propTypes;
-CardImg.defaultProps = defaultProps;
 
 export default CardImg;

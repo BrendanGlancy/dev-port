@@ -201,7 +201,7 @@ class HTMLInputElementImpl extends HTMLElementImpl {
         fireAnEvent("change", this, undefined, { bubbles: true });
       }
     } else if (form && this.type === "submit") {
-      form._doSubmit();
+      form._doRequestSubmit(this);
     } else if (form && this.type === "reset") {
       form._doReset();
     }
@@ -459,6 +459,7 @@ class HTMLInputElementImpl extends HTMLElementImpl {
 
     if (v === null || isNaN(v)) {
       this._value = "";
+      return;
     }
 
     this._value = this._convertDateToString(v);

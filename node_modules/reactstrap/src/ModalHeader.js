@@ -4,49 +4,48 @@ import classNames from 'classnames';
 import { mapToCssModules, tagPropType } from './utils';
 
 const propTypes = {
-  tag: tagPropType,
-  wrapTag: tagPropType,
-  toggle: PropTypes.func,
-  className: PropTypes.string,
-  cssModule: PropTypes.object,
   children: PropTypes.node,
-  closeAriaLabel: PropTypes.string,
-  charCode: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  /** Add custom class */
+  className: PropTypes.string,
+  /** Custom close button */
   close: PropTypes.object,
+  closeAriaLabel: PropTypes.string,
+  /** Change underlying component's CSS base class name */
+  cssModule: PropTypes.object,
+  /** Set a custom element for this component */
+  tag: tagPropType,
+  /** Function to be triggered when close button is clicked */
+  toggle: PropTypes.func,
+  wrapTag: tagPropType,
 };
 
-const defaultProps = {
-  tag: 'h5',
-  wrapTag: 'div',
-  closeAriaLabel: 'Close',
-  charCode: 215,
-};
-
-const ModalHeader = (props) => {
+function ModalHeader(props) {
   let closeButton;
   const {
     className,
     cssModule,
     children,
     toggle,
-    tag: Tag,
-    wrapTag: WrapTag,
-    closeAriaLabel,
-    charCode,
+    tag: Tag = 'h5',
+    wrapTag: WrapTag = 'div',
+    closeAriaLabel = 'Close',
     close,
-    ...attributes } = props;
+    ...attributes
+  } = props;
 
-  const classes = mapToCssModules(classNames(
-    className,
-    'modal-header'
-  ), cssModule);
+  const classes = mapToCssModules(
+    classNames(className, 'modal-header'),
+    cssModule,
+  );
 
   if (!close && toggle) {
-    const closeIcon = typeof charCode === 'number' ? String.fromCharCode(charCode) : charCode;
     closeButton = (
-      <button type="button" onClick={toggle} className={mapToCssModules('close', cssModule)} aria-label={closeAriaLabel}>
-        <span aria-hidden="true">{closeIcon}</span>
-      </button>
+      <button
+        type="button"
+        onClick={toggle}
+        className={mapToCssModules('btn-close', cssModule)}
+        aria-label={closeAriaLabel}
+      />
     );
   }
 
@@ -58,9 +57,8 @@ const ModalHeader = (props) => {
       {close || closeButton}
     </WrapTag>
   );
-};
+}
 
 ModalHeader.propTypes = propTypes;
-ModalHeader.defaultProps = defaultProps;
 
 export default ModalHeader;

@@ -1,38 +1,38 @@
 import React from 'react';
-import { mount } from 'enzyme';
-import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from '../';
-
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from '..';
 
 describe('ButtonDropdown', () => {
   let isOpen;
   let toggle;
 
   beforeEach(() => {
-    isOpen = false;
-    toggle = () => { isOpen = !isOpen; };
+    toggle = () => {};
   });
 
   it('should render a single child', () => {
-    const wrapper = mount(<ButtonDropdown isOpen={isOpen} toggle={toggle}>Ello world</ButtonDropdown>);
+    render(
+      <ButtonDropdown isOpen toggle={toggle}>
+        Ello world
+      </ButtonDropdown>,
+    );
 
-    expect(wrapper.find('.btn-group').hostNodes().text()).toBe('Ello world');
-    expect(wrapper.find('.btn-group').hostNodes().length).toBe(1);
+    expect(screen.getByText('Ello world')).toBeInTheDocument();
   });
 
   it('should render multiple children when isOpen', () => {
     isOpen = true;
-    const wrapper = mount(
-      <ButtonDropdown isOpen={isOpen} toggle={toggle}>
+    render(
+      <ButtonDropdown isOpen toggle={toggle}>
         <DropdownToggle>Toggle</DropdownToggle>
         <DropdownMenu>
           <DropdownItem>Test</DropdownItem>
         </DropdownMenu>
-      </ButtonDropdown>
+      </ButtonDropdown>,
     );
 
-    expect(wrapper.find('.btn').hostNodes().text()).toBe('Toggle');
-    expect(wrapper.find('.btn-group').hostNodes().length).toBe(1);
-    expect(wrapper.find('.dropdown-item').hostNodes().length).toBe(1);
-    expect(wrapper.childAt(0).childAt(0).childAt(0).children().length).toBe(2);
+    expect(screen.getByText(/toggle/i)).toBeInTheDocument();
+    expect(screen.getByText(/test/i)).toBeInTheDocument();
   });
 });

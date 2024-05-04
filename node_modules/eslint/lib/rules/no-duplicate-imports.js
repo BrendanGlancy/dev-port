@@ -227,15 +227,15 @@ function handleImportsExports(
     };
 }
 
+/** @type {import('../shared/types').Rule} */
 module.exports = {
     meta: {
         type: "problem",
 
         docs: {
-            description: "disallow duplicate module imports",
-            category: "ECMAScript 6",
+            description: "Disallow duplicate module imports",
             recommended: false,
-            url: "https://eslint.org/docs/rules/no-duplicate-imports"
+            url: "https://eslint.org/docs/latest/rules/no-duplicate-imports"
         },
 
         schema: [

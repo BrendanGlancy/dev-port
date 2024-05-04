@@ -21,24 +21,24 @@ exports.is = value => {
 exports.isImpl = value => {
   return utils.isObject(value) && value instanceof Impl.implementation;
 };
-exports.convert = (value, { context = "The provided value" } = {}) => {
+exports.convert = (globalObject, value, { context = "The provided value" } = {}) => {
   if (exports.is(value)) {
     return utils.implForWrapper(value);
   }
-  throw new TypeError(`${context} is not of type 'HTMLMediaElement'.`);
+  throw new globalObject.TypeError(`${context} is not of type 'HTMLMediaElement'.`);
 };
 
-function makeWrapper(globalObject) {
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    throw new Error("Internal error: invalid global object");
+function makeWrapper(globalObject, newTarget) {
+  let proto;
+  if (newTarget !== undefined) {
+    proto = newTarget.prototype;
   }
 
-  const ctor = globalObject[ctorRegistrySymbol]["HTMLMediaElement"];
-  if (ctor === undefined) {
-    throw new Error("Internal error: constructor HTMLMediaElement is not installed on the passed global object");
+  if (!utils.isObject(proto)) {
+    proto = globalObject[ctorRegistrySymbol]["HTMLMediaElement"].prototype;
   }
 
-  return Object.create(ctor.prototype);
+  return Object.create(proto);
 }
 
 exports.create = (globalObject, constructorArgs, privateData) => {
@@ -71,8 +71,8 @@ exports.setup = (wrapper, globalObject, constructorArgs = [], privateData = {}) 
   return wrapper;
 };
 
-exports.new = globalObject => {
-  const wrapper = makeWrapper(globalObject);
+exports.new = (globalObject, newTarget) => {
+  const wrapper = makeWrapper(globalObject, newTarget);
 
   exports._internalSetup(wrapper, globalObject);
   Object.defineProperty(wrapper, implSymbol, {
@@ -94,18 +94,18 @@ exports.install = (globalObject, globalNames) => {
     return;
   }
 
-  if (globalObject.HTMLElement === undefined) {
-    throw new Error("Internal error: attempting to evaluate HTMLMediaElement before HTMLElement");
-  }
+  const ctorRegistry = utils.initCtorRegistry(globalObject);
   class HTMLMediaElement extends globalObject.HTMLElement {
     constructor() {
-      throw new TypeError("Illegal constructor");
+      throw new globalObject.TypeError("Illegal constructor");
     }
 
     load() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'load' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'load' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       return esValue[implSymbol].load();
@@ -114,21 +114,22 @@ exports.install = (globalObject, globalNames) => {
     canPlayType(type) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'canPlayType' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'canPlayType' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'canPlayType' on 'HTMLMediaElement': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'canPlayType' on 'HTMLMediaElement': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'canPlayType' on 'HTMLMediaElement': parameter 1"
+          context: "Failed to execute 'canPlayType' on 'HTMLMediaElement': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -139,19 +140,23 @@ exports.install = (globalObject, globalNames) => {
       try {
         const esValue = this !== null && this !== undefined ? this : globalObject;
         if (!exports.is(esValue)) {
-          throw new TypeError("'play' called on an object that is not a valid instance of HTMLMediaElement.");
+          throw new globalObject.TypeError(
+            "'play' called on an object that is not a valid instance of HTMLMediaElement."
+          );
         }
 
         return utils.tryWrapperForImpl(esValue[implSymbol].play());
       } catch (e) {
-        return Promise.reject(e);
+        return globalObject.Promise.reject(e);
       }
     }
 
     pause() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'pause' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'pause' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       return esValue[implSymbol].pause();
@@ -160,20 +165,20 @@ exports.install = (globalObject, globalNames) => {
     addTextTrack(kind) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'addTextTrack' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'addTextTrack' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'addTextTrack' on 'HTMLMediaElement': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'addTextTrack' on 'HTMLMediaElement': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
-        curArg = TextTrackKind.convert(curArg, {
+        curArg = TextTrackKind.convert(globalObject, curArg, {
           context: "Failed to execute 'addTextTrack' on 'HTMLMediaElement': parameter 1"
         });
         args.push(curArg);
@@ -182,7 +187,8 @@ exports.install = (globalObject, globalNames) => {
         let curArg = arguments[1];
         if (curArg !== undefined) {
           curArg = conversions["DOMString"](curArg, {
-            context: "Failed to execute 'addTextTrack' on 'HTMLMediaElement': parameter 2"
+            context: "Failed to execute 'addTextTrack' on 'HTMLMediaElement': parameter 2",
+            globals: globalObject
           });
         } else {
           curArg = "";
@@ -193,7 +199,8 @@ exports.install = (globalObject, globalNames) => {
         let curArg = arguments[2];
         if (curArg !== undefined) {
           curArg = conversions["DOMString"](curArg, {
-            context: "Failed to execute 'addTextTrack' on 'HTMLMediaElement': parameter 3"
+            context: "Failed to execute 'addTextTrack' on 'HTMLMediaElement': parameter 3",
+            globals: globalObject
           });
         } else {
           curArg = "";
@@ -207,7 +214,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get src' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get src' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -233,11 +242,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set src' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'set src' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       V = conversions["USVString"](V, {
-        context: "Failed to set the 'src' property on 'HTMLMediaElement': The provided value"
+        context: "Failed to set the 'src' property on 'HTMLMediaElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -252,7 +264,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get currentSrc' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get currentSrc' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       return esValue[implSymbol]["currentSrc"];
@@ -262,7 +276,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get crossOrigin' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get crossOrigin' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -278,14 +294,17 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set crossOrigin' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'set crossOrigin' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       if (V === null || V === undefined) {
         V = null;
       } else {
         V = conversions["DOMString"](V, {
-          context: "Failed to set the 'crossOrigin' property on 'HTMLMediaElement': The provided value"
+          context: "Failed to set the 'crossOrigin' property on 'HTMLMediaElement': The provided value",
+          globals: globalObject
         });
       }
 
@@ -301,7 +320,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get networkState' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get networkState' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       return esValue[implSymbol]["networkState"];
@@ -311,7 +332,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get preload' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get preload' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -327,11 +350,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set preload' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'set preload' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'preload' property on 'HTMLMediaElement': The provided value"
+        context: "Failed to set the 'preload' property on 'HTMLMediaElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -346,7 +372,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get buffered' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get buffered' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["buffered"]);
@@ -356,7 +384,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get readyState' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get readyState' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       return esValue[implSymbol]["readyState"];
@@ -366,7 +396,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get seeking' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get seeking' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       return esValue[implSymbol]["seeking"];
@@ -376,7 +408,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get currentTime' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get currentTime' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       return esValue[implSymbol]["currentTime"];
@@ -386,11 +420,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set currentTime' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'set currentTime' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       V = conversions["double"](V, {
-        context: "Failed to set the 'currentTime' property on 'HTMLMediaElement': The provided value"
+        context: "Failed to set the 'currentTime' property on 'HTMLMediaElement': The provided value",
+        globals: globalObject
       });
 
       esValue[implSymbol]["currentTime"] = V;
@@ -400,7 +437,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get duration' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get duration' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       return esValue[implSymbol]["duration"];
@@ -410,7 +449,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get paused' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get paused' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       return esValue[implSymbol]["paused"];
@@ -420,7 +461,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get defaultPlaybackRate' called on an object that is not a valid instance of HTMLMediaElement."
         );
       }
@@ -432,13 +473,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'set defaultPlaybackRate' called on an object that is not a valid instance of HTMLMediaElement."
         );
       }
 
       V = conversions["double"](V, {
-        context: "Failed to set the 'defaultPlaybackRate' property on 'HTMLMediaElement': The provided value"
+        context: "Failed to set the 'defaultPlaybackRate' property on 'HTMLMediaElement': The provided value",
+        globals: globalObject
       });
 
       esValue[implSymbol]["defaultPlaybackRate"] = V;
@@ -448,7 +490,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get playbackRate' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get playbackRate' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       return esValue[implSymbol]["playbackRate"];
@@ -458,11 +502,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set playbackRate' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'set playbackRate' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       V = conversions["double"](V, {
-        context: "Failed to set the 'playbackRate' property on 'HTMLMediaElement': The provided value"
+        context: "Failed to set the 'playbackRate' property on 'HTMLMediaElement': The provided value",
+        globals: globalObject
       });
 
       esValue[implSymbol]["playbackRate"] = V;
@@ -472,7 +519,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get played' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get played' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["played"]);
@@ -482,7 +531,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get seekable' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get seekable' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["seekable"]);
@@ -492,7 +543,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ended' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get ended' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       return esValue[implSymbol]["ended"];
@@ -502,7 +555,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get autoplay' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get autoplay' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -517,11 +572,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set autoplay' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'set autoplay' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'autoplay' property on 'HTMLMediaElement': The provided value"
+        context: "Failed to set the 'autoplay' property on 'HTMLMediaElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -540,7 +598,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get loop' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get loop' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -555,11 +615,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set loop' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'set loop' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'loop' property on 'HTMLMediaElement': The provided value"
+        context: "Failed to set the 'loop' property on 'HTMLMediaElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -578,7 +641,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get controls' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get controls' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -593,11 +658,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set controls' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'set controls' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'controls' property on 'HTMLMediaElement': The provided value"
+        context: "Failed to set the 'controls' property on 'HTMLMediaElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -616,7 +684,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get volume' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get volume' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       return esValue[implSymbol]["volume"];
@@ -626,11 +696,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set volume' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'set volume' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       V = conversions["double"](V, {
-        context: "Failed to set the 'volume' property on 'HTMLMediaElement': The provided value"
+        context: "Failed to set the 'volume' property on 'HTMLMediaElement': The provided value",
+        globals: globalObject
       });
 
       esValue[implSymbol]["volume"] = V;
@@ -640,7 +713,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get muted' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get muted' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       return esValue[implSymbol]["muted"];
@@ -650,11 +725,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set muted' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'set muted' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'muted' property on 'HTMLMediaElement': The provided value"
+        context: "Failed to set the 'muted' property on 'HTMLMediaElement': The provided value",
+        globals: globalObject
       });
 
       esValue[implSymbol]["muted"] = V;
@@ -664,7 +742,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get defaultMuted' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get defaultMuted' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -679,11 +759,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set defaultMuted' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'set defaultMuted' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'defaultMuted' property on 'HTMLMediaElement': The provided value"
+        context: "Failed to set the 'defaultMuted' property on 'HTMLMediaElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -702,7 +785,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get audioTracks' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get audioTracks' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       return utils.getSameObject(this, "audioTracks", () => {
@@ -714,7 +799,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get videoTracks' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get videoTracks' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       return utils.getSameObject(this, "videoTracks", () => {
@@ -726,7 +813,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get textTracks' called on an object that is not a valid instance of HTMLMediaElement.");
+        throw new globalObject.TypeError(
+          "'get textTracks' called on an object that is not a valid instance of HTMLMediaElement."
+        );
       }
 
       return utils.getSameObject(this, "textTracks", () => {
@@ -787,10 +876,7 @@ exports.install = (globalObject, globalNames) => {
     HAVE_FUTURE_DATA: { value: 3, enumerable: true },
     HAVE_ENOUGH_DATA: { value: 4, enumerable: true }
   });
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    globalObject[ctorRegistrySymbol] = Object.create(null);
-  }
-  globalObject[ctorRegistrySymbol][interfaceName] = HTMLMediaElement;
+  ctorRegistry[interfaceName] = HTMLMediaElement;
 
   Object.defineProperty(globalObject, interfaceName, {
     configurable: true,

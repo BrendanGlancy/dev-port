@@ -1,16 +1,26 @@
 /// <reference types="node" />
-import ImageData from './image_data.js';
+interface DecodeModule extends EmscriptenWasm.Module {
+    decode: (data: Uint8Array) => ImageData;
+}
+export interface ResizeOptions {
+    width?: number;
+    height?: number;
+    method: 'triangle' | 'catrom' | 'mitchell' | 'lanczos3';
+    premultiply: boolean;
+    linearRGB: boolean;
+}
+export interface RotateOptions {
+    numRotations: number;
+}
+import type { MozJPEGModule as MozJPEGEncodeModule } from './mozjpeg/mozjpeg_enc';
+import type { WebPModule as WebPEncodeModule } from './webp/webp_enc';
+import type { AVIFModule as AVIFEncodeModule } from './avif/avif_enc';
+import ImageData from './image_data';
 export declare const preprocessors: {
     readonly resize: {
         readonly name: "Resize";
         readonly description: "Resize the image before compressing";
-        readonly instantiate: () => Promise<(buffer: Buffer | Uint8Array, input_width: number, input_height: number, { width, height, method, premultiply, linearRGB, }: {
-            width?: number | undefined;
-            height?: number | undefined;
-            method: 'triangle' | 'catrom' | 'mitchell' | 'lanczos3';
-            premultiply: boolean;
-            linearRGB: boolean;
-        }) => ImageData>;
+        readonly instantiate: () => Promise<(buffer: Uint8Array, input_width: number, input_height: number, { width, height, method, premultiply, linearRGB }: ResizeOptions) => ImageData>;
         readonly defaultOptions: {
             readonly method: "lanczos3";
             readonly fitMethod: "stretch";
@@ -21,9 +31,7 @@ export declare const preprocessors: {
     readonly rotate: {
         readonly name: "Rotate";
         readonly description: "Rotate image";
-        readonly instantiate: () => Promise<(buffer: Buffer | Uint8Array, width: number, height: number, { numRotations }: {
-            numRotations: number;
-        }) => Promise<ImageData>>;
+        readonly instantiate: () => Promise<(buffer: Uint8Array, width: number, height: number, { numRotations }: RotateOptions) => Promise<ImageData>>;
         readonly defaultOptions: {
             readonly numRotations: 0;
         };
@@ -34,14 +42,8 @@ export declare const codecs: {
         readonly name: "MozJPEG";
         readonly extension: "jpg";
         readonly detectors: readonly [RegExp];
-        readonly dec: () => {
-            decode?: ((buffer: Uint8Array | Buffer, width: number, height: number, opts: any) => Buffer) | undefined;
-            encode?: ((buffer: Uint8Array | Buffer, width: number, height: number, opts: any) => Buffer) | undefined;
-        };
-        readonly enc: () => {
-            decode?: ((buffer: Uint8Array | Buffer, width: number, height: number, opts: any) => Buffer) | undefined;
-            encode?: ((buffer: Uint8Array | Buffer, width: number, height: number, opts: any) => Buffer) | undefined;
-        };
+        readonly dec: () => Promise<DecodeModule>;
+        readonly enc: () => Promise<MozJPEGEncodeModule>;
         readonly defaultEncoderOptions: {
             readonly quality: 75;
             readonly baseline: false;
@@ -70,14 +72,8 @@ export declare const codecs: {
         readonly name: "WebP";
         readonly extension: "webp";
         readonly detectors: readonly [RegExp];
-        readonly dec: () => {
-            decode?: ((buffer: Uint8Array | Buffer, width: number, height: number, opts: any) => Buffer) | undefined;
-            encode?: ((buffer: Uint8Array | Buffer, width: number, height: number, opts: any) => Buffer) | undefined;
-        };
-        readonly enc: () => {
-            decode?: ((buffer: Uint8Array | Buffer, width: number, height: number, opts: any) => Buffer) | undefined;
-            encode?: ((buffer: Uint8Array | Buffer, width: number, height: number, opts: any) => Buffer) | undefined;
-        };
+        readonly dec: () => Promise<DecodeModule>;
+        readonly enc: () => Promise<WebPEncodeModule>;
         readonly defaultEncoderOptions: {
             readonly quality: 75;
             readonly target_size: 0;
@@ -113,13 +109,41 @@ export declare const codecs: {
             readonly max: 100;
         };
     };
+    readonly avif: {
+        readonly name: "AVIF";
+        readonly extension: "avif";
+        readonly detectors: readonly [RegExp];
+        readonly dec: () => Promise<DecodeModule>;
+        readonly enc: () => Promise<AVIFEncodeModule>;
+        readonly defaultEncoderOptions: {
+            readonly cqLevel: 33;
+            readonly cqAlphaLevel: -1;
+            readonly denoiseLevel: 0;
+            readonly tileColsLog2: 0;
+            readonly tileRowsLog2: 0;
+            readonly speed: 6;
+            readonly subsample: 1;
+            readonly chromaDeltaQ: false;
+            readonly sharpness: 0;
+            readonly tune: 0;
+        };
+        readonly autoOptimize: {
+            readonly option: "cqLevel";
+            readonly min: 62;
+            readonly max: 0;
+        };
+    };
     readonly oxipng: {
         readonly name: "OxiPNG";
         readonly extension: "png";
         readonly detectors: readonly [RegExp];
-        readonly dec: () => Promise<any>;
+        readonly dec: () => Promise<{
+            decode: (buffer: Buffer | Uint8Array) => any;
+        }>;
         readonly enc: () => Promise<{
-            encode: (buffer: Buffer | Uint8Array, width: number, height: number, opts: any) => any;
+            encode: (buffer: Uint8ClampedArray | ArrayBuffer, width: number, height: number, opts: {
+                level: number;
+            }) => any;
         }>;
         readonly defaultEncoderOptions: {
             readonly level: 2;
@@ -131,3 +155,4 @@ export declare const codecs: {
         };
     };
 };
+export {};

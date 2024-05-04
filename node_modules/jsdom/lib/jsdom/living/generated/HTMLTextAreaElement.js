@@ -20,24 +20,24 @@ exports.is = value => {
 exports.isImpl = value => {
   return utils.isObject(value) && value instanceof Impl.implementation;
 };
-exports.convert = (value, { context = "The provided value" } = {}) => {
+exports.convert = (globalObject, value, { context = "The provided value" } = {}) => {
   if (exports.is(value)) {
     return utils.implForWrapper(value);
   }
-  throw new TypeError(`${context} is not of type 'HTMLTextAreaElement'.`);
+  throw new globalObject.TypeError(`${context} is not of type 'HTMLTextAreaElement'.`);
 };
 
-function makeWrapper(globalObject) {
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    throw new Error("Internal error: invalid global object");
+function makeWrapper(globalObject, newTarget) {
+  let proto;
+  if (newTarget !== undefined) {
+    proto = newTarget.prototype;
   }
 
-  const ctor = globalObject[ctorRegistrySymbol]["HTMLTextAreaElement"];
-  if (ctor === undefined) {
-    throw new Error("Internal error: constructor HTMLTextAreaElement is not installed on the passed global object");
+  if (!utils.isObject(proto)) {
+    proto = globalObject[ctorRegistrySymbol]["HTMLTextAreaElement"].prototype;
   }
 
-  return Object.create(ctor.prototype);
+  return Object.create(proto);
 }
 
 exports.create = (globalObject, constructorArgs, privateData) => {
@@ -70,8 +70,8 @@ exports.setup = (wrapper, globalObject, constructorArgs = [], privateData = {}) 
   return wrapper;
 };
 
-exports.new = globalObject => {
-  const wrapper = makeWrapper(globalObject);
+exports.new = (globalObject, newTarget) => {
+  const wrapper = makeWrapper(globalObject, newTarget);
 
   exports._internalSetup(wrapper, globalObject);
   Object.defineProperty(wrapper, implSymbol, {
@@ -93,9 +93,7 @@ exports.install = (globalObject, globalNames) => {
     return;
   }
 
-  if (globalObject.HTMLElement === undefined) {
-    throw new Error("Internal error: attempting to evaluate HTMLTextAreaElement before HTMLElement");
-  }
+  const ctorRegistry = utils.initCtorRegistry(globalObject);
   class HTMLTextAreaElement extends globalObject.HTMLElement {
     constructor() {
       return HTMLConstructor_helpers_html_constructor(globalObject, interfaceName, new.target);
@@ -104,7 +102,9 @@ exports.install = (globalObject, globalNames) => {
     checkValidity() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'checkValidity' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'checkValidity' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       return esValue[implSymbol].checkValidity();
@@ -113,7 +113,7 @@ exports.install = (globalObject, globalNames) => {
     reportValidity() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'reportValidity' called on an object that is not a valid instance of HTMLTextAreaElement."
         );
       }
@@ -124,23 +124,22 @@ exports.install = (globalObject, globalNames) => {
     setCustomValidity(error) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'setCustomValidity' called on an object that is not a valid instance of HTMLTextAreaElement."
         );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'setCustomValidity' on 'HTMLTextAreaElement': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'setCustomValidity' on 'HTMLTextAreaElement': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'setCustomValidity' on 'HTMLTextAreaElement': parameter 1"
+          context: "Failed to execute 'setCustomValidity' on 'HTMLTextAreaElement': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -150,7 +149,9 @@ exports.install = (globalObject, globalNames) => {
     select() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'select' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'select' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       return esValue[implSymbol].select();
@@ -159,14 +160,14 @@ exports.install = (globalObject, globalNames) => {
     setRangeText(replacement) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'setRangeText' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'setRangeText' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'setRangeText' on 'HTMLTextAreaElement': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'setRangeText' on 'HTMLTextAreaElement': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
@@ -175,37 +176,39 @@ exports.install = (globalObject, globalNames) => {
           {
             let curArg = arguments[0];
             curArg = conversions["DOMString"](curArg, {
-              context: "Failed to execute 'setRangeText' on 'HTMLTextAreaElement': parameter 1"
+              context: "Failed to execute 'setRangeText' on 'HTMLTextAreaElement': parameter 1",
+              globals: globalObject
             });
             args.push(curArg);
           }
           break;
         case 2:
-          throw new TypeError(
-            "Failed to execute 'setRangeText' on 'HTMLTextAreaElement': only " +
-              arguments.length +
-              " arguments present."
+          throw new globalObject.TypeError(
+            `Failed to execute 'setRangeText' on 'HTMLTextAreaElement': only ${arguments.length} arguments present.`
           );
           break;
         case 3:
           {
             let curArg = arguments[0];
             curArg = conversions["DOMString"](curArg, {
-              context: "Failed to execute 'setRangeText' on 'HTMLTextAreaElement': parameter 1"
+              context: "Failed to execute 'setRangeText' on 'HTMLTextAreaElement': parameter 1",
+              globals: globalObject
             });
             args.push(curArg);
           }
           {
             let curArg = arguments[1];
             curArg = conversions["unsigned long"](curArg, {
-              context: "Failed to execute 'setRangeText' on 'HTMLTextAreaElement': parameter 2"
+              context: "Failed to execute 'setRangeText' on 'HTMLTextAreaElement': parameter 2",
+              globals: globalObject
             });
             args.push(curArg);
           }
           {
             let curArg = arguments[2];
             curArg = conversions["unsigned long"](curArg, {
-              context: "Failed to execute 'setRangeText' on 'HTMLTextAreaElement': parameter 3"
+              context: "Failed to execute 'setRangeText' on 'HTMLTextAreaElement': parameter 3",
+              globals: globalObject
             });
             args.push(curArg);
           }
@@ -214,28 +217,31 @@ exports.install = (globalObject, globalNames) => {
           {
             let curArg = arguments[0];
             curArg = conversions["DOMString"](curArg, {
-              context: "Failed to execute 'setRangeText' on 'HTMLTextAreaElement': parameter 1"
+              context: "Failed to execute 'setRangeText' on 'HTMLTextAreaElement': parameter 1",
+              globals: globalObject
             });
             args.push(curArg);
           }
           {
             let curArg = arguments[1];
             curArg = conversions["unsigned long"](curArg, {
-              context: "Failed to execute 'setRangeText' on 'HTMLTextAreaElement': parameter 2"
+              context: "Failed to execute 'setRangeText' on 'HTMLTextAreaElement': parameter 2",
+              globals: globalObject
             });
             args.push(curArg);
           }
           {
             let curArg = arguments[2];
             curArg = conversions["unsigned long"](curArg, {
-              context: "Failed to execute 'setRangeText' on 'HTMLTextAreaElement': parameter 3"
+              context: "Failed to execute 'setRangeText' on 'HTMLTextAreaElement': parameter 3",
+              globals: globalObject
             });
             args.push(curArg);
           }
           {
             let curArg = arguments[3];
             if (curArg !== undefined) {
-              curArg = SelectionMode.convert(curArg, {
+              curArg = SelectionMode.convert(globalObject, curArg, {
                 context: "Failed to execute 'setRangeText' on 'HTMLTextAreaElement': parameter 4"
               });
             } else {
@@ -250,30 +256,30 @@ exports.install = (globalObject, globalNames) => {
     setSelectionRange(start, end) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'setSelectionRange' called on an object that is not a valid instance of HTMLTextAreaElement."
         );
       }
 
       if (arguments.length < 2) {
-        throw new TypeError(
-          "Failed to execute 'setSelectionRange' on 'HTMLTextAreaElement': 2 arguments required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'setSelectionRange' on 'HTMLTextAreaElement': 2 arguments required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["unsigned long"](curArg, {
-          context: "Failed to execute 'setSelectionRange' on 'HTMLTextAreaElement': parameter 1"
+          context: "Failed to execute 'setSelectionRange' on 'HTMLTextAreaElement': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
       {
         let curArg = arguments[1];
         curArg = conversions["unsigned long"](curArg, {
-          context: "Failed to execute 'setSelectionRange' on 'HTMLTextAreaElement': parameter 2"
+          context: "Failed to execute 'setSelectionRange' on 'HTMLTextAreaElement': parameter 2",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -281,7 +287,8 @@ exports.install = (globalObject, globalNames) => {
         let curArg = arguments[2];
         if (curArg !== undefined) {
           curArg = conversions["DOMString"](curArg, {
-            context: "Failed to execute 'setSelectionRange' on 'HTMLTextAreaElement': parameter 3"
+            context: "Failed to execute 'setSelectionRange' on 'HTMLTextAreaElement': parameter 3",
+            globals: globalObject
           });
         }
         args.push(curArg);
@@ -293,7 +300,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get autocomplete' called on an object that is not a valid instance of HTMLTextAreaElement."
         );
       }
@@ -311,13 +318,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'set autocomplete' called on an object that is not a valid instance of HTMLTextAreaElement."
         );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'autocomplete' property on 'HTMLTextAreaElement': The provided value"
+        context: "Failed to set the 'autocomplete' property on 'HTMLTextAreaElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -332,7 +340,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get autofocus' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'get autofocus' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -347,11 +357,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set autofocus' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'set autofocus' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'autofocus' property on 'HTMLTextAreaElement': The provided value"
+        context: "Failed to set the 'autofocus' property on 'HTMLTextAreaElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -370,7 +383,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get cols' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'get cols' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -385,11 +400,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set cols' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'set cols' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       V = conversions["unsigned long"](V, {
-        context: "Failed to set the 'cols' property on 'HTMLTextAreaElement': The provided value"
+        context: "Failed to set the 'cols' property on 'HTMLTextAreaElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -404,7 +422,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get dirName' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'get dirName' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -420,11 +440,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set dirName' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'set dirName' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'dirName' property on 'HTMLTextAreaElement': The provided value"
+        context: "Failed to set the 'dirName' property on 'HTMLTextAreaElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -439,7 +462,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get disabled' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'get disabled' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -454,11 +479,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set disabled' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'set disabled' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'disabled' property on 'HTMLTextAreaElement': The provided value"
+        context: "Failed to set the 'disabled' property on 'HTMLTextAreaElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -477,7 +505,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get form' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'get form' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["form"]);
@@ -487,7 +517,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get inputMode' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'get inputMode' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -503,11 +535,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set inputMode' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'set inputMode' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'inputMode' property on 'HTMLTextAreaElement': The provided value"
+        context: "Failed to set the 'inputMode' property on 'HTMLTextAreaElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -522,7 +557,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get maxLength' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'get maxLength' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -542,11 +579,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set maxLength' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'set maxLength' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       V = conversions["long"](V, {
-        context: "Failed to set the 'maxLength' property on 'HTMLTextAreaElement': The provided value"
+        context: "Failed to set the 'maxLength' property on 'HTMLTextAreaElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -561,7 +601,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get minLength' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'get minLength' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -581,11 +623,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set minLength' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'set minLength' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       V = conversions["long"](V, {
-        context: "Failed to set the 'minLength' property on 'HTMLTextAreaElement': The provided value"
+        context: "Failed to set the 'minLength' property on 'HTMLTextAreaElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -600,7 +645,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get name' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'get name' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -616,11 +663,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set name' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'set name' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'name' property on 'HTMLTextAreaElement': The provided value"
+        context: "Failed to set the 'name' property on 'HTMLTextAreaElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -635,7 +685,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get placeholder' called on an object that is not a valid instance of HTMLTextAreaElement."
         );
       }
@@ -653,13 +703,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'set placeholder' called on an object that is not a valid instance of HTMLTextAreaElement."
         );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'placeholder' property on 'HTMLTextAreaElement': The provided value"
+        context: "Failed to set the 'placeholder' property on 'HTMLTextAreaElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -674,7 +725,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get readOnly' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'get readOnly' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -689,11 +742,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set readOnly' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'set readOnly' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'readOnly' property on 'HTMLTextAreaElement': The provided value"
+        context: "Failed to set the 'readOnly' property on 'HTMLTextAreaElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -712,7 +768,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get required' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'get required' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -727,11 +785,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set required' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'set required' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'required' property on 'HTMLTextAreaElement': The provided value"
+        context: "Failed to set the 'required' property on 'HTMLTextAreaElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -750,7 +811,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get rows' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'get rows' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -765,11 +828,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set rows' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'set rows' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       V = conversions["unsigned long"](V, {
-        context: "Failed to set the 'rows' property on 'HTMLTextAreaElement': The provided value"
+        context: "Failed to set the 'rows' property on 'HTMLTextAreaElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -784,7 +850,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get wrap' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'get wrap' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -800,11 +868,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set wrap' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'set wrap' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'wrap' property on 'HTMLTextAreaElement': The provided value"
+        context: "Failed to set the 'wrap' property on 'HTMLTextAreaElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -819,7 +890,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get type' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'get type' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       return esValue[implSymbol]["type"];
@@ -829,7 +902,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get defaultValue' called on an object that is not a valid instance of HTMLTextAreaElement."
         );
       }
@@ -846,13 +919,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'set defaultValue' called on an object that is not a valid instance of HTMLTextAreaElement."
         );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'defaultValue' property on 'HTMLTextAreaElement': The provided value"
+        context: "Failed to set the 'defaultValue' property on 'HTMLTextAreaElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -867,7 +941,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get value' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'get value' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -882,11 +958,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set value' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'set value' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
         context: "Failed to set the 'value' property on 'HTMLTextAreaElement': The provided value",
+        globals: globalObject,
         treatNullAsEmptyString: true
       });
 
@@ -902,7 +981,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get textLength' called on an object that is not a valid instance of HTMLTextAreaElement."
         );
       }
@@ -914,7 +993,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get willValidate' called on an object that is not a valid instance of HTMLTextAreaElement."
         );
       }
@@ -926,7 +1005,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get validity' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'get validity' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["validity"]);
@@ -936,7 +1017,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get validationMessage' called on an object that is not a valid instance of HTMLTextAreaElement."
         );
       }
@@ -948,7 +1029,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get labels' called on an object that is not a valid instance of HTMLTextAreaElement.");
+        throw new globalObject.TypeError(
+          "'get labels' called on an object that is not a valid instance of HTMLTextAreaElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["labels"]);
@@ -958,7 +1041,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get selectionStart' called on an object that is not a valid instance of HTMLTextAreaElement."
         );
       }
@@ -970,13 +1053,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'set selectionStart' called on an object that is not a valid instance of HTMLTextAreaElement."
         );
       }
 
       V = conversions["unsigned long"](V, {
-        context: "Failed to set the 'selectionStart' property on 'HTMLTextAreaElement': The provided value"
+        context: "Failed to set the 'selectionStart' property on 'HTMLTextAreaElement': The provided value",
+        globals: globalObject
       });
 
       esValue[implSymbol]["selectionStart"] = V;
@@ -986,7 +1070,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get selectionEnd' called on an object that is not a valid instance of HTMLTextAreaElement."
         );
       }
@@ -998,13 +1082,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'set selectionEnd' called on an object that is not a valid instance of HTMLTextAreaElement."
         );
       }
 
       V = conversions["unsigned long"](V, {
-        context: "Failed to set the 'selectionEnd' property on 'HTMLTextAreaElement': The provided value"
+        context: "Failed to set the 'selectionEnd' property on 'HTMLTextAreaElement': The provided value",
+        globals: globalObject
       });
 
       esValue[implSymbol]["selectionEnd"] = V;
@@ -1014,7 +1099,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get selectionDirection' called on an object that is not a valid instance of HTMLTextAreaElement."
         );
       }
@@ -1026,13 +1111,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'set selectionDirection' called on an object that is not a valid instance of HTMLTextAreaElement."
         );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'selectionDirection' property on 'HTMLTextAreaElement': The provided value"
+        context: "Failed to set the 'selectionDirection' property on 'HTMLTextAreaElement': The provided value",
+        globals: globalObject
       });
 
       esValue[implSymbol]["selectionDirection"] = V;
@@ -1073,10 +1159,7 @@ exports.install = (globalObject, globalNames) => {
     selectionDirection: { enumerable: true },
     [Symbol.toStringTag]: { value: "HTMLTextAreaElement", configurable: true }
   });
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    globalObject[ctorRegistrySymbol] = Object.create(null);
-  }
-  globalObject[ctorRegistrySymbol][interfaceName] = HTMLTextAreaElement;
+  ctorRegistry[interfaceName] = HTMLTextAreaElement;
 
   Object.defineProperty(globalObject, interfaceName, {
     configurable: true,

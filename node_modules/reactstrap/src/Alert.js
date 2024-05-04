@@ -5,61 +5,66 @@ import { mapToCssModules, tagPropType } from './utils';
 import Fade from './Fade';
 
 const propTypes = {
+  /** Pass children so this component can wrap the child elements */
   children: PropTypes.node,
+  /** Add custom class */
   className: PropTypes.string,
+  /** Add custom class for close button */
   closeClassName: PropTypes.string,
+  /** Aria label for close button */
   closeAriaLabel: PropTypes.string,
-  cssModule: PropTypes.object,
+  /** Change color of alert */
   color: PropTypes.string,
+  /** Change existing className with a new className */
+  cssModule: PropTypes.object,
+  /** Toggle fade animation */
   fade: PropTypes.bool,
-  isOpen: PropTypes.bool,
-  toggle: PropTypes.func,
-  tag: tagPropType,
-  transition: PropTypes.shape(Fade.propTypes),
   innerRef: PropTypes.oneOfType([
     PropTypes.object,
     PropTypes.string,
     PropTypes.func,
   ]),
-};
-
-const defaultProps = {
-  color: 'success',
-  isOpen: true,
-  tag: 'div',
-  closeAriaLabel: 'Close',
-  fade: true,
-  transition: {
-    ...Fade.defaultProps,
-    unmountOnExit: true,
-  },
+  /** Control visibility state of Alert */
+  isOpen: PropTypes.bool,
+  /** Set a custom element for this component */
+  tag: tagPropType,
+  /** Function to toggle visibility */
+  toggle: PropTypes.func,
+  /** Props to be passed to `Fade` to modify transition */
+  transition: PropTypes.shape(Fade.propTypes),
 };
 
 function Alert(props) {
   const {
     className,
     closeClassName,
-    closeAriaLabel,
+    closeAriaLabel = 'Close',
     cssModule,
-    tag: Tag,
-    color,
-    isOpen,
+    tag: Tag = 'div',
+    color = 'success',
+    isOpen = true,
     toggle,
     children,
-    transition,
-    fade,
+    transition = {
+      ...Fade.defaultProps,
+      unmountOnExit: true,
+    },
+    fade = true,
     innerRef,
     ...attributes
   } = props;
 
-  const classes = mapToCssModules(classNames(
-    className,
-    'alert',
-    `alert-${color}`,
-    { 'alert-dismissible': toggle }
-  ), cssModule);
+  const classes = mapToCssModules(
+    classNames(className, 'alert', `alert-${color}`, {
+      'alert-dismissible': toggle,
+    }),
+    cssModule,
+  );
 
-  const closeClasses = mapToCssModules(classNames('close', closeClassName), cssModule);
+  const closeClasses = mapToCssModules(
+    classNames('btn-close', closeClassName),
+    cssModule,
+  );
 
   const alertTransition = {
     ...Fade.defaultProps,
@@ -69,18 +74,28 @@ function Alert(props) {
   };
 
   return (
-    <Fade {...attributes} {...alertTransition} tag={Tag} className={classes} in={isOpen} role="alert" innerRef={innerRef}>
-      {toggle ?
-        <button type="button" className={closeClasses} aria-label={closeAriaLabel} onClick={toggle}>
-          <span aria-hidden="true">&times;</span>
-        </button>
-        : null}
+    <Fade
+      {...attributes}
+      {...alertTransition}
+      tag={Tag}
+      className={classes}
+      in={isOpen}
+      role="alert"
+      innerRef={innerRef}
+    >
+      {toggle ? (
+        <button
+          type="button"
+          className={closeClasses}
+          aria-label={closeAriaLabel}
+          onClick={toggle}
+        />
+      ) : null}
       {children}
     </Fade>
   );
 }
 
 Alert.propTypes = propTypes;
-Alert.defaultProps = defaultProps;
 
 export default Alert;

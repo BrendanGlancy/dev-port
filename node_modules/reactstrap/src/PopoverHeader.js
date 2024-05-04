@@ -9,29 +9,17 @@ const propTypes = {
   cssModule: PropTypes.object,
 };
 
-const defaultProps = {
-  tag: 'h3'
-};
+function PopoverHeader(props) {
+  const { className, cssModule, tag: Tag = 'h3', ...attributes } = props;
 
-const PopoverHeader = (props) => {
-  const {
-    className,
+  const classes = mapToCssModules(
+    classNames(className, 'popover-header'),
     cssModule,
-    tag: Tag,
-    ...attributes
-  } = props;
-
-  const classes = mapToCssModules(classNames(
-    className,
-    'popover-header'
-  ), cssModule);
-
-  return (
-    <Tag {...attributes} className={classes} />
   );
-};
+
+  return <Tag {...attributes} className={classes} />;
+}
 
 PopoverHeader.propTypes = propTypes;
-PopoverHeader.defaultProps = defaultProps;
 
 export default PopoverHeader;

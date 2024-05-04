@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import { TabContext } from './TabContext';
 import { mapToCssModules, omit, tagPropType } from './utils';
 
-
 const propTypes = {
   tag: tagPropType,
   activeTab: PropTypes.any,
@@ -12,40 +11,35 @@ const propTypes = {
   cssModule: PropTypes.object,
 };
 
-const defaultProps = {
-  tag: 'div',
-};
-
-
 class TabContent extends Component {
   static getDerivedStateFromProps(nextProps, prevState) {
     if (prevState.activeTab !== nextProps.activeTab) {
       return {
-        activeTab: nextProps.activeTab
+        activeTab: nextProps.activeTab,
       };
     }
     return null;
   }
+
   constructor(props) {
     super(props);
     this.state = {
-      activeTab: this.props.activeTab
+      activeTab: this.props.activeTab,
     };
   }
 
   render() {
-    const {
-      className,
-      cssModule,
-      tag: Tag,
-    } = this.props;
+    const { className, cssModule, tag: Tag = 'div' } = this.props;
 
     const attributes = omit(this.props, Object.keys(propTypes));
 
-    const classes = mapToCssModules(classNames('tab-content', className), cssModule);
+    const classes = mapToCssModules(
+      classNames('tab-content', className),
+      cssModule,
+    );
 
     return (
-      <TabContext.Provider value={{activeTabId: this.state.activeTab}}>
+      <TabContext.Provider value={{ activeTabId: this.state.activeTab }}>
         <Tag {...attributes} className={classes} />
       </TabContext.Provider>
     );
@@ -55,5 +49,3 @@ class TabContent extends Component {
 export default TabContent;
 
 TabContent.propTypes = propTypes;
-TabContent.defaultProps = defaultProps;
-

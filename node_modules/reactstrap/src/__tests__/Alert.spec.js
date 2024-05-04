@@ -1,101 +1,142 @@
 import React from 'react';
-import { shallow, mount } from 'enzyme';
-import { Alert } from '../';
+import { render, screen } from '@testing-library/react';
+import user from '@testing-library/user-event';
+import '@testing-library/jest-dom';
+import { testForCustomClass, testForCustomTag } from '../testUtils';
+import { Alert } from '..';
 
 describe('Alert', () => {
-  it('should render children', () => {
-    const alert = mount(<Alert>Yo!</Alert>);
-    expect(alert.text()).toBe('Yo!');
+  beforeEach(() => {
+    jest.resetModules();
+    jest.useFakeTimers();
   });
 
-  it('should pass className down', () => {
-    const alert = mount(<Alert className="test-class-name">Yo!</Alert>);
-    expect(alert.find('.alert').hostNodes().prop('className')).toContain('test-class-name');
+  it('should render children', () => {
+    render(<Alert>Yo!</Alert>);
+    expect(screen.getByText('Yo!')).toBeInTheDocument();
+  });
+
+  it('should render additional classes', () => {
+    testForCustomClass(Alert);
+  });
+
+  it('should render custom tag', () => {
+    testForCustomTag(Alert);
   });
 
   it('should pass close className down', () => {
-    function noop() { }
-    const alert = mount(<Alert toggle={noop} closeClassName="test-class-name">Yo!</Alert>);
-    expect(alert.find('.close').hostNodes().prop('className')).toContain('test-class-name');
+    const noop = () => {};
+    render(
+      <Alert toggle={noop} closeClassName="test-class-name">
+        Yo!
+      </Alert>,
+    );
+
+    expect(screen.getByLabelText('Close')).toHaveClass('test-class-name');
   });
 
   it('should pass other props down', () => {
-    const alert = mount(<Alert data-testprop="testvalue">Yo!</Alert>);
-    expect(alert.find('.alert').hostNodes().prop('data-testprop')).toContain('testvalue');
-  });
-
-  it('should have default transitionTimeouts', () => {
-    const alert = mount(<Alert>Yo!</Alert>);
-
-    const transition = alert.find('Transition');
-    expect(transition.prop('timeout')).toEqual(150);
-    expect(transition.prop('appear')).toBe(true);
-    expect(transition.prop('enter')).toBe(true);
-    expect(transition.prop('exit')).toBe(true);
-  });
-
-  it('should have support configurable transitionTimeouts', () => {
-    const alert = mount(
-      <Alert transition={{ timeout: 0, appear: false, enter: false, exit: false }}>
-        Yo!
-      </Alert>
+    render(<Alert data-testprop="testvalue">Yo!</Alert>);
+    expect(screen.getByText('Yo!')).toHaveAttribute(
+      'data-testprop',
+      'testvalue',
     );
-
-    const transition = alert.find('Transition');
-    expect(transition.prop('timeout')).toEqual(0);
-    expect(transition.prop('appear')).toBe(false);
-    expect(transition.prop('enter')).toBe(false);
-    expect(transition.prop('exit')).toBe(false);
   });
 
   it('should have "success" as default color', () => {
-    const alert = mount(<Alert>Yo!</Alert>).find('div');
-    expect(alert.hasClass('alert-success')).toBe(true);
+    render(<Alert>Yo!</Alert>);
+    expect(screen.getByText('Yo!')).toHaveClass('alert-success');
   });
 
   it('should accept color prop', () => {
-    const alert = mount(<Alert color="warning">Yo!</Alert>).find('div');
-    expect(alert.hasClass('alert-warning')).toBe(true);
+    render(<Alert color="warning">Yo!</Alert>);
+    expect(screen.getByText('Yo!')).toHaveClass('alert-warning');
   });
 
   it('should use a div tag by default', () => {
-    const alert = mount(<Alert>Yo!</Alert>);
-    expect(alert.find('div').hostNodes().length).toBe(1);
+    render(<Alert>Yo!</Alert>);
+    expect(screen.getByText('Yo!').tagName.toLowerCase()).toEqual('div');
   });
 
   it('should be non dismissible by default', () => {
-    const alert = mount(<Alert>Yo!</Alert>).find('div');
-    expect(alert.find('button').hostNodes().length).toEqual(0);
-    expect(alert.hasClass('alert-dismissible')).toBe(false);
+    render(<Alert>Yo!</Alert>);
+
+    expect(screen.queryByLabelText('Close')).toBe(null);
+    expect(screen.getByText('Yo!')).not.toHaveClass('alert-dismissible');
   });
 
   it('should show dismiss button if passed toggle', () => {
-    const alert = mount(<Alert color="danger" toggle={() => { }}>Yo!</Alert>).find('div');
-    expect(alert.find('button').hostNodes().length).toEqual(1);
-    expect(alert.hasClass('alert-dismissible')).toBe(true);
-  });
+    render(
+      <Alert color="danger" toggle={() => {}}>
+        Yo!
+      </Alert>,
+    );
 
-  it('should support custom tag', () => {
-    const alert = mount(<Alert tag="p">Yo!</Alert>);
-    expect(alert.find('p').hostNodes().length).toBe(1);
+    expect(screen.getByLabelText('Close')).toBeInTheDocument();
+    expect(screen.getByText('Yo!')).toHaveClass('alert-dismissible');
   });
 
   it('should be empty if not isOpen', () => {
-    const alert = shallow(<Alert isOpen={false}>Yo!</Alert>);
-    expect(alert.html()).toBe('');
+    render(<Alert isOpen={false}>Yo!</Alert>);
+    expect(screen.queryByText('Yo!')).toBe(null);
   });
 
   it('should be dismissible', () => {
-    const onClick = jest.fn();
-    const alert = mount(<Alert color="danger" toggle={onClick}>Yo!</Alert>);
+    const mockFn = jest.fn();
+    render(
+      <Alert color="danger" toggle={mockFn}>
+        Yo!
+      </Alert>,
+    );
+    screen.getByText('Yo!');
 
-    alert.find('button').hostNodes().simulate('click');
-    expect(onClick).toHaveBeenCalled();
+    user.click(screen.getByLabelText('Close'));
+    expect(mockFn).toHaveBeenCalled();
   });
 
   it('should render close button with custom aria-label', () => {
-    const alert = mount(<Alert toggle={() => { }} closeAriaLabel="oseclay">Yo!</Alert>).find('div');
-    const closeButton = alert.find('button').hostNodes().first();
-    expect(closeButton.prop('aria-label')).toBe('oseclay');
+    render(
+      <Alert toggle={() => {}} closeAriaLabel="oseclay">
+        Yo!
+      </Alert>,
+    );
+
+    expect(screen.getByLabelText('oseclay')).toBeInTheDocument();
+  });
+
+  it('should have default transitionTimeouts', () => {
+    render(<Alert>Hello</Alert>);
+
+    expect(screen.getByText(/hello/i)).not.toHaveClass('show');
+
+    jest.advanceTimersByTime(150);
+    expect(screen.getByText(/hello/i)).toHaveClass('show');
+  });
+
+  it('should have support configurable transitionTimeouts', () => {
+    render(
+      <Alert
+        transition={{
+          timeout: 0,
+          appear: false,
+          enter: false,
+          exit: false,
+        }}
+      >
+        Hello
+      </Alert>,
+    );
+
+    expect(screen.getByText(/hello/i)).toHaveClass('show');
+  });
+
+  it('works with strict mode', () => {
+    const spy = jest.spyOn(console, 'error');
+    render(
+      <React.StrictMode>
+        <Alert>Hello</Alert>
+      </React.StrictMode>,
+    );
+    expect(spy).not.toHaveBeenCalled();
   });
 });

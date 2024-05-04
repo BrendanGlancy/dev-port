@@ -7,24 +7,23 @@ function isScope(node) {
   return node.type === 'FunctionExpression' || node.type === 'FunctionDeclaration' || node.type === 'ArrowFunctionExpression' || node.type === 'Program';
 }
 function isBlockScope(node) {
-  return node.type === 'BlockStatement' || isScope(node);
+  // The body of switch statement is a block.
+  return node.type === 'BlockStatement' || node.type === 'SwitchStatement' || isScope(node);
 }
 
 function declaresArguments(node) {
   return node.type === 'FunctionExpression' || node.type === 'FunctionDeclaration';
 }
 
-function declaresThis(node) {
-  return node.type === 'FunctionExpression' || node.type === 'FunctionDeclaration';
-}
-
 function reallyParse(source, options) {
-  var parseOptions = Object.assign({}, options,
+  var parseOptions = Object.assign(
     {
       allowReturnOutsideFunction: true,
       allowImportExportEverywhere: true,
-      allowHashBang: true
-    }
+      allowHashBang: true,
+      ecmaVersion: "latest"
+    },
+    options
   );
   return acorn.parse(source, parseOptions);
 }
@@ -132,7 +131,7 @@ function findGlobals(source, options) {
     },
     'Class': declareClass,
     'TryStatement': function (node) {
-      if (node.handler === null) return;
+      if (node.handler === null || node.handler.param === null) return;
       node.handler.locals = node.handler.locals || Object.create(null);
       declarePattern(node.handler.param, node.handler);
     },
@@ -159,9 +158,9 @@ function findGlobals(source, options) {
     'Identifier': identifier,
     'ThisExpression': function (node, parents) {
       for (var i = 0; i < parents.length; i++) {
-        if (declaresThis(parents[i])) {
-          return;
-        }
+        var parent = parents[i];
+        if ( parent.type === 'FunctionExpression' || parent.type === 'FunctionDeclaration' ) { return; }
+        if ( parent.type === 'PropertyDefinition' && parents[i+1]===parent.value ) { return; }
       }
       node.parents = parents.slice();
       globals.push(node);

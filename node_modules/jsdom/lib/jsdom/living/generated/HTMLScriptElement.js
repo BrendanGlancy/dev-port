@@ -21,24 +21,24 @@ exports.is = value => {
 exports.isImpl = value => {
   return utils.isObject(value) && value instanceof Impl.implementation;
 };
-exports.convert = (value, { context = "The provided value" } = {}) => {
+exports.convert = (globalObject, value, { context = "The provided value" } = {}) => {
   if (exports.is(value)) {
     return utils.implForWrapper(value);
   }
-  throw new TypeError(`${context} is not of type 'HTMLScriptElement'.`);
+  throw new globalObject.TypeError(`${context} is not of type 'HTMLScriptElement'.`);
 };
 
-function makeWrapper(globalObject) {
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    throw new Error("Internal error: invalid global object");
+function makeWrapper(globalObject, newTarget) {
+  let proto;
+  if (newTarget !== undefined) {
+    proto = newTarget.prototype;
   }
 
-  const ctor = globalObject[ctorRegistrySymbol]["HTMLScriptElement"];
-  if (ctor === undefined) {
-    throw new Error("Internal error: constructor HTMLScriptElement is not installed on the passed global object");
+  if (!utils.isObject(proto)) {
+    proto = globalObject[ctorRegistrySymbol]["HTMLScriptElement"].prototype;
   }
 
-  return Object.create(ctor.prototype);
+  return Object.create(proto);
 }
 
 exports.create = (globalObject, constructorArgs, privateData) => {
@@ -71,8 +71,8 @@ exports.setup = (wrapper, globalObject, constructorArgs = [], privateData = {}) 
   return wrapper;
 };
 
-exports.new = globalObject => {
-  const wrapper = makeWrapper(globalObject);
+exports.new = (globalObject, newTarget) => {
+  const wrapper = makeWrapper(globalObject, newTarget);
 
   exports._internalSetup(wrapper, globalObject);
   Object.defineProperty(wrapper, implSymbol, {
@@ -94,9 +94,7 @@ exports.install = (globalObject, globalNames) => {
     return;
   }
 
-  if (globalObject.HTMLElement === undefined) {
-    throw new Error("Internal error: attempting to evaluate HTMLScriptElement before HTMLElement");
-  }
+  const ctorRegistry = utils.initCtorRegistry(globalObject);
   class HTMLScriptElement extends globalObject.HTMLElement {
     constructor() {
       return HTMLConstructor_helpers_html_constructor(globalObject, interfaceName, new.target);
@@ -106,7 +104,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get src' called on an object that is not a valid instance of HTMLScriptElement.");
+        throw new globalObject.TypeError(
+          "'get src' called on an object that is not a valid instance of HTMLScriptElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -132,11 +132,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set src' called on an object that is not a valid instance of HTMLScriptElement.");
+        throw new globalObject.TypeError(
+          "'set src' called on an object that is not a valid instance of HTMLScriptElement."
+        );
       }
 
       V = conversions["USVString"](V, {
-        context: "Failed to set the 'src' property on 'HTMLScriptElement': The provided value"
+        context: "Failed to set the 'src' property on 'HTMLScriptElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -151,7 +154,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get type' called on an object that is not a valid instance of HTMLScriptElement.");
+        throw new globalObject.TypeError(
+          "'get type' called on an object that is not a valid instance of HTMLScriptElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -167,11 +172,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set type' called on an object that is not a valid instance of HTMLScriptElement.");
+        throw new globalObject.TypeError(
+          "'set type' called on an object that is not a valid instance of HTMLScriptElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'type' property on 'HTMLScriptElement': The provided value"
+        context: "Failed to set the 'type' property on 'HTMLScriptElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -186,7 +194,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get defer' called on an object that is not a valid instance of HTMLScriptElement.");
+        throw new globalObject.TypeError(
+          "'get defer' called on an object that is not a valid instance of HTMLScriptElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -201,11 +211,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set defer' called on an object that is not a valid instance of HTMLScriptElement.");
+        throw new globalObject.TypeError(
+          "'set defer' called on an object that is not a valid instance of HTMLScriptElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'defer' property on 'HTMLScriptElement': The provided value"
+        context: "Failed to set the 'defer' property on 'HTMLScriptElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -224,7 +237,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get crossOrigin' called on an object that is not a valid instance of HTMLScriptElement.");
+        throw new globalObject.TypeError(
+          "'get crossOrigin' called on an object that is not a valid instance of HTMLScriptElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -240,14 +255,17 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set crossOrigin' called on an object that is not a valid instance of HTMLScriptElement.");
+        throw new globalObject.TypeError(
+          "'set crossOrigin' called on an object that is not a valid instance of HTMLScriptElement."
+        );
       }
 
       if (V === null || V === undefined) {
         V = null;
       } else {
         V = conversions["DOMString"](V, {
-          context: "Failed to set the 'crossOrigin' property on 'HTMLScriptElement': The provided value"
+          context: "Failed to set the 'crossOrigin' property on 'HTMLScriptElement': The provided value",
+          globals: globalObject
         });
       }
 
@@ -263,7 +281,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get text' called on an object that is not a valid instance of HTMLScriptElement.");
+        throw new globalObject.TypeError(
+          "'get text' called on an object that is not a valid instance of HTMLScriptElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -278,11 +298,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set text' called on an object that is not a valid instance of HTMLScriptElement.");
+        throw new globalObject.TypeError(
+          "'set text' called on an object that is not a valid instance of HTMLScriptElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'text' property on 'HTMLScriptElement': The provided value"
+        context: "Failed to set the 'text' property on 'HTMLScriptElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -297,7 +320,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get charset' called on an object that is not a valid instance of HTMLScriptElement.");
+        throw new globalObject.TypeError(
+          "'get charset' called on an object that is not a valid instance of HTMLScriptElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -313,11 +338,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set charset' called on an object that is not a valid instance of HTMLScriptElement.");
+        throw new globalObject.TypeError(
+          "'set charset' called on an object that is not a valid instance of HTMLScriptElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'charset' property on 'HTMLScriptElement': The provided value"
+        context: "Failed to set the 'charset' property on 'HTMLScriptElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -332,7 +360,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get event' called on an object that is not a valid instance of HTMLScriptElement.");
+        throw new globalObject.TypeError(
+          "'get event' called on an object that is not a valid instance of HTMLScriptElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -348,11 +378,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set event' called on an object that is not a valid instance of HTMLScriptElement.");
+        throw new globalObject.TypeError(
+          "'set event' called on an object that is not a valid instance of HTMLScriptElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'event' property on 'HTMLScriptElement': The provided value"
+        context: "Failed to set the 'event' property on 'HTMLScriptElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -367,7 +400,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get htmlFor' called on an object that is not a valid instance of HTMLScriptElement.");
+        throw new globalObject.TypeError(
+          "'get htmlFor' called on an object that is not a valid instance of HTMLScriptElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -383,11 +418,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set htmlFor' called on an object that is not a valid instance of HTMLScriptElement.");
+        throw new globalObject.TypeError(
+          "'set htmlFor' called on an object that is not a valid instance of HTMLScriptElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'htmlFor' property on 'HTMLScriptElement': The provided value"
+        context: "Failed to set the 'htmlFor' property on 'HTMLScriptElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -409,10 +447,7 @@ exports.install = (globalObject, globalNames) => {
     htmlFor: { enumerable: true },
     [Symbol.toStringTag]: { value: "HTMLScriptElement", configurable: true }
   });
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    globalObject[ctorRegistrySymbol] = Object.create(null);
-  }
-  globalObject[ctorRegistrySymbol][interfaceName] = HTMLScriptElement;
+  ctorRegistry[interfaceName] = HTMLScriptElement;
 
   Object.defineProperty(globalObject, interfaceName, {
     configurable: true,

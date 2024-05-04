@@ -1,6 +1,6 @@
 import { SimpleWebpackError } from './simpleWebpackError';
 export declare function getBabelError(fileName: string, err: Error & {
-    code?: 'BABEL_PARSE_ERROR';
+    code?: string | number;
     loc?: {
         line: number;
         column: number;

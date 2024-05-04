@@ -1,27 +1,31 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import { render, screen } from '@testing-library/react';
+import user from '@testing-library/user-event';
 import { TransitionGroup } from 'react-transition-group';
-import { Fade } from '../';
+import { Fade } from '..';
+import { testForCustomTag } from '../testUtils';
 
 class Helper extends React.Component {
   constructor(props) {
     super(props);
     this.toggle = this.toggle.bind(this);
     this.state = {
-      showItem: props.showItem
+      showItem: props.showItem,
     };
   }
 
   toggle() {
-    this.setState({
-      showItem: !this.state.showItem
-    });
+    this.setState((prevState) => ({
+      showItem: !prevState.showItem,
+    }));
   }
 
   render() {
     return (
       <div>
-        <div className="trigger" onClick={this.toggle}>Toggle</div>
+        <div className="trigger" onClick={this.toggle}>
+          Toggle
+        </div>
         <TransitionGroup component="div">
           {this.state.showItem ? this.props.children : null}
         </TransitionGroup>
@@ -40,68 +44,84 @@ describe('Fade', () => {
   });
 
   it('should transition classes from "fade" to "fade show" on appear', () => {
-    let isOpen = true;
-    const wrapper = mount(
-      <Helper showItem={isOpen} >
-        <Fade key={Math.random()}>Yo!</Fade>
-        <Fade appear={false} key={Math.random()}>Yo 2!</Fade>
-      </Helper>
+    render(
+      <Helper showItem>
+        <Fade>Yo!</Fade>
+        <Fade appear={false}>Yo 2!</Fade>
+      </Helper>,
     );
 
-    expect(wrapper.update().find('div.fade').hostNodes().length).toBe(2);
-    expect(wrapper.update().find('div.fade.show').hostNodes().length).toBe(1);
+    expect(screen.getByText('Yo!')).toHaveClass('fade');
+    expect(screen.getByText('Yo!')).not.toHaveClass('show');
+    expect(screen.getByText('Yo 2!')).toHaveClass('fade');
+    expect(screen.getByText('Yo 2!')).toHaveClass('show');
 
-    jest.runTimersToTime(300);
+    jest.advanceTimersByTime(300);
 
-    expect(wrapper.update().find('div.fade.show').hostNodes().length).toBe(2);
+    expect(screen.getByText('Yo!')).toHaveClass('fade');
+    expect(screen.getByText('Yo!')).toHaveClass('show');
+    expect(screen.getByText('Yo 2!')).toHaveClass('fade');
+    expect(screen.getByText('Yo 2!')).toHaveClass('show');
 
-    wrapper.find('.trigger').hostNodes().simulate('click');
-    expect(wrapper.update().find('div.fade.show').hostNodes().length).toBe(0);
+    user.click(document.getElementsByClassName('trigger')[0]);
+
+    expect(screen.getByText('Yo!')).toHaveClass('fade');
+    expect(screen.getByText('Yo!')).not.toHaveClass('show');
+    expect(screen.getByText('Yo 2!')).toHaveClass('fade');
+    expect(screen.getByText('Yo 2!')).not.toHaveClass('show');
   });
 
   it('should transition classes from "fade" to "fade show" on enter', () => {
     const onEnter = jest.fn();
     const onExit = jest.fn();
-    let isOpen = false;
-    const wrapper = mount(
-      <Helper showItem={isOpen} >
-        <Fade onEnter={onEnter} onExit={onExit} key={Math.random()}>Yo 3!</Fade>
-        <Fade appear={false} enter={false} exit={false} key={Math.random()}>Yo 4!</Fade>
-      </Helper>
+    render(
+      <Helper showItem={false}>
+        <Fade onEnter={onEnter} onExit={onExit} key={Math.random()}>
+          Yo 3!
+        </Fade>
+        <Fade appear={false} enter={false} exit={false} key={Math.random()}>
+          Yo 4!
+        </Fade>
+      </Helper>,
     );
 
-    expect(wrapper.update().find('div.fade').hostNodes().length).toBe(0);
-    expect(wrapper.update().find('div.fade.show').hostNodes().length).toBe(0);
+    expect(document.getElementsByClassName('fade').length).toBe(0);
+    expect(document.getElementsByClassName('fade show').length).toBe(0);
 
-    wrapper.find('.trigger').hostNodes().simulate('click');
-
-    expect(wrapper.update().find('div.fade').hostNodes().length).toBe(2);
-    expect(wrapper.update().find('div.fade.show').hostNodes().length).toBe(1);
-    expect(onEnter).toHaveBeenCalled();
-
-    jest.runTimersToTime(300);
+    user.click(document.getElementsByClassName('trigger')[0]);
 
     expect(onEnter).toHaveBeenCalled();
     expect(onExit).not.toHaveBeenCalled();
-    expect(wrapper.update().find('div.fade.show').hostNodes().length).toBe(2);
+    expect(document.getElementsByClassName('fade').length).toBe(2);
+    expect(document.getElementsByClassName('fade show').length).toBe(1);
 
-    wrapper.find('.trigger').hostNodes().simulate('click');
-    expect(wrapper.update().find('div.fade.show').hostNodes().length).toBe(0);
+    jest.advanceTimersByTime(300);
+
+    expect(onEnter).toHaveBeenCalled();
+    expect(onExit).not.toHaveBeenCalled();
+    expect(document.getElementsByClassName('fade show').length).toBe(2);
+
+    user.click(document.getElementsByClassName('trigger')[0]);
+
     expect(onExit).toHaveBeenCalled();
+    expect(document.getElementsByClassName('fade show').length).toBe(0);
   });
 
   it('should pass className down', () => {
-    const alert = mount(<Fade className="test-class-name">Yo!</Fade>);
-    expect(alert.find('.fade').hostNodes().prop('className')).toContain('test-class-name');
+    render(<Fade className="test-class-name">Yo!</Fade>);
+    expect(screen.getByText(/yo/i)).toHaveClass('test-class-name');
   });
 
   it('should pass other props down', () => {
-    const alert = mount(<Fade data-testprop="testvalue">Yo!</Fade>);
-    expect(alert.find('.fade').hostNodes().prop('data-testprop')).toContain('testvalue');
+    render(<Fade data-testprop="testvalue">Yo</Fade>);
+
+    expect(screen.getByText(/yo/i)).toHaveAttribute(
+      'data-testprop',
+      'testvalue',
+    );
   });
 
   it('should support custom tag', () => {
-    const alert = mount(<Fade tag="p">Yo!</Fade>);
-    expect(alert.find('p').hostNodes().length).toBe(1);
+    testForCustomTag(Fade);
   });
 });

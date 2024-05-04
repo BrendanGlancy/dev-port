@@ -31,6 +31,7 @@ const generatedInterfaces = {
   Comment: require("./generated/Comment"),
   DocumentType: require("./generated/DocumentType"),
   NodeList: require("./generated/NodeList"),
+  RadioNodeList: require("./generated/RadioNodeList"),
   HTMLCollection: require("./generated/HTMLCollection"),
   HTMLOptionsCollection: require("./generated/HTMLOptionsCollection"),
   DOMStringMap: require("./generated/DOMStringMap"),
@@ -109,6 +110,7 @@ const generatedInterfaces = {
   HTMLVideoElement: require("./generated/HTMLVideoElement.js"),
   HTMLAudioElement: require("./generated/HTMLAudioElement.js"),
   HTMLTrackElement: require("./generated/HTMLTrackElement.js"),
+  HTMLFormControlsCollection: require("./generated/HTMLFormControlsCollection.js"),
 
   SVGElement: require("./generated/SVGElement.js"),
   SVGGraphicsElement: require("./generated/SVGGraphicsElement.js"),
@@ -145,6 +147,8 @@ const generatedInterfaces = {
   Screen: require("./generated/Screen"),
   Performance: require("./generated/Performance"),
   Navigator: require("./generated/Navigator"),
+
+  Crypto: require("./generated/Crypto"),
 
   PluginArray: require("./generated/PluginArray"),
   MimeTypeArray: require("./generated/MimeTypeArray"),

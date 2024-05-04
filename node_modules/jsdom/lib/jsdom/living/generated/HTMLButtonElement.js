@@ -18,24 +18,24 @@ exports.is = value => {
 exports.isImpl = value => {
   return utils.isObject(value) && value instanceof Impl.implementation;
 };
-exports.convert = (value, { context = "The provided value" } = {}) => {
+exports.convert = (globalObject, value, { context = "The provided value" } = {}) => {
   if (exports.is(value)) {
     return utils.implForWrapper(value);
   }
-  throw new TypeError(`${context} is not of type 'HTMLButtonElement'.`);
+  throw new globalObject.TypeError(`${context} is not of type 'HTMLButtonElement'.`);
 };
 
-function makeWrapper(globalObject) {
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    throw new Error("Internal error: invalid global object");
+function makeWrapper(globalObject, newTarget) {
+  let proto;
+  if (newTarget !== undefined) {
+    proto = newTarget.prototype;
   }
 
-  const ctor = globalObject[ctorRegistrySymbol]["HTMLButtonElement"];
-  if (ctor === undefined) {
-    throw new Error("Internal error: constructor HTMLButtonElement is not installed on the passed global object");
+  if (!utils.isObject(proto)) {
+    proto = globalObject[ctorRegistrySymbol]["HTMLButtonElement"].prototype;
   }
 
-  return Object.create(ctor.prototype);
+  return Object.create(proto);
 }
 
 exports.create = (globalObject, constructorArgs, privateData) => {
@@ -68,8 +68,8 @@ exports.setup = (wrapper, globalObject, constructorArgs = [], privateData = {}) 
   return wrapper;
 };
 
-exports.new = globalObject => {
-  const wrapper = makeWrapper(globalObject);
+exports.new = (globalObject, newTarget) => {
+  const wrapper = makeWrapper(globalObject, newTarget);
 
   exports._internalSetup(wrapper, globalObject);
   Object.defineProperty(wrapper, implSymbol, {
@@ -91,9 +91,7 @@ exports.install = (globalObject, globalNames) => {
     return;
   }
 
-  if (globalObject.HTMLElement === undefined) {
-    throw new Error("Internal error: attempting to evaluate HTMLButtonElement before HTMLElement");
-  }
+  const ctorRegistry = utils.initCtorRegistry(globalObject);
   class HTMLButtonElement extends globalObject.HTMLElement {
     constructor() {
       return HTMLConstructor_helpers_html_constructor(globalObject, interfaceName, new.target);
@@ -102,7 +100,9 @@ exports.install = (globalObject, globalNames) => {
     checkValidity() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'checkValidity' called on an object that is not a valid instance of HTMLButtonElement.");
+        throw new globalObject.TypeError(
+          "'checkValidity' called on an object that is not a valid instance of HTMLButtonElement."
+        );
       }
 
       return esValue[implSymbol].checkValidity();
@@ -111,7 +111,9 @@ exports.install = (globalObject, globalNames) => {
     reportValidity() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'reportValidity' called on an object that is not a valid instance of HTMLButtonElement.");
+        throw new globalObject.TypeError(
+          "'reportValidity' called on an object that is not a valid instance of HTMLButtonElement."
+        );
       }
 
       return esValue[implSymbol].reportValidity();
@@ -120,23 +122,22 @@ exports.install = (globalObject, globalNames) => {
     setCustomValidity(error) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'setCustomValidity' called on an object that is not a valid instance of HTMLButtonElement."
         );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'setCustomValidity' on 'HTMLButtonElement': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'setCustomValidity' on 'HTMLButtonElement': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'setCustomValidity' on 'HTMLButtonElement': parameter 1"
+          context: "Failed to execute 'setCustomValidity' on 'HTMLButtonElement': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -147,7 +148,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get autofocus' called on an object that is not a valid instance of HTMLButtonElement.");
+        throw new globalObject.TypeError(
+          "'get autofocus' called on an object that is not a valid instance of HTMLButtonElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -162,11 +165,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set autofocus' called on an object that is not a valid instance of HTMLButtonElement.");
+        throw new globalObject.TypeError(
+          "'set autofocus' called on an object that is not a valid instance of HTMLButtonElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'autofocus' property on 'HTMLButtonElement': The provided value"
+        context: "Failed to set the 'autofocus' property on 'HTMLButtonElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -185,7 +191,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get disabled' called on an object that is not a valid instance of HTMLButtonElement.");
+        throw new globalObject.TypeError(
+          "'get disabled' called on an object that is not a valid instance of HTMLButtonElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -200,11 +208,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set disabled' called on an object that is not a valid instance of HTMLButtonElement.");
+        throw new globalObject.TypeError(
+          "'set disabled' called on an object that is not a valid instance of HTMLButtonElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'disabled' property on 'HTMLButtonElement': The provided value"
+        context: "Failed to set the 'disabled' property on 'HTMLButtonElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -223,7 +234,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get form' called on an object that is not a valid instance of HTMLButtonElement.");
+        throw new globalObject.TypeError(
+          "'get form' called on an object that is not a valid instance of HTMLButtonElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["form"]);
@@ -233,7 +246,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get formNoValidate' called on an object that is not a valid instance of HTMLButtonElement."
         );
       }
@@ -250,13 +263,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'set formNoValidate' called on an object that is not a valid instance of HTMLButtonElement."
         );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'formNoValidate' property on 'HTMLButtonElement': The provided value"
+        context: "Failed to set the 'formNoValidate' property on 'HTMLButtonElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -275,7 +289,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get formTarget' called on an object that is not a valid instance of HTMLButtonElement.");
+        throw new globalObject.TypeError(
+          "'get formTarget' called on an object that is not a valid instance of HTMLButtonElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -291,11 +307,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set formTarget' called on an object that is not a valid instance of HTMLButtonElement.");
+        throw new globalObject.TypeError(
+          "'set formTarget' called on an object that is not a valid instance of HTMLButtonElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'formTarget' property on 'HTMLButtonElement': The provided value"
+        context: "Failed to set the 'formTarget' property on 'HTMLButtonElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -310,7 +329,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get name' called on an object that is not a valid instance of HTMLButtonElement.");
+        throw new globalObject.TypeError(
+          "'get name' called on an object that is not a valid instance of HTMLButtonElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -326,11 +347,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set name' called on an object that is not a valid instance of HTMLButtonElement.");
+        throw new globalObject.TypeError(
+          "'set name' called on an object that is not a valid instance of HTMLButtonElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'name' property on 'HTMLButtonElement': The provided value"
+        context: "Failed to set the 'name' property on 'HTMLButtonElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -345,7 +369,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get type' called on an object that is not a valid instance of HTMLButtonElement.");
+        throw new globalObject.TypeError(
+          "'get type' called on an object that is not a valid instance of HTMLButtonElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -360,11 +386,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set type' called on an object that is not a valid instance of HTMLButtonElement.");
+        throw new globalObject.TypeError(
+          "'set type' called on an object that is not a valid instance of HTMLButtonElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'type' property on 'HTMLButtonElement': The provided value"
+        context: "Failed to set the 'type' property on 'HTMLButtonElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -379,7 +408,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get value' called on an object that is not a valid instance of HTMLButtonElement.");
+        throw new globalObject.TypeError(
+          "'get value' called on an object that is not a valid instance of HTMLButtonElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -395,11 +426,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set value' called on an object that is not a valid instance of HTMLButtonElement.");
+        throw new globalObject.TypeError(
+          "'set value' called on an object that is not a valid instance of HTMLButtonElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'value' property on 'HTMLButtonElement': The provided value"
+        context: "Failed to set the 'value' property on 'HTMLButtonElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -414,7 +448,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get willValidate' called on an object that is not a valid instance of HTMLButtonElement."
         );
       }
@@ -426,7 +460,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get validity' called on an object that is not a valid instance of HTMLButtonElement.");
+        throw new globalObject.TypeError(
+          "'get validity' called on an object that is not a valid instance of HTMLButtonElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["validity"]);
@@ -436,7 +472,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get validationMessage' called on an object that is not a valid instance of HTMLButtonElement."
         );
       }
@@ -448,7 +484,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get labels' called on an object that is not a valid instance of HTMLButtonElement.");
+        throw new globalObject.TypeError(
+          "'get labels' called on an object that is not a valid instance of HTMLButtonElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["labels"]);
@@ -472,10 +510,7 @@ exports.install = (globalObject, globalNames) => {
     labels: { enumerable: true },
     [Symbol.toStringTag]: { value: "HTMLButtonElement", configurable: true }
   });
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    globalObject[ctorRegistrySymbol] = Object.create(null);
-  }
-  globalObject[ctorRegistrySymbol][interfaceName] = HTMLButtonElement;
+  ctorRegistry[interfaceName] = HTMLButtonElement;
 
   Object.defineProperty(globalObject, interfaceName, {
     configurable: true,

@@ -22,24 +22,24 @@ exports.is = value => {
 exports.isImpl = value => {
   return utils.isObject(value) && value instanceof Impl.implementation;
 };
-exports.convert = (value, { context = "The provided value" } = {}) => {
+exports.convert = (globalObject, value, { context = "The provided value" } = {}) => {
   if (exports.is(value)) {
     return utils.implForWrapper(value);
   }
-  throw new TypeError(`${context} is not of type 'HTMLVideoElement'.`);
+  throw new globalObject.TypeError(`${context} is not of type 'HTMLVideoElement'.`);
 };
 
-function makeWrapper(globalObject) {
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    throw new Error("Internal error: invalid global object");
+function makeWrapper(globalObject, newTarget) {
+  let proto;
+  if (newTarget !== undefined) {
+    proto = newTarget.prototype;
   }
 
-  const ctor = globalObject[ctorRegistrySymbol]["HTMLVideoElement"];
-  if (ctor === undefined) {
-    throw new Error("Internal error: constructor HTMLVideoElement is not installed on the passed global object");
+  if (!utils.isObject(proto)) {
+    proto = globalObject[ctorRegistrySymbol]["HTMLVideoElement"].prototype;
   }
 
-  return Object.create(ctor.prototype);
+  return Object.create(proto);
 }
 
 exports.create = (globalObject, constructorArgs, privateData) => {
@@ -72,8 +72,8 @@ exports.setup = (wrapper, globalObject, constructorArgs = [], privateData = {}) 
   return wrapper;
 };
 
-exports.new = globalObject => {
-  const wrapper = makeWrapper(globalObject);
+exports.new = (globalObject, newTarget) => {
+  const wrapper = makeWrapper(globalObject, newTarget);
 
   exports._internalSetup(wrapper, globalObject);
   Object.defineProperty(wrapper, implSymbol, {
@@ -95,9 +95,7 @@ exports.install = (globalObject, globalNames) => {
     return;
   }
 
-  if (globalObject.HTMLMediaElement === undefined) {
-    throw new Error("Internal error: attempting to evaluate HTMLVideoElement before HTMLMediaElement");
-  }
+  const ctorRegistry = utils.initCtorRegistry(globalObject);
   class HTMLVideoElement extends globalObject.HTMLMediaElement {
     constructor() {
       return HTMLConstructor_helpers_html_constructor(globalObject, interfaceName, new.target);
@@ -107,7 +105,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get width' called on an object that is not a valid instance of HTMLVideoElement.");
+        throw new globalObject.TypeError(
+          "'get width' called on an object that is not a valid instance of HTMLVideoElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -127,11 +127,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set width' called on an object that is not a valid instance of HTMLVideoElement.");
+        throw new globalObject.TypeError(
+          "'set width' called on an object that is not a valid instance of HTMLVideoElement."
+        );
       }
 
       V = conversions["unsigned long"](V, {
-        context: "Failed to set the 'width' property on 'HTMLVideoElement': The provided value"
+        context: "Failed to set the 'width' property on 'HTMLVideoElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -147,7 +150,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get height' called on an object that is not a valid instance of HTMLVideoElement.");
+        throw new globalObject.TypeError(
+          "'get height' called on an object that is not a valid instance of HTMLVideoElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -167,11 +172,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set height' called on an object that is not a valid instance of HTMLVideoElement.");
+        throw new globalObject.TypeError(
+          "'set height' called on an object that is not a valid instance of HTMLVideoElement."
+        );
       }
 
       V = conversions["unsigned long"](V, {
-        context: "Failed to set the 'height' property on 'HTMLVideoElement': The provided value"
+        context: "Failed to set the 'height' property on 'HTMLVideoElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -187,7 +195,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get videoWidth' called on an object that is not a valid instance of HTMLVideoElement.");
+        throw new globalObject.TypeError(
+          "'get videoWidth' called on an object that is not a valid instance of HTMLVideoElement."
+        );
       }
 
       return esValue[implSymbol]["videoWidth"];
@@ -197,7 +207,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get videoHeight' called on an object that is not a valid instance of HTMLVideoElement.");
+        throw new globalObject.TypeError(
+          "'get videoHeight' called on an object that is not a valid instance of HTMLVideoElement."
+        );
       }
 
       return esValue[implSymbol]["videoHeight"];
@@ -207,7 +219,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get poster' called on an object that is not a valid instance of HTMLVideoElement.");
+        throw new globalObject.TypeError(
+          "'get poster' called on an object that is not a valid instance of HTMLVideoElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -233,11 +247,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set poster' called on an object that is not a valid instance of HTMLVideoElement.");
+        throw new globalObject.TypeError(
+          "'set poster' called on an object that is not a valid instance of HTMLVideoElement."
+        );
       }
 
       V = conversions["USVString"](V, {
-        context: "Failed to set the 'poster' property on 'HTMLVideoElement': The provided value"
+        context: "Failed to set the 'poster' property on 'HTMLVideoElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -252,7 +269,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get playsInline' called on an object that is not a valid instance of HTMLVideoElement.");
+        throw new globalObject.TypeError(
+          "'get playsInline' called on an object that is not a valid instance of HTMLVideoElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -267,11 +286,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set playsInline' called on an object that is not a valid instance of HTMLVideoElement.");
+        throw new globalObject.TypeError(
+          "'set playsInline' called on an object that is not a valid instance of HTMLVideoElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'playsInline' property on 'HTMLVideoElement': The provided value"
+        context: "Failed to set the 'playsInline' property on 'HTMLVideoElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -295,10 +317,7 @@ exports.install = (globalObject, globalNames) => {
     playsInline: { enumerable: true },
     [Symbol.toStringTag]: { value: "HTMLVideoElement", configurable: true }
   });
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    globalObject[ctorRegistrySymbol] = Object.create(null);
-  }
-  globalObject[ctorRegistrySymbol][interfaceName] = HTMLVideoElement;
+  ctorRegistry[interfaceName] = HTMLVideoElement;
 
   Object.defineProperty(globalObject, interfaceName, {
     configurable: true,

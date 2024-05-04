@@ -1,26 +1,7 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getFirstSemanticOrSyntacticError = void 0;
-const ts = __importStar(require("typescript"));
+const typescript_1 = require("typescript");
 /**
  * By default, diagnostics from the TypeScript compiler contain all errors - regardless of whether
  * they are related to generic ECMAScript standards, or TypeScript-specific constructs.
@@ -30,12 +11,12 @@ const ts = __importStar(require("typescript"));
  */
 function getFirstSemanticOrSyntacticError(program, ast) {
     try {
-        const supportedSyntacticDiagnostics = whitelistSupportedDiagnostics(program.getSyntacticDiagnostics(ast));
-        if (supportedSyntacticDiagnostics.length) {
+        const supportedSyntacticDiagnostics = allowlistSupportedDiagnostics(program.getSyntacticDiagnostics(ast));
+        if (supportedSyntacticDiagnostics.length > 0) {
             return convertDiagnosticToSemanticOrSyntacticError(supportedSyntacticDiagnostics[0]);
         }
-        const supportedSemanticDiagnostics = whitelistSupportedDiagnostics(program.getSemanticDiagnostics(ast));
-        if (supportedSemanticDiagnostics.length) {
+        const supportedSemanticDiagnostics = allowlistSupportedDiagnostics(program.getSemanticDiagnostics(ast));
+        if (supportedSemanticDiagnostics.length > 0) {
             return convertDiagnosticToSemanticOrSyntacticError(supportedSemanticDiagnostics[0]);
         }
         return undefined;
@@ -58,7 +39,7 @@ function getFirstSemanticOrSyntacticError(program, ast) {
     }
 }
 exports.getFirstSemanticOrSyntacticError = getFirstSemanticOrSyntacticError;
-function whitelistSupportedDiagnostics(diagnostics) {
+function allowlistSupportedDiagnostics(diagnostics) {
     return diagnostics.filter(diagnostic => {
         switch (diagnostic.code) {
             case 1013: // "A rest parameter or binding pattern may not have a trailing comma."
@@ -107,6 +88,9 @@ function whitelistSupportedDiagnostics(diagnostics) {
     });
 }
 function convertDiagnosticToSemanticOrSyntacticError(diagnostic) {
-    return Object.assign(Object.assign({}, diagnostic), { message: ts.flattenDiagnosticMessageText(diagnostic.messageText, ts.sys.newLine) });
+    return {
+        ...diagnostic,
+        message: (0, typescript_1.flattenDiagnosticMessageText)(diagnostic.messageText, typescript_1.sys.newLine),
+    };
 }
 //# sourceMappingURL=semantic-or-syntactic-errors.js.map

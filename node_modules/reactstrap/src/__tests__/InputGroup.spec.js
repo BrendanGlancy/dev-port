@@ -1,42 +1,73 @@
 import React from 'react';
-import { shallow } from 'enzyme';
-import { InputGroup } from '../';
+import { render, screen } from '@testing-library/react';
+import user from '@testing-library/user-event';
+import '@testing-library/jest-dom';
+import {
+  InputGroup,
+  DropdownMenu,
+  DropdownToggle,
+  DropdownItem,
+  Input,
+} from '..';
+import Dropdown from '../Dropdown';
+import {
+  testForChildrenInComponent,
+  testForCustomClass,
+  testForCustomTag,
+  testForDefaultClass,
+  testForDefaultTag,
+} from '../testUtils';
 
 describe('InputGroup', () => {
   it('should render with "div" tag', () => {
-    const wrapper = shallow(<InputGroup>Yo!</InputGroup>);
-
-    expect(wrapper.type()).toBe('div');
+    testForDefaultTag(InputGroup, 'div');
   });
 
   it('should render children', () => {
-    const wrapper = shallow(<InputGroup>Yo!</InputGroup>);
-
-    expect(wrapper.text()).toBe('Yo!');
+    testForChildrenInComponent(InputGroup);
   });
 
   it('should render with "input-group" class', () => {
-    const wrapper = shallow(<InputGroup>Yo!</InputGroup>);
-
-    expect(wrapper.hasClass('input-group')).toBe(true);
+    testForDefaultClass(InputGroup, 'input-group');
   });
 
   it('should render with "input-group-${size}" class when size is passed', () => {
-    const wrapper = shallow(<InputGroup size="whatever">Yo!</InputGroup>);
+    render(<InputGroup size="whatever">Yo!</InputGroup>);
 
-    expect(wrapper.hasClass('input-group-whatever')).toBe(true);
+    expect(screen.getByText(/yo!/i)).toHaveClass('input-group-whatever');
   });
 
   it('should render additional classes', () => {
-    const wrapper = shallow(<InputGroup className="other">Yo!</InputGroup>);
-
-    expect(wrapper.hasClass('other')).toBe(true);
-    expect(wrapper.hasClass('input-group')).toBe(true);
+    testForCustomClass(InputGroup);
   });
 
   it('should render custom tag', () => {
-    const wrapper = shallow(<InputGroup tag="main">Yo!</InputGroup>);
+    testForCustomTag(InputGroup);
+  });
 
-    expect(wrapper.type()).toBe('main');
+  describe('When type="dropdown"', () => {
+    it('should render Dropdown', () => {
+      render(<InputGroup type="dropdown" data-testid="drpdwn" />);
+      expect(screen.getByTestId('drpdwn')).toHaveClass('dropdown');
+    });
+
+    it('should call toggle when input is clicked', () => {
+      const toggle = jest.fn();
+
+      render(
+        <InputGroup type="dropdown" isOpen toggle={toggle}>
+          <Input />
+          <DropdownToggle>Toggle</DropdownToggle>
+          <DropdownMenu right>
+            <DropdownItem>Test</DropdownItem>
+            <DropdownItem id="divider" divider />
+          </DropdownMenu>
+        </InputGroup>,
+      );
+
+      expect(toggle).not.toBeCalled();
+      user.click(document.querySelector('input.form-control'));
+      expect(toggle).toBeCalled();
+    });
   });
 });

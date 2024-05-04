@@ -14,15 +14,15 @@ const astUtils = require("./utils/ast-utils");
 // Rule Definition
 //------------------------------------------------------------------------------
 
+/** @type {import('../shared/types').Rule} */
 module.exports = {
     meta: {
         type: "suggestion",
 
         docs: {
-            description: "require braces around arrow function bodies",
-            category: "ECMAScript 6",
+            description: "Require braces around arrow function bodies",
             recommended: false,
-            url: "https://eslint.org/docs/rules/arrow-body-style"
+            url: "https://eslint.org/docs/latest/rules/arrow-body-style"
         },
 
         schema: {
@@ -74,7 +74,7 @@ module.exports = {
         const asNeeded = !options[0] || options[0] === "as-needed";
         const never = options[0] === "never";
         const requireReturnForObjectLiteral = options[1] && options[1].requireReturnForObjectLiteral;
-        const sourceCode = context.getSourceCode();
+        const sourceCode = context.sourceCode;
         let funcInfo = null;
 
         /**

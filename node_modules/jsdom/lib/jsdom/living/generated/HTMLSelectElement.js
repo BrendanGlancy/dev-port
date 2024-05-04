@@ -21,24 +21,24 @@ exports.is = value => {
 exports.isImpl = value => {
   return utils.isObject(value) && value instanceof Impl.implementation;
 };
-exports.convert = (value, { context = "The provided value" } = {}) => {
+exports.convert = (globalObject, value, { context = "The provided value" } = {}) => {
   if (exports.is(value)) {
     return utils.implForWrapper(value);
   }
-  throw new TypeError(`${context} is not of type 'HTMLSelectElement'.`);
+  throw new globalObject.TypeError(`${context} is not of type 'HTMLSelectElement'.`);
 };
 
-function makeWrapper(globalObject) {
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    throw new Error("Internal error: invalid global object");
+function makeWrapper(globalObject, newTarget) {
+  let proto;
+  if (newTarget !== undefined) {
+    proto = newTarget.prototype;
   }
 
-  const ctor = globalObject[ctorRegistrySymbol]["HTMLSelectElement"];
-  if (ctor === undefined) {
-    throw new Error("Internal error: constructor HTMLSelectElement is not installed on the passed global object");
+  if (!utils.isObject(proto)) {
+    proto = globalObject[ctorRegistrySymbol]["HTMLSelectElement"].prototype;
   }
 
-  return Object.create(ctor.prototype);
+  return Object.create(proto);
 }
 
 function makeProxy(wrapper, globalObject) {
@@ -82,8 +82,8 @@ exports.setup = (wrapper, globalObject, constructorArgs = [], privateData = {}) 
   return wrapper;
 };
 
-exports.new = globalObject => {
-  let wrapper = makeWrapper(globalObject);
+exports.new = (globalObject, newTarget) => {
+  let wrapper = makeWrapper(globalObject, newTarget);
 
   exports._internalSetup(wrapper, globalObject);
   Object.defineProperty(wrapper, implSymbol, {
@@ -107,9 +107,7 @@ exports.install = (globalObject, globalNames) => {
     return;
   }
 
-  if (globalObject.HTMLElement === undefined) {
-    throw new Error("Internal error: attempting to evaluate HTMLSelectElement before HTMLElement");
-  }
+  const ctorRegistry = utils.initCtorRegistry(globalObject);
   class HTMLSelectElement extends globalObject.HTMLElement {
     constructor() {
       return HTMLConstructor_helpers_html_constructor(globalObject, interfaceName, new.target);
@@ -118,21 +116,22 @@ exports.install = (globalObject, globalNames) => {
     item(index) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'item' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'item' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'item' on 'HTMLSelectElement': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'item' on 'HTMLSelectElement': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["unsigned long"](curArg, {
-          context: "Failed to execute 'item' on 'HTMLSelectElement': parameter 1"
+          context: "Failed to execute 'item' on 'HTMLSelectElement': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -142,21 +141,22 @@ exports.install = (globalObject, globalNames) => {
     namedItem(name) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'namedItem' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'namedItem' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'namedItem' on 'HTMLSelectElement': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'namedItem' on 'HTMLSelectElement': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'namedItem' on 'HTMLSelectElement': parameter 1"
+          context: "Failed to execute 'namedItem' on 'HTMLSelectElement': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -166,14 +166,14 @@ exports.install = (globalObject, globalNames) => {
     add(element) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'add' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'add' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'add' on 'HTMLSelectElement': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'add' on 'HTMLSelectElement': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
@@ -182,7 +182,7 @@ exports.install = (globalObject, globalNames) => {
         if (HTMLOptionElement.is(curArg) || HTMLOptGroupElement.is(curArg)) {
           curArg = utils.implForWrapper(curArg);
         } else {
-          throw new TypeError(
+          throw new globalObject.TypeError(
             "Failed to execute 'add' on 'HTMLSelectElement': parameter 1" + " is not of any supported type."
           );
         }
@@ -198,11 +198,13 @@ exports.install = (globalObject, globalNames) => {
               curArg = utils.implForWrapper(curArg);
             } else if (typeof curArg === "number") {
               curArg = conversions["long"](curArg, {
-                context: "Failed to execute 'add' on 'HTMLSelectElement': parameter 2"
+                context: "Failed to execute 'add' on 'HTMLSelectElement': parameter 2",
+                globals: globalObject
               });
             } else {
               curArg = conversions["long"](curArg, {
-                context: "Failed to execute 'add' on 'HTMLSelectElement': parameter 2"
+                context: "Failed to execute 'add' on 'HTMLSelectElement': parameter 2",
+                globals: globalObject
               });
             }
           }
@@ -222,7 +224,9 @@ exports.install = (globalObject, globalNames) => {
     remove() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'remove' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'remove' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
       const args = [];
       switch (arguments.length) {
@@ -231,7 +235,8 @@ exports.install = (globalObject, globalNames) => {
         default: {
           let curArg = arguments[0];
           curArg = conversions["long"](curArg, {
-            context: "Failed to execute 'remove' on 'HTMLSelectElement': parameter 1"
+            context: "Failed to execute 'remove' on 'HTMLSelectElement': parameter 1",
+            globals: globalObject
           });
           args.push(curArg);
         }
@@ -247,7 +252,9 @@ exports.install = (globalObject, globalNames) => {
     checkValidity() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'checkValidity' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'checkValidity' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       return esValue[implSymbol].checkValidity();
@@ -256,7 +263,9 @@ exports.install = (globalObject, globalNames) => {
     reportValidity() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'reportValidity' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'reportValidity' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       return esValue[implSymbol].reportValidity();
@@ -265,23 +274,22 @@ exports.install = (globalObject, globalNames) => {
     setCustomValidity(error) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'setCustomValidity' called on an object that is not a valid instance of HTMLSelectElement."
         );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'setCustomValidity' on 'HTMLSelectElement': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'setCustomValidity' on 'HTMLSelectElement': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'setCustomValidity' on 'HTMLSelectElement': parameter 1"
+          context: "Failed to execute 'setCustomValidity' on 'HTMLSelectElement': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -292,7 +300,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get autofocus' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'get autofocus' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -307,11 +317,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set autofocus' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'set autofocus' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'autofocus' property on 'HTMLSelectElement': The provided value"
+        context: "Failed to set the 'autofocus' property on 'HTMLSelectElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -330,7 +343,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get disabled' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'get disabled' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -345,11 +360,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set disabled' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'set disabled' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'disabled' property on 'HTMLSelectElement': The provided value"
+        context: "Failed to set the 'disabled' property on 'HTMLSelectElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -368,7 +386,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get form' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'get form' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["form"]);
@@ -378,7 +398,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get multiple' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'get multiple' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -393,11 +415,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set multiple' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'set multiple' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'multiple' property on 'HTMLSelectElement': The provided value"
+        context: "Failed to set the 'multiple' property on 'HTMLSelectElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -416,7 +441,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get name' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'get name' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -432,11 +459,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set name' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'set name' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'name' property on 'HTMLSelectElement': The provided value"
+        context: "Failed to set the 'name' property on 'HTMLSelectElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -451,7 +481,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get required' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'get required' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -466,11 +498,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set required' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'set required' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'required' property on 'HTMLSelectElement': The provided value"
+        context: "Failed to set the 'required' property on 'HTMLSelectElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -489,7 +524,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get size' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'get size' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -509,11 +546,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set size' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'set size' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       V = conversions["unsigned long"](V, {
-        context: "Failed to set the 'size' property on 'HTMLSelectElement': The provided value"
+        context: "Failed to set the 'size' property on 'HTMLSelectElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -529,7 +569,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get type' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'get type' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       return esValue[implSymbol]["type"];
@@ -539,7 +581,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get options' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'get options' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       return utils.getSameObject(this, "options", () => {
@@ -551,7 +595,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get length' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'get length' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -566,11 +612,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set length' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'set length' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       V = conversions["unsigned long"](V, {
-        context: "Failed to set the 'length' property on 'HTMLSelectElement': The provided value"
+        context: "Failed to set the 'length' property on 'HTMLSelectElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -585,7 +634,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get selectedOptions' called on an object that is not a valid instance of HTMLSelectElement."
         );
       }
@@ -599,7 +648,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get selectedIndex' called on an object that is not a valid instance of HTMLSelectElement."
         );
       }
@@ -611,13 +660,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'set selectedIndex' called on an object that is not a valid instance of HTMLSelectElement."
         );
       }
 
       V = conversions["long"](V, {
-        context: "Failed to set the 'selectedIndex' property on 'HTMLSelectElement': The provided value"
+        context: "Failed to set the 'selectedIndex' property on 'HTMLSelectElement': The provided value",
+        globals: globalObject
       });
 
       esValue[implSymbol]["selectedIndex"] = V;
@@ -627,7 +677,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get value' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'get value' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       return esValue[implSymbol]["value"];
@@ -637,11 +689,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set value' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'set value' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'value' property on 'HTMLSelectElement': The provided value"
+        context: "Failed to set the 'value' property on 'HTMLSelectElement': The provided value",
+        globals: globalObject
       });
 
       esValue[implSymbol]["value"] = V;
@@ -651,7 +706,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get willValidate' called on an object that is not a valid instance of HTMLSelectElement."
         );
       }
@@ -663,7 +718,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get validity' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'get validity' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["validity"]);
@@ -673,7 +730,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get validationMessage' called on an object that is not a valid instance of HTMLSelectElement."
         );
       }
@@ -685,7 +742,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get labels' called on an object that is not a valid instance of HTMLSelectElement.");
+        throw new globalObject.TypeError(
+          "'get labels' called on an object that is not a valid instance of HTMLSelectElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["labels"]);
@@ -717,12 +776,9 @@ exports.install = (globalObject, globalNames) => {
     validationMessage: { enumerable: true },
     labels: { enumerable: true },
     [Symbol.toStringTag]: { value: "HTMLSelectElement", configurable: true },
-    [Symbol.iterator]: { value: Array.prototype[Symbol.iterator], configurable: true, writable: true }
+    [Symbol.iterator]: { value: globalObject.Array.prototype[Symbol.iterator], configurable: true, writable: true }
   });
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    globalObject[ctorRegistrySymbol] = Object.create(null);
-  }
-  globalObject[ctorRegistrySymbol][interfaceName] = HTMLSelectElement;
+  ctorRegistry[interfaceName] = HTMLSelectElement;
 
   Object.defineProperty(globalObject, interfaceName, {
     configurable: true,
@@ -826,7 +882,7 @@ class ProxyHandler {
         if (indexedValue === null || indexedValue === undefined) {
           indexedValue = null;
         } else {
-          indexedValue = HTMLOptionElement.convert(indexedValue, {
+          indexedValue = HTMLOptionElement.convert(globalObject, indexedValue, {
             context: "Failed to set the " + index + " property on 'HTMLSelectElement': The provided value"
           });
         }
@@ -911,7 +967,7 @@ class ProxyHandler {
       if (indexedValue === null || indexedValue === undefined) {
         indexedValue = null;
       } else {
-        indexedValue = HTMLOptionElement.convert(indexedValue, {
+        indexedValue = HTMLOptionElement.convert(globalObject, indexedValue, {
           context: "Failed to set the " + index + " property on 'HTMLSelectElement': The provided value"
         });
       }

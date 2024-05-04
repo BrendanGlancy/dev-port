@@ -21,24 +21,24 @@ exports.is = value => {
 exports.isImpl = value => {
   return utils.isObject(value) && value instanceof Impl.implementation;
 };
-exports.convert = (value, { context = "The provided value" } = {}) => {
+exports.convert = (globalObject, value, { context = "The provided value" } = {}) => {
   if (exports.is(value)) {
     return utils.implForWrapper(value);
   }
-  throw new TypeError(`${context} is not of type 'HTMLLinkElement'.`);
+  throw new globalObject.TypeError(`${context} is not of type 'HTMLLinkElement'.`);
 };
 
-function makeWrapper(globalObject) {
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    throw new Error("Internal error: invalid global object");
+function makeWrapper(globalObject, newTarget) {
+  let proto;
+  if (newTarget !== undefined) {
+    proto = newTarget.prototype;
   }
 
-  const ctor = globalObject[ctorRegistrySymbol]["HTMLLinkElement"];
-  if (ctor === undefined) {
-    throw new Error("Internal error: constructor HTMLLinkElement is not installed on the passed global object");
+  if (!utils.isObject(proto)) {
+    proto = globalObject[ctorRegistrySymbol]["HTMLLinkElement"].prototype;
   }
 
-  return Object.create(ctor.prototype);
+  return Object.create(proto);
 }
 
 exports.create = (globalObject, constructorArgs, privateData) => {
@@ -71,8 +71,8 @@ exports.setup = (wrapper, globalObject, constructorArgs = [], privateData = {}) 
   return wrapper;
 };
 
-exports.new = globalObject => {
-  const wrapper = makeWrapper(globalObject);
+exports.new = (globalObject, newTarget) => {
+  const wrapper = makeWrapper(globalObject, newTarget);
 
   exports._internalSetup(wrapper, globalObject);
   Object.defineProperty(wrapper, implSymbol, {
@@ -94,9 +94,7 @@ exports.install = (globalObject, globalNames) => {
     return;
   }
 
-  if (globalObject.HTMLElement === undefined) {
-    throw new Error("Internal error: attempting to evaluate HTMLLinkElement before HTMLElement");
-  }
+  const ctorRegistry = utils.initCtorRegistry(globalObject);
   class HTMLLinkElement extends globalObject.HTMLElement {
     constructor() {
       return HTMLConstructor_helpers_html_constructor(globalObject, interfaceName, new.target);
@@ -106,7 +104,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get href' called on an object that is not a valid instance of HTMLLinkElement.");
+        throw new globalObject.TypeError(
+          "'get href' called on an object that is not a valid instance of HTMLLinkElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -132,11 +132,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set href' called on an object that is not a valid instance of HTMLLinkElement.");
+        throw new globalObject.TypeError(
+          "'set href' called on an object that is not a valid instance of HTMLLinkElement."
+        );
       }
 
       V = conversions["USVString"](V, {
-        context: "Failed to set the 'href' property on 'HTMLLinkElement': The provided value"
+        context: "Failed to set the 'href' property on 'HTMLLinkElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -151,7 +154,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get crossOrigin' called on an object that is not a valid instance of HTMLLinkElement.");
+        throw new globalObject.TypeError(
+          "'get crossOrigin' called on an object that is not a valid instance of HTMLLinkElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -167,14 +172,17 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set crossOrigin' called on an object that is not a valid instance of HTMLLinkElement.");
+        throw new globalObject.TypeError(
+          "'set crossOrigin' called on an object that is not a valid instance of HTMLLinkElement."
+        );
       }
 
       if (V === null || V === undefined) {
         V = null;
       } else {
         V = conversions["DOMString"](V, {
-          context: "Failed to set the 'crossOrigin' property on 'HTMLLinkElement': The provided value"
+          context: "Failed to set the 'crossOrigin' property on 'HTMLLinkElement': The provided value",
+          globals: globalObject
         });
       }
 
@@ -190,7 +198,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get rel' called on an object that is not a valid instance of HTMLLinkElement.");
+        throw new globalObject.TypeError(
+          "'get rel' called on an object that is not a valid instance of HTMLLinkElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -206,11 +216,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set rel' called on an object that is not a valid instance of HTMLLinkElement.");
+        throw new globalObject.TypeError(
+          "'set rel' called on an object that is not a valid instance of HTMLLinkElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'rel' property on 'HTMLLinkElement': The provided value"
+        context: "Failed to set the 'rel' property on 'HTMLLinkElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -225,7 +238,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get relList' called on an object that is not a valid instance of HTMLLinkElement.");
+        throw new globalObject.TypeError(
+          "'get relList' called on an object that is not a valid instance of HTMLLinkElement."
+        );
       }
 
       return utils.getSameObject(this, "relList", () => {
@@ -237,12 +252,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set relList' called on an object that is not a valid instance of HTMLLinkElement.");
+        throw new globalObject.TypeError(
+          "'set relList' called on an object that is not a valid instance of HTMLLinkElement."
+        );
       }
 
       const Q = esValue["relList"];
       if (!utils.isObject(Q)) {
-        throw new TypeError("Property 'relList' is not an object");
+        throw new globalObject.TypeError("Property 'relList' is not an object");
       }
       Reflect.set(Q, "value", V);
     }
@@ -251,7 +268,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get media' called on an object that is not a valid instance of HTMLLinkElement.");
+        throw new globalObject.TypeError(
+          "'get media' called on an object that is not a valid instance of HTMLLinkElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -267,11 +286,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set media' called on an object that is not a valid instance of HTMLLinkElement.");
+        throw new globalObject.TypeError(
+          "'set media' called on an object that is not a valid instance of HTMLLinkElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'media' property on 'HTMLLinkElement': The provided value"
+        context: "Failed to set the 'media' property on 'HTMLLinkElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -286,7 +308,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get hreflang' called on an object that is not a valid instance of HTMLLinkElement.");
+        throw new globalObject.TypeError(
+          "'get hreflang' called on an object that is not a valid instance of HTMLLinkElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -302,11 +326,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set hreflang' called on an object that is not a valid instance of HTMLLinkElement.");
+        throw new globalObject.TypeError(
+          "'set hreflang' called on an object that is not a valid instance of HTMLLinkElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'hreflang' property on 'HTMLLinkElement': The provided value"
+        context: "Failed to set the 'hreflang' property on 'HTMLLinkElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -321,7 +348,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get type' called on an object that is not a valid instance of HTMLLinkElement.");
+        throw new globalObject.TypeError(
+          "'get type' called on an object that is not a valid instance of HTMLLinkElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -337,11 +366,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set type' called on an object that is not a valid instance of HTMLLinkElement.");
+        throw new globalObject.TypeError(
+          "'set type' called on an object that is not a valid instance of HTMLLinkElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'type' property on 'HTMLLinkElement': The provided value"
+        context: "Failed to set the 'type' property on 'HTMLLinkElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -356,7 +388,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get charset' called on an object that is not a valid instance of HTMLLinkElement.");
+        throw new globalObject.TypeError(
+          "'get charset' called on an object that is not a valid instance of HTMLLinkElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -372,11 +406,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set charset' called on an object that is not a valid instance of HTMLLinkElement.");
+        throw new globalObject.TypeError(
+          "'set charset' called on an object that is not a valid instance of HTMLLinkElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'charset' property on 'HTMLLinkElement': The provided value"
+        context: "Failed to set the 'charset' property on 'HTMLLinkElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -391,7 +428,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get rev' called on an object that is not a valid instance of HTMLLinkElement.");
+        throw new globalObject.TypeError(
+          "'get rev' called on an object that is not a valid instance of HTMLLinkElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -407,11 +446,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set rev' called on an object that is not a valid instance of HTMLLinkElement.");
+        throw new globalObject.TypeError(
+          "'set rev' called on an object that is not a valid instance of HTMLLinkElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'rev' property on 'HTMLLinkElement': The provided value"
+        context: "Failed to set the 'rev' property on 'HTMLLinkElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -426,7 +468,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get target' called on an object that is not a valid instance of HTMLLinkElement.");
+        throw new globalObject.TypeError(
+          "'get target' called on an object that is not a valid instance of HTMLLinkElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -442,11 +486,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set target' called on an object that is not a valid instance of HTMLLinkElement.");
+        throw new globalObject.TypeError(
+          "'set target' called on an object that is not a valid instance of HTMLLinkElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'target' property on 'HTMLLinkElement': The provided value"
+        context: "Failed to set the 'target' property on 'HTMLLinkElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -461,7 +508,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get sheet' called on an object that is not a valid instance of HTMLLinkElement.");
+        throw new globalObject.TypeError(
+          "'get sheet' called on an object that is not a valid instance of HTMLLinkElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["sheet"]);
@@ -481,10 +530,7 @@ exports.install = (globalObject, globalNames) => {
     sheet: { enumerable: true },
     [Symbol.toStringTag]: { value: "HTMLLinkElement", configurable: true }
   });
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    globalObject[ctorRegistrySymbol] = Object.create(null);
-  }
-  globalObject[ctorRegistrySymbol][interfaceName] = HTMLLinkElement;
+  ctorRegistry[interfaceName] = HTMLLinkElement;
 
   Object.defineProperty(globalObject, interfaceName, {
     configurable: true,

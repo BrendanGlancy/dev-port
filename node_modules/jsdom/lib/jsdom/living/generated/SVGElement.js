@@ -19,24 +19,24 @@ exports.is = value => {
 exports.isImpl = value => {
   return utils.isObject(value) && value instanceof Impl.implementation;
 };
-exports.convert = (value, { context = "The provided value" } = {}) => {
+exports.convert = (globalObject, value, { context = "The provided value" } = {}) => {
   if (exports.is(value)) {
     return utils.implForWrapper(value);
   }
-  throw new TypeError(`${context} is not of type 'SVGElement'.`);
+  throw new globalObject.TypeError(`${context} is not of type 'SVGElement'.`);
 };
 
-function makeWrapper(globalObject) {
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    throw new Error("Internal error: invalid global object");
+function makeWrapper(globalObject, newTarget) {
+  let proto;
+  if (newTarget !== undefined) {
+    proto = newTarget.prototype;
   }
 
-  const ctor = globalObject[ctorRegistrySymbol]["SVGElement"];
-  if (ctor === undefined) {
-    throw new Error("Internal error: constructor SVGElement is not installed on the passed global object");
+  if (!utils.isObject(proto)) {
+    proto = globalObject[ctorRegistrySymbol]["SVGElement"].prototype;
   }
 
-  return Object.create(ctor.prototype);
+  return Object.create(proto);
 }
 
 exports.create = (globalObject, constructorArgs, privateData) => {
@@ -69,8 +69,8 @@ exports.setup = (wrapper, globalObject, constructorArgs = [], privateData = {}) 
   return wrapper;
 };
 
-exports.new = globalObject => {
-  const wrapper = makeWrapper(globalObject);
+exports.new = (globalObject, newTarget) => {
+  const wrapper = makeWrapper(globalObject, newTarget);
 
   exports._internalSetup(wrapper, globalObject);
   Object.defineProperty(wrapper, implSymbol, {
@@ -92,18 +92,16 @@ exports.install = (globalObject, globalNames) => {
     return;
   }
 
-  if (globalObject.Element === undefined) {
-    throw new Error("Internal error: attempting to evaluate SVGElement before Element");
-  }
+  const ctorRegistry = utils.initCtorRegistry(globalObject);
   class SVGElement extends globalObject.Element {
     constructor() {
-      throw new TypeError("Illegal constructor");
+      throw new globalObject.TypeError("Illegal constructor");
     }
 
     focus() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'focus' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError("'focus' called on an object that is not a valid instance of SVGElement.");
       }
 
       return esValue[implSymbol].focus();
@@ -112,7 +110,7 @@ exports.install = (globalObject, globalNames) => {
     blur() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'blur' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError("'blur' called on an object that is not a valid instance of SVGElement.");
       }
 
       return esValue[implSymbol].blur();
@@ -122,7 +120,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get className' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get className' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.getSameObject(this, "className", () => {
@@ -134,7 +134,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ownerSVGElement' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get ownerSVGElement' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["ownerSVGElement"]);
@@ -144,7 +146,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get viewportElement' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get viewportElement' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["viewportElement"]);
@@ -154,7 +158,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get style' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError("'get style' called on an object that is not a valid instance of SVGElement.");
       }
 
       return utils.getSameObject(this, "style", () => {
@@ -166,12 +170,12 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set style' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError("'set style' called on an object that is not a valid instance of SVGElement.");
       }
 
       const Q = esValue["style"];
       if (!utils.isObject(Q)) {
-        throw new TypeError("Property 'style' is not an object");
+        throw new globalObject.TypeError("Property 'style' is not an object");
       }
       Reflect.set(Q, "cssText", V);
     }
@@ -180,7 +184,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onabort' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onabort' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onabort"]);
@@ -190,13 +196,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onabort' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onabort' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onabort' property on 'SVGElement': The provided value"
         });
       }
@@ -207,7 +215,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onauxclick' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onauxclick' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onauxclick"]);
@@ -217,13 +227,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onauxclick' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onauxclick' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onauxclick' property on 'SVGElement': The provided value"
         });
       }
@@ -234,7 +246,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onblur' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onblur' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onblur"]);
@@ -244,13 +258,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onblur' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onblur' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onblur' property on 'SVGElement': The provided value"
         });
       }
@@ -261,7 +277,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get oncancel' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get oncancel' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["oncancel"]);
@@ -271,13 +289,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set oncancel' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set oncancel' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'oncancel' property on 'SVGElement': The provided value"
         });
       }
@@ -288,7 +308,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get oncanplay' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get oncanplay' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["oncanplay"]);
@@ -298,13 +320,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set oncanplay' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set oncanplay' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'oncanplay' property on 'SVGElement': The provided value"
         });
       }
@@ -315,7 +339,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get oncanplaythrough' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get oncanplaythrough' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["oncanplaythrough"]);
@@ -325,13 +351,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set oncanplaythrough' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set oncanplaythrough' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'oncanplaythrough' property on 'SVGElement': The provided value"
         });
       }
@@ -342,7 +370,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onchange' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onchange' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onchange"]);
@@ -352,13 +382,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onchange' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onchange' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onchange' property on 'SVGElement': The provided value"
         });
       }
@@ -369,7 +401,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onclick' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onclick' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onclick"]);
@@ -379,13 +413,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onclick' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onclick' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onclick' property on 'SVGElement': The provided value"
         });
       }
@@ -396,7 +432,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onclose' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onclose' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onclose"]);
@@ -406,13 +444,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onclose' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onclose' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onclose' property on 'SVGElement': The provided value"
         });
       }
@@ -423,7 +463,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get oncontextmenu' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get oncontextmenu' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["oncontextmenu"]);
@@ -433,13 +475,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set oncontextmenu' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set oncontextmenu' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'oncontextmenu' property on 'SVGElement': The provided value"
         });
       }
@@ -450,7 +494,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get oncuechange' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get oncuechange' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["oncuechange"]);
@@ -460,13 +506,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set oncuechange' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set oncuechange' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'oncuechange' property on 'SVGElement': The provided value"
         });
       }
@@ -477,7 +525,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ondblclick' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get ondblclick' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["ondblclick"]);
@@ -487,13 +537,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ondblclick' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set ondblclick' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'ondblclick' property on 'SVGElement': The provided value"
         });
       }
@@ -504,7 +556,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ondrag' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get ondrag' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["ondrag"]);
@@ -514,13 +568,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ondrag' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set ondrag' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'ondrag' property on 'SVGElement': The provided value"
         });
       }
@@ -531,7 +587,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ondragend' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get ondragend' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["ondragend"]);
@@ -541,13 +599,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ondragend' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set ondragend' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'ondragend' property on 'SVGElement': The provided value"
         });
       }
@@ -558,7 +618,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ondragenter' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get ondragenter' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["ondragenter"]);
@@ -568,13 +630,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ondragenter' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set ondragenter' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'ondragenter' property on 'SVGElement': The provided value"
         });
       }
@@ -585,7 +649,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ondragleave' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get ondragleave' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["ondragleave"]);
@@ -595,13 +661,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ondragleave' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set ondragleave' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'ondragleave' property on 'SVGElement': The provided value"
         });
       }
@@ -612,7 +680,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ondragover' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get ondragover' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["ondragover"]);
@@ -622,13 +692,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ondragover' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set ondragover' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'ondragover' property on 'SVGElement': The provided value"
         });
       }
@@ -639,7 +711,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ondragstart' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get ondragstart' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["ondragstart"]);
@@ -649,13 +723,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ondragstart' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set ondragstart' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'ondragstart' property on 'SVGElement': The provided value"
         });
       }
@@ -666,7 +742,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ondrop' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get ondrop' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["ondrop"]);
@@ -676,13 +754,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ondrop' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set ondrop' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'ondrop' property on 'SVGElement': The provided value"
         });
       }
@@ -693,7 +773,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ondurationchange' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get ondurationchange' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["ondurationchange"]);
@@ -703,13 +785,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ondurationchange' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set ondurationchange' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'ondurationchange' property on 'SVGElement': The provided value"
         });
       }
@@ -720,7 +804,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onemptied' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onemptied' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onemptied"]);
@@ -730,13 +816,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onemptied' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onemptied' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onemptied' property on 'SVGElement': The provided value"
         });
       }
@@ -747,7 +835,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onended' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onended' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onended"]);
@@ -757,13 +847,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onended' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onended' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onended' property on 'SVGElement': The provided value"
         });
       }
@@ -774,7 +866,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onerror' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onerror' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onerror"]);
@@ -784,13 +878,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onerror' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onerror' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = OnErrorEventHandlerNonNull.convert(V, {
+        V = OnErrorEventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onerror' property on 'SVGElement': The provided value"
         });
       }
@@ -801,7 +897,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onfocus' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onfocus' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onfocus"]);
@@ -811,13 +909,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onfocus' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onfocus' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onfocus' property on 'SVGElement': The provided value"
         });
       }
@@ -828,7 +928,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get oninput' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get oninput' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["oninput"]);
@@ -838,13 +940,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set oninput' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set oninput' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'oninput' property on 'SVGElement': The provided value"
         });
       }
@@ -855,7 +959,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get oninvalid' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get oninvalid' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["oninvalid"]);
@@ -865,13 +971,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set oninvalid' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set oninvalid' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'oninvalid' property on 'SVGElement': The provided value"
         });
       }
@@ -882,7 +990,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onkeydown' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onkeydown' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onkeydown"]);
@@ -892,13 +1002,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onkeydown' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onkeydown' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onkeydown' property on 'SVGElement': The provided value"
         });
       }
@@ -909,7 +1021,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onkeypress' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onkeypress' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onkeypress"]);
@@ -919,13 +1033,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onkeypress' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onkeypress' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onkeypress' property on 'SVGElement': The provided value"
         });
       }
@@ -936,7 +1052,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onkeyup' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onkeyup' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onkeyup"]);
@@ -946,13 +1064,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onkeyup' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onkeyup' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onkeyup' property on 'SVGElement': The provided value"
         });
       }
@@ -963,7 +1083,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onload' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onload' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onload"]);
@@ -973,13 +1095,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onload' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onload' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onload' property on 'SVGElement': The provided value"
         });
       }
@@ -990,7 +1114,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onloadeddata' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onloadeddata' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onloadeddata"]);
@@ -1000,13 +1126,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onloadeddata' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onloadeddata' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onloadeddata' property on 'SVGElement': The provided value"
         });
       }
@@ -1017,7 +1145,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onloadedmetadata' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onloadedmetadata' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onloadedmetadata"]);
@@ -1027,13 +1157,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onloadedmetadata' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onloadedmetadata' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onloadedmetadata' property on 'SVGElement': The provided value"
         });
       }
@@ -1044,7 +1176,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onloadend' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onloadend' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onloadend"]);
@@ -1054,13 +1188,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onloadend' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onloadend' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onloadend' property on 'SVGElement': The provided value"
         });
       }
@@ -1071,7 +1207,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onloadstart' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onloadstart' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onloadstart"]);
@@ -1081,13 +1219,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onloadstart' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onloadstart' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onloadstart' property on 'SVGElement': The provided value"
         });
       }
@@ -1098,7 +1238,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onmousedown' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onmousedown' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onmousedown"]);
@@ -1108,13 +1250,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onmousedown' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onmousedown' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onmousedown' property on 'SVGElement': The provided value"
         });
       }
@@ -1141,7 +1285,7 @@ exports.install = (globalObject, globalNames) => {
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onmouseenter' property on 'SVGElement': The provided value"
         });
       }
@@ -1168,7 +1312,7 @@ exports.install = (globalObject, globalNames) => {
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onmouseleave' property on 'SVGElement': The provided value"
         });
       }
@@ -1179,7 +1323,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onmousemove' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onmousemove' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onmousemove"]);
@@ -1189,13 +1335,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onmousemove' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onmousemove' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onmousemove' property on 'SVGElement': The provided value"
         });
       }
@@ -1206,7 +1354,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onmouseout' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onmouseout' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onmouseout"]);
@@ -1216,13 +1366,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onmouseout' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onmouseout' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onmouseout' property on 'SVGElement': The provided value"
         });
       }
@@ -1233,7 +1385,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onmouseover' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onmouseover' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onmouseover"]);
@@ -1243,13 +1397,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onmouseover' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onmouseover' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onmouseover' property on 'SVGElement': The provided value"
         });
       }
@@ -1260,7 +1416,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onmouseup' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onmouseup' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onmouseup"]);
@@ -1270,13 +1428,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onmouseup' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onmouseup' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onmouseup' property on 'SVGElement': The provided value"
         });
       }
@@ -1287,7 +1447,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onwheel' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onwheel' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onwheel"]);
@@ -1297,13 +1459,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onwheel' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onwheel' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onwheel' property on 'SVGElement': The provided value"
         });
       }
@@ -1314,7 +1478,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onpause' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onpause' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onpause"]);
@@ -1324,13 +1490,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onpause' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onpause' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onpause' property on 'SVGElement': The provided value"
         });
       }
@@ -1341,7 +1509,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onplay' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onplay' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onplay"]);
@@ -1351,13 +1521,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onplay' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onplay' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onplay' property on 'SVGElement': The provided value"
         });
       }
@@ -1368,7 +1540,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onplaying' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onplaying' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onplaying"]);
@@ -1378,13 +1552,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onplaying' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onplaying' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onplaying' property on 'SVGElement': The provided value"
         });
       }
@@ -1395,7 +1571,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onprogress' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onprogress' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onprogress"]);
@@ -1405,13 +1583,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onprogress' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onprogress' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onprogress' property on 'SVGElement': The provided value"
         });
       }
@@ -1422,7 +1602,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onratechange' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onratechange' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onratechange"]);
@@ -1432,13 +1614,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onratechange' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onratechange' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onratechange' property on 'SVGElement': The provided value"
         });
       }
@@ -1449,7 +1633,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onreset' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onreset' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onreset"]);
@@ -1459,13 +1645,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onreset' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onreset' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onreset' property on 'SVGElement': The provided value"
         });
       }
@@ -1476,7 +1664,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onresize' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onresize' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onresize"]);
@@ -1486,13 +1676,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onresize' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onresize' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onresize' property on 'SVGElement': The provided value"
         });
       }
@@ -1503,7 +1695,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onscroll' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onscroll' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onscroll"]);
@@ -1513,13 +1707,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onscroll' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onscroll' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onscroll' property on 'SVGElement': The provided value"
         });
       }
@@ -1530,7 +1726,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get onsecuritypolicyviolation' called on an object that is not a valid instance of SVGElement."
         );
       }
@@ -1542,7 +1738,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'set onsecuritypolicyviolation' called on an object that is not a valid instance of SVGElement."
         );
       }
@@ -1550,7 +1746,7 @@ exports.install = (globalObject, globalNames) => {
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onsecuritypolicyviolation' property on 'SVGElement': The provided value"
         });
       }
@@ -1561,7 +1757,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onseeked' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onseeked' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onseeked"]);
@@ -1571,13 +1769,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onseeked' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onseeked' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onseeked' property on 'SVGElement': The provided value"
         });
       }
@@ -1588,7 +1788,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onseeking' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onseeking' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onseeking"]);
@@ -1598,13 +1800,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onseeking' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onseeking' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onseeking' property on 'SVGElement': The provided value"
         });
       }
@@ -1615,7 +1819,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onselect' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onselect' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onselect"]);
@@ -1625,13 +1831,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onselect' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onselect' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onselect' property on 'SVGElement': The provided value"
         });
       }
@@ -1642,7 +1850,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onstalled' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onstalled' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onstalled"]);
@@ -1652,13 +1862,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onstalled' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onstalled' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onstalled' property on 'SVGElement': The provided value"
         });
       }
@@ -1669,7 +1881,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onsubmit' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onsubmit' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onsubmit"]);
@@ -1679,13 +1893,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onsubmit' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onsubmit' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onsubmit' property on 'SVGElement': The provided value"
         });
       }
@@ -1696,7 +1912,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onsuspend' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onsuspend' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onsuspend"]);
@@ -1706,13 +1924,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onsuspend' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onsuspend' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onsuspend' property on 'SVGElement': The provided value"
         });
       }
@@ -1723,7 +1943,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ontimeupdate' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get ontimeupdate' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["ontimeupdate"]);
@@ -1733,13 +1955,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ontimeupdate' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set ontimeupdate' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'ontimeupdate' property on 'SVGElement': The provided value"
         });
       }
@@ -1750,7 +1974,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ontoggle' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get ontoggle' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["ontoggle"]);
@@ -1760,13 +1986,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ontoggle' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set ontoggle' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'ontoggle' property on 'SVGElement': The provided value"
         });
       }
@@ -1777,7 +2005,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onvolumechange' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onvolumechange' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onvolumechange"]);
@@ -1787,13 +2017,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onvolumechange' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onvolumechange' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onvolumechange' property on 'SVGElement': The provided value"
         });
       }
@@ -1804,7 +2036,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onwaiting' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get onwaiting' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onwaiting"]);
@@ -1814,13 +2048,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onwaiting' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set onwaiting' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onwaiting' property on 'SVGElement': The provided value"
         });
       }
@@ -1831,7 +2067,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get dataset' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get dataset' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       return utils.getSameObject(this, "dataset", () => {
@@ -1843,7 +2081,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get nonce' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError("'get nonce' called on an object that is not a valid instance of SVGElement.");
       }
 
       const value = esValue[implSymbol].getAttributeNS(null, "nonce");
@@ -1854,11 +2092,12 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set nonce' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError("'set nonce' called on an object that is not a valid instance of SVGElement.");
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'nonce' property on 'SVGElement': The provided value"
+        context: "Failed to set the 'nonce' property on 'SVGElement': The provided value",
+        globals: globalObject
       });
 
       esValue[implSymbol].setAttributeNS(null, "nonce", V);
@@ -1868,7 +2107,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get tabIndex' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'get tabIndex' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1883,11 +2124,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set tabIndex' called on an object that is not a valid instance of SVGElement.");
+        throw new globalObject.TypeError(
+          "'set tabIndex' called on an object that is not a valid instance of SVGElement."
+        );
       }
 
       V = conversions["long"](V, {
-        context: "Failed to set the 'tabIndex' property on 'SVGElement': The provided value"
+        context: "Failed to set the 'tabIndex' property on 'SVGElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1971,10 +2215,7 @@ exports.install = (globalObject, globalNames) => {
     tabIndex: { enumerable: true },
     [Symbol.toStringTag]: { value: "SVGElement", configurable: true }
   });
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    globalObject[ctorRegistrySymbol] = Object.create(null);
-  }
-  globalObject[ctorRegistrySymbol][interfaceName] = SVGElement;
+  ctorRegistry[interfaceName] = SVGElement;
 
   Object.defineProperty(globalObject, interfaceName, {
     configurable: true,

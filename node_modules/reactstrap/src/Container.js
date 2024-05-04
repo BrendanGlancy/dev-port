@@ -10,38 +10,30 @@ const propTypes = {
   cssModule: PropTypes.object,
 };
 
-const defaultProps = {
-  tag: 'div',
-};
-
-const Container = (props) => {
+function Container(props) {
   const {
     className,
     cssModule,
     fluid,
-    tag: Tag,
+    tag: Tag = 'div',
     ...attributes
   } = props;
 
   let containerClass = 'container';
   if (fluid === true) {
     containerClass = 'container-fluid';
-  }
-  else if (fluid) {
+  } else if (fluid) {
     containerClass = `container-${fluid}`;
   }
 
-  const classes = mapToCssModules(classNames(
-    className,
-    containerClass
-  ), cssModule);
-
-  return (
-    <Tag {...attributes} className={classes} />
+  const classes = mapToCssModules(
+    classNames(className, containerClass),
+    cssModule,
   );
-};
+
+  return <Tag {...attributes} className={classes} />;
+}
 
 Container.propTypes = propTypes;
-Container.defaultProps = defaultProps;
 
 export default Container;

@@ -19,24 +19,24 @@ exports.is = value => {
 exports.isImpl = value => {
   return utils.isObject(value) && value instanceof Impl.implementation;
 };
-exports.convert = (value, { context = "The provided value" } = {}) => {
+exports.convert = (globalObject, value, { context = "The provided value" } = {}) => {
   if (exports.is(value)) {
     return utils.implForWrapper(value);
   }
-  throw new TypeError(`${context} is not of type 'HTMLTableColElement'.`);
+  throw new globalObject.TypeError(`${context} is not of type 'HTMLTableColElement'.`);
 };
 
-function makeWrapper(globalObject) {
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    throw new Error("Internal error: invalid global object");
+function makeWrapper(globalObject, newTarget) {
+  let proto;
+  if (newTarget !== undefined) {
+    proto = newTarget.prototype;
   }
 
-  const ctor = globalObject[ctorRegistrySymbol]["HTMLTableColElement"];
-  if (ctor === undefined) {
-    throw new Error("Internal error: constructor HTMLTableColElement is not installed on the passed global object");
+  if (!utils.isObject(proto)) {
+    proto = globalObject[ctorRegistrySymbol]["HTMLTableColElement"].prototype;
   }
 
-  return Object.create(ctor.prototype);
+  return Object.create(proto);
 }
 
 exports.create = (globalObject, constructorArgs, privateData) => {
@@ -69,8 +69,8 @@ exports.setup = (wrapper, globalObject, constructorArgs = [], privateData = {}) 
   return wrapper;
 };
 
-exports.new = globalObject => {
-  const wrapper = makeWrapper(globalObject);
+exports.new = (globalObject, newTarget) => {
+  const wrapper = makeWrapper(globalObject, newTarget);
 
   exports._internalSetup(wrapper, globalObject);
   Object.defineProperty(wrapper, implSymbol, {
@@ -92,9 +92,7 @@ exports.install = (globalObject, globalNames) => {
     return;
   }
 
-  if (globalObject.HTMLElement === undefined) {
-    throw new Error("Internal error: attempting to evaluate HTMLTableColElement before HTMLElement");
-  }
+  const ctorRegistry = utils.initCtorRegistry(globalObject);
   class HTMLTableColElement extends globalObject.HTMLElement {
     constructor() {
       return HTMLConstructor_helpers_html_constructor(globalObject, interfaceName, new.target);
@@ -104,7 +102,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get span' called on an object that is not a valid instance of HTMLTableColElement.");
+        throw new globalObject.TypeError(
+          "'get span' called on an object that is not a valid instance of HTMLTableColElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -124,11 +124,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set span' called on an object that is not a valid instance of HTMLTableColElement.");
+        throw new globalObject.TypeError(
+          "'set span' called on an object that is not a valid instance of HTMLTableColElement."
+        );
       }
 
       V = conversions["unsigned long"](V, {
-        context: "Failed to set the 'span' property on 'HTMLTableColElement': The provided value"
+        context: "Failed to set the 'span' property on 'HTMLTableColElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -144,7 +147,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get align' called on an object that is not a valid instance of HTMLTableColElement.");
+        throw new globalObject.TypeError(
+          "'get align' called on an object that is not a valid instance of HTMLTableColElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -160,11 +165,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set align' called on an object that is not a valid instance of HTMLTableColElement.");
+        throw new globalObject.TypeError(
+          "'set align' called on an object that is not a valid instance of HTMLTableColElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'align' property on 'HTMLTableColElement': The provided value"
+        context: "Failed to set the 'align' property on 'HTMLTableColElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -179,7 +187,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ch' called on an object that is not a valid instance of HTMLTableColElement.");
+        throw new globalObject.TypeError(
+          "'get ch' called on an object that is not a valid instance of HTMLTableColElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -195,11 +205,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ch' called on an object that is not a valid instance of HTMLTableColElement.");
+        throw new globalObject.TypeError(
+          "'set ch' called on an object that is not a valid instance of HTMLTableColElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'ch' property on 'HTMLTableColElement': The provided value"
+        context: "Failed to set the 'ch' property on 'HTMLTableColElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -214,7 +227,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get chOff' called on an object that is not a valid instance of HTMLTableColElement.");
+        throw new globalObject.TypeError(
+          "'get chOff' called on an object that is not a valid instance of HTMLTableColElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -230,11 +245,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set chOff' called on an object that is not a valid instance of HTMLTableColElement.");
+        throw new globalObject.TypeError(
+          "'set chOff' called on an object that is not a valid instance of HTMLTableColElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'chOff' property on 'HTMLTableColElement': The provided value"
+        context: "Failed to set the 'chOff' property on 'HTMLTableColElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -249,7 +267,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get vAlign' called on an object that is not a valid instance of HTMLTableColElement.");
+        throw new globalObject.TypeError(
+          "'get vAlign' called on an object that is not a valid instance of HTMLTableColElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -265,11 +285,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set vAlign' called on an object that is not a valid instance of HTMLTableColElement.");
+        throw new globalObject.TypeError(
+          "'set vAlign' called on an object that is not a valid instance of HTMLTableColElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'vAlign' property on 'HTMLTableColElement': The provided value"
+        context: "Failed to set the 'vAlign' property on 'HTMLTableColElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -284,7 +307,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get width' called on an object that is not a valid instance of HTMLTableColElement.");
+        throw new globalObject.TypeError(
+          "'get width' called on an object that is not a valid instance of HTMLTableColElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -300,11 +325,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set width' called on an object that is not a valid instance of HTMLTableColElement.");
+        throw new globalObject.TypeError(
+          "'set width' called on an object that is not a valid instance of HTMLTableColElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'width' property on 'HTMLTableColElement': The provided value"
+        context: "Failed to set the 'width' property on 'HTMLTableColElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -324,10 +352,7 @@ exports.install = (globalObject, globalNames) => {
     width: { enumerable: true },
     [Symbol.toStringTag]: { value: "HTMLTableColElement", configurable: true }
   });
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    globalObject[ctorRegistrySymbol] = Object.create(null);
-  }
-  globalObject[ctorRegistrySymbol][interfaceName] = HTMLTableColElement;
+  ctorRegistry[interfaceName] = HTMLTableColElement;
 
   Object.defineProperty(globalObject, interfaceName, {
     configurable: true,

@@ -19,24 +19,24 @@ exports.is = value => {
 exports.isImpl = value => {
   return utils.isObject(value) && value instanceof Impl.implementation;
 };
-exports.convert = (value, { context = "The provided value" } = {}) => {
+exports.convert = (globalObject, value, { context = "The provided value" } = {}) => {
   if (exports.is(value)) {
     return utils.implForWrapper(value);
   }
-  throw new TypeError(`${context} is not of type 'Element'.`);
+  throw new globalObject.TypeError(`${context} is not of type 'Element'.`);
 };
 
-function makeWrapper(globalObject) {
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    throw new Error("Internal error: invalid global object");
+function makeWrapper(globalObject, newTarget) {
+  let proto;
+  if (newTarget !== undefined) {
+    proto = newTarget.prototype;
   }
 
-  const ctor = globalObject[ctorRegistrySymbol]["Element"];
-  if (ctor === undefined) {
-    throw new Error("Internal error: constructor Element is not installed on the passed global object");
+  if (!utils.isObject(proto)) {
+    proto = globalObject[ctorRegistrySymbol]["Element"].prototype;
   }
 
-  return Object.create(ctor.prototype);
+  return Object.create(proto);
 }
 
 exports.create = (globalObject, constructorArgs, privateData) => {
@@ -69,8 +69,8 @@ exports.setup = (wrapper, globalObject, constructorArgs = [], privateData = {}) 
   return wrapper;
 };
 
-exports.new = globalObject => {
-  const wrapper = makeWrapper(globalObject);
+exports.new = (globalObject, newTarget) => {
+  const wrapper = makeWrapper(globalObject, newTarget);
 
   exports._internalSetup(wrapper, globalObject);
   Object.defineProperty(wrapper, implSymbol, {
@@ -92,18 +92,18 @@ exports.install = (globalObject, globalNames) => {
     return;
   }
 
-  if (globalObject.Node === undefined) {
-    throw new Error("Internal error: attempting to evaluate Element before Node");
-  }
+  const ctorRegistry = utils.initCtorRegistry(globalObject);
   class Element extends globalObject.Node {
     constructor() {
-      throw new TypeError("Illegal constructor");
+      throw new globalObject.TypeError("Illegal constructor");
     }
 
     hasAttributes() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'hasAttributes' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'hasAttributes' called on an object that is not a valid instance of Element."
+        );
       }
 
       return esValue[implSymbol].hasAttributes();
@@ -112,7 +112,9 @@ exports.install = (globalObject, globalNames) => {
     getAttributeNames() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'getAttributeNames' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'getAttributeNames' called on an object that is not a valid instance of Element."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol].getAttributeNames());
@@ -121,21 +123,20 @@ exports.install = (globalObject, globalNames) => {
     getAttribute(qualifiedName) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'getAttribute' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError("'getAttribute' called on an object that is not a valid instance of Element.");
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'getAttribute' on 'Element': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'getAttribute' on 'Element': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'getAttribute' on 'Element': parameter 1"
+          context: "Failed to execute 'getAttribute' on 'Element': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -145,14 +146,14 @@ exports.install = (globalObject, globalNames) => {
     getAttributeNS(namespace, localName) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'getAttributeNS' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'getAttributeNS' called on an object that is not a valid instance of Element."
+        );
       }
 
       if (arguments.length < 2) {
-        throw new TypeError(
-          "Failed to execute 'getAttributeNS' on 'Element': 2 arguments required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'getAttributeNS' on 'Element': 2 arguments required, but only ${arguments.length} present.`
         );
       }
       const args = [];
@@ -162,7 +163,8 @@ exports.install = (globalObject, globalNames) => {
           curArg = null;
         } else {
           curArg = conversions["DOMString"](curArg, {
-            context: "Failed to execute 'getAttributeNS' on 'Element': parameter 1"
+            context: "Failed to execute 'getAttributeNS' on 'Element': parameter 1",
+            globals: globalObject
           });
         }
         args.push(curArg);
@@ -170,7 +172,8 @@ exports.install = (globalObject, globalNames) => {
       {
         let curArg = arguments[1];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'getAttributeNS' on 'Element': parameter 2"
+          context: "Failed to execute 'getAttributeNS' on 'Element': parameter 2",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -180,28 +183,28 @@ exports.install = (globalObject, globalNames) => {
     setAttribute(qualifiedName, value) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'setAttribute' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError("'setAttribute' called on an object that is not a valid instance of Element.");
       }
 
       if (arguments.length < 2) {
-        throw new TypeError(
-          "Failed to execute 'setAttribute' on 'Element': 2 arguments required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'setAttribute' on 'Element': 2 arguments required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'setAttribute' on 'Element': parameter 1"
+          context: "Failed to execute 'setAttribute' on 'Element': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
       {
         let curArg = arguments[1];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'setAttribute' on 'Element': parameter 2"
+          context: "Failed to execute 'setAttribute' on 'Element': parameter 2",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -216,14 +219,14 @@ exports.install = (globalObject, globalNames) => {
     setAttributeNS(namespace, qualifiedName, value) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'setAttributeNS' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'setAttributeNS' called on an object that is not a valid instance of Element."
+        );
       }
 
       if (arguments.length < 3) {
-        throw new TypeError(
-          "Failed to execute 'setAttributeNS' on 'Element': 3 arguments required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'setAttributeNS' on 'Element': 3 arguments required, but only ${arguments.length} present.`
         );
       }
       const args = [];
@@ -233,7 +236,8 @@ exports.install = (globalObject, globalNames) => {
           curArg = null;
         } else {
           curArg = conversions["DOMString"](curArg, {
-            context: "Failed to execute 'setAttributeNS' on 'Element': parameter 1"
+            context: "Failed to execute 'setAttributeNS' on 'Element': parameter 1",
+            globals: globalObject
           });
         }
         args.push(curArg);
@@ -241,14 +245,16 @@ exports.install = (globalObject, globalNames) => {
       {
         let curArg = arguments[1];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'setAttributeNS' on 'Element': parameter 2"
+          context: "Failed to execute 'setAttributeNS' on 'Element': parameter 2",
+          globals: globalObject
         });
         args.push(curArg);
       }
       {
         let curArg = arguments[2];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'setAttributeNS' on 'Element': parameter 3"
+          context: "Failed to execute 'setAttributeNS' on 'Element': parameter 3",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -263,21 +269,22 @@ exports.install = (globalObject, globalNames) => {
     removeAttribute(qualifiedName) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'removeAttribute' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'removeAttribute' called on an object that is not a valid instance of Element."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'removeAttribute' on 'Element': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'removeAttribute' on 'Element': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'removeAttribute' on 'Element': parameter 1"
+          context: "Failed to execute 'removeAttribute' on 'Element': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -292,14 +299,14 @@ exports.install = (globalObject, globalNames) => {
     removeAttributeNS(namespace, localName) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'removeAttributeNS' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'removeAttributeNS' called on an object that is not a valid instance of Element."
+        );
       }
 
       if (arguments.length < 2) {
-        throw new TypeError(
-          "Failed to execute 'removeAttributeNS' on 'Element': 2 arguments required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'removeAttributeNS' on 'Element': 2 arguments required, but only ${arguments.length} present.`
         );
       }
       const args = [];
@@ -309,7 +316,8 @@ exports.install = (globalObject, globalNames) => {
           curArg = null;
         } else {
           curArg = conversions["DOMString"](curArg, {
-            context: "Failed to execute 'removeAttributeNS' on 'Element': parameter 1"
+            context: "Failed to execute 'removeAttributeNS' on 'Element': parameter 1",
+            globals: globalObject
           });
         }
         args.push(curArg);
@@ -317,7 +325,8 @@ exports.install = (globalObject, globalNames) => {
       {
         let curArg = arguments[1];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'removeAttributeNS' on 'Element': parameter 2"
+          context: "Failed to execute 'removeAttributeNS' on 'Element': parameter 2",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -332,21 +341,22 @@ exports.install = (globalObject, globalNames) => {
     toggleAttribute(qualifiedName) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'toggleAttribute' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'toggleAttribute' called on an object that is not a valid instance of Element."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'toggleAttribute' on 'Element': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'toggleAttribute' on 'Element': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'toggleAttribute' on 'Element': parameter 1"
+          context: "Failed to execute 'toggleAttribute' on 'Element': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -354,7 +364,8 @@ exports.install = (globalObject, globalNames) => {
         let curArg = arguments[1];
         if (curArg !== undefined) {
           curArg = conversions["boolean"](curArg, {
-            context: "Failed to execute 'toggleAttribute' on 'Element': parameter 2"
+            context: "Failed to execute 'toggleAttribute' on 'Element': parameter 2",
+            globals: globalObject
           });
         }
         args.push(curArg);
@@ -370,21 +381,20 @@ exports.install = (globalObject, globalNames) => {
     hasAttribute(qualifiedName) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'hasAttribute' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError("'hasAttribute' called on an object that is not a valid instance of Element.");
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'hasAttribute' on 'Element': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'hasAttribute' on 'Element': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'hasAttribute' on 'Element': parameter 1"
+          context: "Failed to execute 'hasAttribute' on 'Element': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -394,14 +404,14 @@ exports.install = (globalObject, globalNames) => {
     hasAttributeNS(namespace, localName) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'hasAttributeNS' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'hasAttributeNS' called on an object that is not a valid instance of Element."
+        );
       }
 
       if (arguments.length < 2) {
-        throw new TypeError(
-          "Failed to execute 'hasAttributeNS' on 'Element': 2 arguments required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'hasAttributeNS' on 'Element': 2 arguments required, but only ${arguments.length} present.`
         );
       }
       const args = [];
@@ -411,7 +421,8 @@ exports.install = (globalObject, globalNames) => {
           curArg = null;
         } else {
           curArg = conversions["DOMString"](curArg, {
-            context: "Failed to execute 'hasAttributeNS' on 'Element': parameter 1"
+            context: "Failed to execute 'hasAttributeNS' on 'Element': parameter 1",
+            globals: globalObject
           });
         }
         args.push(curArg);
@@ -419,7 +430,8 @@ exports.install = (globalObject, globalNames) => {
       {
         let curArg = arguments[1];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'hasAttributeNS' on 'Element': parameter 2"
+          context: "Failed to execute 'hasAttributeNS' on 'Element': parameter 2",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -429,21 +441,22 @@ exports.install = (globalObject, globalNames) => {
     getAttributeNode(qualifiedName) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'getAttributeNode' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'getAttributeNode' called on an object that is not a valid instance of Element."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'getAttributeNode' on 'Element': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'getAttributeNode' on 'Element': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'getAttributeNode' on 'Element': parameter 1"
+          context: "Failed to execute 'getAttributeNode' on 'Element': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -453,14 +466,14 @@ exports.install = (globalObject, globalNames) => {
     getAttributeNodeNS(namespace, localName) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'getAttributeNodeNS' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'getAttributeNodeNS' called on an object that is not a valid instance of Element."
+        );
       }
 
       if (arguments.length < 2) {
-        throw new TypeError(
-          "Failed to execute 'getAttributeNodeNS' on 'Element': 2 arguments required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'getAttributeNodeNS' on 'Element': 2 arguments required, but only ${arguments.length} present.`
         );
       }
       const args = [];
@@ -470,7 +483,8 @@ exports.install = (globalObject, globalNames) => {
           curArg = null;
         } else {
           curArg = conversions["DOMString"](curArg, {
-            context: "Failed to execute 'getAttributeNodeNS' on 'Element': parameter 1"
+            context: "Failed to execute 'getAttributeNodeNS' on 'Element': parameter 1",
+            globals: globalObject
           });
         }
         args.push(curArg);
@@ -478,7 +492,8 @@ exports.install = (globalObject, globalNames) => {
       {
         let curArg = arguments[1];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'getAttributeNodeNS' on 'Element': parameter 2"
+          context: "Failed to execute 'getAttributeNodeNS' on 'Element': parameter 2",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -488,20 +503,22 @@ exports.install = (globalObject, globalNames) => {
     setAttributeNode(attr) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'setAttributeNode' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'setAttributeNode' called on an object that is not a valid instance of Element."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'setAttributeNode' on 'Element': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'setAttributeNode' on 'Element': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
-        curArg = Attr.convert(curArg, { context: "Failed to execute 'setAttributeNode' on 'Element': parameter 1" });
+        curArg = Attr.convert(globalObject, curArg, {
+          context: "Failed to execute 'setAttributeNode' on 'Element': parameter 1"
+        });
         args.push(curArg);
       }
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -515,20 +532,22 @@ exports.install = (globalObject, globalNames) => {
     setAttributeNodeNS(attr) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'setAttributeNodeNS' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'setAttributeNodeNS' called on an object that is not a valid instance of Element."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'setAttributeNodeNS' on 'Element': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'setAttributeNodeNS' on 'Element': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
-        curArg = Attr.convert(curArg, { context: "Failed to execute 'setAttributeNodeNS' on 'Element': parameter 1" });
+        curArg = Attr.convert(globalObject, curArg, {
+          context: "Failed to execute 'setAttributeNodeNS' on 'Element': parameter 1"
+        });
         args.push(curArg);
       }
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -542,20 +561,22 @@ exports.install = (globalObject, globalNames) => {
     removeAttributeNode(attr) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'removeAttributeNode' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'removeAttributeNode' called on an object that is not a valid instance of Element."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'removeAttributeNode' on 'Element': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'removeAttributeNode' on 'Element': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
-        curArg = Attr.convert(curArg, { context: "Failed to execute 'removeAttributeNode' on 'Element': parameter 1" });
+        curArg = Attr.convert(globalObject, curArg, {
+          context: "Failed to execute 'removeAttributeNode' on 'Element': parameter 1"
+        });
         args.push(curArg);
       }
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -569,20 +590,18 @@ exports.install = (globalObject, globalNames) => {
     attachShadow(init) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'attachShadow' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError("'attachShadow' called on an object that is not a valid instance of Element.");
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'attachShadow' on 'Element': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'attachShadow' on 'Element': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
-        curArg = ShadowRootInit.convert(curArg, {
+        curArg = ShadowRootInit.convert(globalObject, curArg, {
           context: "Failed to execute 'attachShadow' on 'Element': parameter 1"
         });
         args.push(curArg);
@@ -593,18 +612,21 @@ exports.install = (globalObject, globalNames) => {
     closest(selectors) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'closest' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError("'closest' called on an object that is not a valid instance of Element.");
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'closest' on 'Element': 1 argument required, but only " + arguments.length + " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'closest' on 'Element': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
-        curArg = conversions["DOMString"](curArg, { context: "Failed to execute 'closest' on 'Element': parameter 1" });
+        curArg = conversions["DOMString"](curArg, {
+          context: "Failed to execute 'closest' on 'Element': parameter 1",
+          globals: globalObject
+        });
         args.push(curArg);
       }
       return utils.tryWrapperForImpl(esValue[implSymbol].closest(...args));
@@ -613,18 +635,21 @@ exports.install = (globalObject, globalNames) => {
     matches(selectors) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'matches' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError("'matches' called on an object that is not a valid instance of Element.");
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'matches' on 'Element': 1 argument required, but only " + arguments.length + " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'matches' on 'Element': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
-        curArg = conversions["DOMString"](curArg, { context: "Failed to execute 'matches' on 'Element': parameter 1" });
+        curArg = conversions["DOMString"](curArg, {
+          context: "Failed to execute 'matches' on 'Element': parameter 1",
+          globals: globalObject
+        });
         args.push(curArg);
       }
       return esValue[implSymbol].matches(...args);
@@ -633,21 +658,22 @@ exports.install = (globalObject, globalNames) => {
     webkitMatchesSelector(selectors) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'webkitMatchesSelector' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'webkitMatchesSelector' called on an object that is not a valid instance of Element."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'webkitMatchesSelector' on 'Element': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'webkitMatchesSelector' on 'Element': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'webkitMatchesSelector' on 'Element': parameter 1"
+          context: "Failed to execute 'webkitMatchesSelector' on 'Element': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -657,21 +683,22 @@ exports.install = (globalObject, globalNames) => {
     getElementsByTagName(qualifiedName) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'getElementsByTagName' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'getElementsByTagName' called on an object that is not a valid instance of Element."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'getElementsByTagName' on 'Element': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'getElementsByTagName' on 'Element': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'getElementsByTagName' on 'Element': parameter 1"
+          context: "Failed to execute 'getElementsByTagName' on 'Element': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -681,14 +708,14 @@ exports.install = (globalObject, globalNames) => {
     getElementsByTagNameNS(namespace, localName) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'getElementsByTagNameNS' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'getElementsByTagNameNS' called on an object that is not a valid instance of Element."
+        );
       }
 
       if (arguments.length < 2) {
-        throw new TypeError(
-          "Failed to execute 'getElementsByTagNameNS' on 'Element': 2 arguments required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'getElementsByTagNameNS' on 'Element': 2 arguments required, but only ${arguments.length} present.`
         );
       }
       const args = [];
@@ -698,7 +725,8 @@ exports.install = (globalObject, globalNames) => {
           curArg = null;
         } else {
           curArg = conversions["DOMString"](curArg, {
-            context: "Failed to execute 'getElementsByTagNameNS' on 'Element': parameter 1"
+            context: "Failed to execute 'getElementsByTagNameNS' on 'Element': parameter 1",
+            globals: globalObject
           });
         }
         args.push(curArg);
@@ -706,7 +734,8 @@ exports.install = (globalObject, globalNames) => {
       {
         let curArg = arguments[1];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'getElementsByTagNameNS' on 'Element': parameter 2"
+          context: "Failed to execute 'getElementsByTagNameNS' on 'Element': parameter 2",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -716,21 +745,22 @@ exports.install = (globalObject, globalNames) => {
     getElementsByClassName(classNames) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'getElementsByClassName' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'getElementsByClassName' called on an object that is not a valid instance of Element."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'getElementsByClassName' on 'Element': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'getElementsByClassName' on 'Element': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'getElementsByClassName' on 'Element': parameter 1"
+          context: "Failed to execute 'getElementsByClassName' on 'Element': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -740,27 +770,28 @@ exports.install = (globalObject, globalNames) => {
     insertAdjacentElement(where, element) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'insertAdjacentElement' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'insertAdjacentElement' called on an object that is not a valid instance of Element."
+        );
       }
 
       if (arguments.length < 2) {
-        throw new TypeError(
-          "Failed to execute 'insertAdjacentElement' on 'Element': 2 arguments required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'insertAdjacentElement' on 'Element': 2 arguments required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'insertAdjacentElement' on 'Element': parameter 1"
+          context: "Failed to execute 'insertAdjacentElement' on 'Element': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
       {
         let curArg = arguments[1];
-        curArg = exports.convert(curArg, {
+        curArg = exports.convert(globalObject, curArg, {
           context: "Failed to execute 'insertAdjacentElement' on 'Element': parameter 2"
         });
         args.push(curArg);
@@ -776,28 +807,30 @@ exports.install = (globalObject, globalNames) => {
     insertAdjacentText(where, data) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'insertAdjacentText' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'insertAdjacentText' called on an object that is not a valid instance of Element."
+        );
       }
 
       if (arguments.length < 2) {
-        throw new TypeError(
-          "Failed to execute 'insertAdjacentText' on 'Element': 2 arguments required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'insertAdjacentText' on 'Element': 2 arguments required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'insertAdjacentText' on 'Element': parameter 1"
+          context: "Failed to execute 'insertAdjacentText' on 'Element': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
       {
         let curArg = arguments[1];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'insertAdjacentText' on 'Element': parameter 2"
+          context: "Failed to execute 'insertAdjacentText' on 'Element': parameter 2",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -807,28 +840,30 @@ exports.install = (globalObject, globalNames) => {
     insertAdjacentHTML(position, text) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'insertAdjacentHTML' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'insertAdjacentHTML' called on an object that is not a valid instance of Element."
+        );
       }
 
       if (arguments.length < 2) {
-        throw new TypeError(
-          "Failed to execute 'insertAdjacentHTML' on 'Element': 2 arguments required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'insertAdjacentHTML' on 'Element': 2 arguments required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'insertAdjacentHTML' on 'Element': parameter 1"
+          context: "Failed to execute 'insertAdjacentHTML' on 'Element': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
       {
         let curArg = arguments[1];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'insertAdjacentHTML' on 'Element': parameter 2"
+          context: "Failed to execute 'insertAdjacentHTML' on 'Element': parameter 2",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -843,7 +878,9 @@ exports.install = (globalObject, globalNames) => {
     getClientRects() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'getClientRects' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'getClientRects' called on an object that is not a valid instance of Element."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol].getClientRects());
@@ -852,7 +889,9 @@ exports.install = (globalObject, globalNames) => {
     getBoundingClientRect() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'getBoundingClientRect' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'getBoundingClientRect' called on an object that is not a valid instance of Element."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol].getBoundingClientRect());
@@ -861,7 +900,7 @@ exports.install = (globalObject, globalNames) => {
     before() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'before' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError("'before' called on an object that is not a valid instance of Element.");
       }
       const args = [];
       for (let i = 0; i < arguments.length; i++) {
@@ -870,7 +909,8 @@ exports.install = (globalObject, globalNames) => {
           curArg = utils.implForWrapper(curArg);
         } else {
           curArg = conversions["DOMString"](curArg, {
-            context: "Failed to execute 'before' on 'Element': parameter " + (i + 1)
+            context: "Failed to execute 'before' on 'Element': parameter " + (i + 1),
+            globals: globalObject
           });
         }
         args.push(curArg);
@@ -886,7 +926,7 @@ exports.install = (globalObject, globalNames) => {
     after() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'after' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError("'after' called on an object that is not a valid instance of Element.");
       }
       const args = [];
       for (let i = 0; i < arguments.length; i++) {
@@ -895,7 +935,8 @@ exports.install = (globalObject, globalNames) => {
           curArg = utils.implForWrapper(curArg);
         } else {
           curArg = conversions["DOMString"](curArg, {
-            context: "Failed to execute 'after' on 'Element': parameter " + (i + 1)
+            context: "Failed to execute 'after' on 'Element': parameter " + (i + 1),
+            globals: globalObject
           });
         }
         args.push(curArg);
@@ -911,7 +952,7 @@ exports.install = (globalObject, globalNames) => {
     replaceWith() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'replaceWith' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError("'replaceWith' called on an object that is not a valid instance of Element.");
       }
       const args = [];
       for (let i = 0; i < arguments.length; i++) {
@@ -920,7 +961,8 @@ exports.install = (globalObject, globalNames) => {
           curArg = utils.implForWrapper(curArg);
         } else {
           curArg = conversions["DOMString"](curArg, {
-            context: "Failed to execute 'replaceWith' on 'Element': parameter " + (i + 1)
+            context: "Failed to execute 'replaceWith' on 'Element': parameter " + (i + 1),
+            globals: globalObject
           });
         }
         args.push(curArg);
@@ -936,7 +978,7 @@ exports.install = (globalObject, globalNames) => {
     remove() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'remove' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError("'remove' called on an object that is not a valid instance of Element.");
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -950,7 +992,7 @@ exports.install = (globalObject, globalNames) => {
     prepend() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'prepend' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError("'prepend' called on an object that is not a valid instance of Element.");
       }
       const args = [];
       for (let i = 0; i < arguments.length; i++) {
@@ -959,7 +1001,8 @@ exports.install = (globalObject, globalNames) => {
           curArg = utils.implForWrapper(curArg);
         } else {
           curArg = conversions["DOMString"](curArg, {
-            context: "Failed to execute 'prepend' on 'Element': parameter " + (i + 1)
+            context: "Failed to execute 'prepend' on 'Element': parameter " + (i + 1),
+            globals: globalObject
           });
         }
         args.push(curArg);
@@ -975,7 +1018,7 @@ exports.install = (globalObject, globalNames) => {
     append() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'append' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError("'append' called on an object that is not a valid instance of Element.");
       }
       const args = [];
       for (let i = 0; i < arguments.length; i++) {
@@ -984,7 +1027,8 @@ exports.install = (globalObject, globalNames) => {
           curArg = utils.implForWrapper(curArg);
         } else {
           curArg = conversions["DOMString"](curArg, {
-            context: "Failed to execute 'append' on 'Element': parameter " + (i + 1)
+            context: "Failed to execute 'append' on 'Element': parameter " + (i + 1),
+            globals: globalObject
           });
         }
         args.push(curArg);
@@ -1000,7 +1044,9 @@ exports.install = (globalObject, globalNames) => {
     replaceChildren() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'replaceChildren' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'replaceChildren' called on an object that is not a valid instance of Element."
+        );
       }
       const args = [];
       for (let i = 0; i < arguments.length; i++) {
@@ -1009,14 +1055,15 @@ exports.install = (globalObject, globalNames) => {
           curArg = utils.implForWrapper(curArg);
         } else {
           curArg = conversions["DOMString"](curArg, {
-            context: "Failed to execute 'replaceChildren' on 'Element': parameter " + (i + 1)
+            context: "Failed to execute 'replaceChildren' on 'Element': parameter " + (i + 1),
+            globals: globalObject
           });
         }
         args.push(curArg);
       }
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
       try {
-        return utils.tryWrapperForImpl(esValue[implSymbol].replaceChildren(...args));
+        return esValue[implSymbol].replaceChildren(...args);
       } finally {
         ceReactionsPostSteps_helpers_custom_elements(globalObject);
       }
@@ -1025,21 +1072,22 @@ exports.install = (globalObject, globalNames) => {
     querySelector(selectors) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'querySelector' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'querySelector' called on an object that is not a valid instance of Element."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'querySelector' on 'Element': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'querySelector' on 'Element': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'querySelector' on 'Element': parameter 1"
+          context: "Failed to execute 'querySelector' on 'Element': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -1049,21 +1097,22 @@ exports.install = (globalObject, globalNames) => {
     querySelectorAll(selectors) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'querySelectorAll' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'querySelectorAll' called on an object that is not a valid instance of Element."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'querySelectorAll' on 'Element': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'querySelectorAll' on 'Element': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'querySelectorAll' on 'Element': parameter 1"
+          context: "Failed to execute 'querySelectorAll' on 'Element': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -1074,7 +1123,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get namespaceURI' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'get namespaceURI' called on an object that is not a valid instance of Element."
+        );
       }
 
       return esValue[implSymbol]["namespaceURI"];
@@ -1084,7 +1135,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get prefix' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError("'get prefix' called on an object that is not a valid instance of Element.");
       }
 
       return esValue[implSymbol]["prefix"];
@@ -1094,7 +1145,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get localName' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'get localName' called on an object that is not a valid instance of Element."
+        );
       }
 
       return esValue[implSymbol]["localName"];
@@ -1104,7 +1157,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get tagName' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError("'get tagName' called on an object that is not a valid instance of Element.");
       }
 
       return esValue[implSymbol]["tagName"];
@@ -1114,7 +1167,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get id' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError("'get id' called on an object that is not a valid instance of Element.");
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1130,10 +1183,13 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set id' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError("'set id' called on an object that is not a valid instance of Element.");
       }
 
-      V = conversions["DOMString"](V, { context: "Failed to set the 'id' property on 'Element': The provided value" });
+      V = conversions["DOMString"](V, {
+        context: "Failed to set the 'id' property on 'Element': The provided value",
+        globals: globalObject
+      });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
       try {
@@ -1147,7 +1203,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get className' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'get className' called on an object that is not a valid instance of Element."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1163,11 +1221,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set className' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'set className' called on an object that is not a valid instance of Element."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'className' property on 'Element': The provided value"
+        context: "Failed to set the 'className' property on 'Element': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1182,7 +1243,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get classList' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'get classList' called on an object that is not a valid instance of Element."
+        );
       }
 
       return utils.getSameObject(this, "classList", () => {
@@ -1194,12 +1257,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set classList' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'set classList' called on an object that is not a valid instance of Element."
+        );
       }
 
       const Q = esValue["classList"];
       if (!utils.isObject(Q)) {
-        throw new TypeError("Property 'classList' is not an object");
+        throw new globalObject.TypeError("Property 'classList' is not an object");
       }
       Reflect.set(Q, "value", V);
     }
@@ -1208,7 +1273,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get slot' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError("'get slot' called on an object that is not a valid instance of Element.");
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1224,11 +1289,12 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set slot' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError("'set slot' called on an object that is not a valid instance of Element.");
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'slot' property on 'Element': The provided value"
+        context: "Failed to set the 'slot' property on 'Element': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1243,7 +1309,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get attributes' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'get attributes' called on an object that is not a valid instance of Element."
+        );
       }
 
       return utils.getSameObject(this, "attributes", () => {
@@ -1255,7 +1323,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get shadowRoot' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'get shadowRoot' called on an object that is not a valid instance of Element."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["shadowRoot"]);
@@ -1265,7 +1335,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get outerHTML' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'get outerHTML' called on an object that is not a valid instance of Element."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1280,11 +1352,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set outerHTML' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'set outerHTML' called on an object that is not a valid instance of Element."
+        );
       }
 
       V = conversions["DOMString"](V, {
         context: "Failed to set the 'outerHTML' property on 'Element': The provided value",
+        globals: globalObject,
         treatNullAsEmptyString: true
       });
 
@@ -1300,7 +1375,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get scrollTop' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'get scrollTop' called on an object that is not a valid instance of Element."
+        );
       }
 
       return esValue[implSymbol]["scrollTop"];
@@ -1310,11 +1387,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set scrollTop' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'set scrollTop' called on an object that is not a valid instance of Element."
+        );
       }
 
       V = conversions["unrestricted double"](V, {
-        context: "Failed to set the 'scrollTop' property on 'Element': The provided value"
+        context: "Failed to set the 'scrollTop' property on 'Element': The provided value",
+        globals: globalObject
       });
 
       esValue[implSymbol]["scrollTop"] = V;
@@ -1324,7 +1404,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get scrollLeft' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'get scrollLeft' called on an object that is not a valid instance of Element."
+        );
       }
 
       return esValue[implSymbol]["scrollLeft"];
@@ -1334,11 +1416,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set scrollLeft' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'set scrollLeft' called on an object that is not a valid instance of Element."
+        );
       }
 
       V = conversions["unrestricted double"](V, {
-        context: "Failed to set the 'scrollLeft' property on 'Element': The provided value"
+        context: "Failed to set the 'scrollLeft' property on 'Element': The provided value",
+        globals: globalObject
       });
 
       esValue[implSymbol]["scrollLeft"] = V;
@@ -1348,7 +1433,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get scrollWidth' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'get scrollWidth' called on an object that is not a valid instance of Element."
+        );
       }
 
       return esValue[implSymbol]["scrollWidth"];
@@ -1358,7 +1445,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get scrollHeight' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'get scrollHeight' called on an object that is not a valid instance of Element."
+        );
       }
 
       return esValue[implSymbol]["scrollHeight"];
@@ -1368,7 +1457,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get clientTop' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'get clientTop' called on an object that is not a valid instance of Element."
+        );
       }
 
       return esValue[implSymbol]["clientTop"];
@@ -1378,7 +1469,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get clientLeft' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'get clientLeft' called on an object that is not a valid instance of Element."
+        );
       }
 
       return esValue[implSymbol]["clientLeft"];
@@ -1388,7 +1481,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get clientWidth' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'get clientWidth' called on an object that is not a valid instance of Element."
+        );
       }
 
       return esValue[implSymbol]["clientWidth"];
@@ -1398,7 +1493,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get clientHeight' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'get clientHeight' called on an object that is not a valid instance of Element."
+        );
       }
 
       return esValue[implSymbol]["clientHeight"];
@@ -1408,7 +1505,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get innerHTML' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'get innerHTML' called on an object that is not a valid instance of Element."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1423,11 +1522,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set innerHTML' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'set innerHTML' called on an object that is not a valid instance of Element."
+        );
       }
 
       V = conversions["DOMString"](V, {
         context: "Failed to set the 'innerHTML' property on 'Element': The provided value",
+        globals: globalObject,
         treatNullAsEmptyString: true
       });
 
@@ -1443,7 +1545,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get previousElementSibling' called on an object that is not a valid instance of Element."
         );
       }
@@ -1455,7 +1557,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get nextElementSibling' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'get nextElementSibling' called on an object that is not a valid instance of Element."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["nextElementSibling"]);
@@ -1465,7 +1569,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get children' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError("'get children' called on an object that is not a valid instance of Element.");
       }
 
       return utils.getSameObject(this, "children", () => {
@@ -1477,7 +1581,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get firstElementChild' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'get firstElementChild' called on an object that is not a valid instance of Element."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["firstElementChild"]);
@@ -1487,7 +1593,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get lastElementChild' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'get lastElementChild' called on an object that is not a valid instance of Element."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["lastElementChild"]);
@@ -1497,7 +1605,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get childElementCount' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'get childElementCount' called on an object that is not a valid instance of Element."
+        );
       }
 
       return esValue[implSymbol]["childElementCount"];
@@ -1507,7 +1617,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get assignedSlot' called on an object that is not a valid instance of Element.");
+        throw new globalObject.TypeError(
+          "'get assignedSlot' called on an object that is not a valid instance of Element."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["assignedSlot"]);
@@ -1594,10 +1706,7 @@ exports.install = (globalObject, globalNames) => {
       configurable: true
     }
   });
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    globalObject[ctorRegistrySymbol] = Object.create(null);
-  }
-  globalObject[ctorRegistrySymbol][interfaceName] = Element;
+  ctorRegistry[interfaceName] = Element;
 
   Object.defineProperty(globalObject, interfaceName, {
     configurable: true,

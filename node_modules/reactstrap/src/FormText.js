@@ -12,33 +12,28 @@ const propTypes = {
   cssModule: PropTypes.object,
 };
 
-const defaultProps = {
-  tag: 'small',
-  color: 'muted',
-};
-
-const FormText = (props) => {
+function FormText(props) {
   const {
     className,
     cssModule,
     inline,
-    color,
-    tag: Tag,
+    color = 'muted',
+    tag: Tag = 'small',
     ...attributes
   } = props;
 
-  const classes = mapToCssModules(classNames(
-    className,
-    !inline ? 'form-text' : false,
-    color ? `text-${color}` : false
-  ), cssModule);
-
-  return (
-    <Tag {...attributes} className={classes} />
+  const classes = mapToCssModules(
+    classNames(
+      className,
+      !inline ? 'form-text' : false,
+      color ? `text-${color}` : false,
+    ),
+    cssModule,
   );
-};
+
+  return <Tag {...attributes} className={classes} />;
+}
 
 FormText.propTypes = propTypes;
-FormText.defaultProps = defaultProps;
 
 export default FormText;

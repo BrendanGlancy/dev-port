@@ -1,11 +1,2 @@
-/// <reference types="node" />
 export declare function pathify(path: string): string;
-export declare function instantiateEmscriptenWasm(factory: (args: {
-    locateFile: () => string;
-}) => {
-    decode?: (buffer: Buffer | Uint8Array, width: number, height: number, opts: any) => Buffer;
-    encode?: (buffer: Buffer | Uint8Array, width: number, height: number, opts: any) => Buffer;
-}, path: string): {
-    decode?: ((buffer: Buffer | Uint8Array, width: number, height: number, opts: any) => Buffer) | undefined;
-    encode?: ((buffer: Buffer | Uint8Array, width: number, height: number, opts: any) => Buffer) | undefined;
-};
+export declare function instantiateEmscriptenWasm<T extends EmscriptenWasm.Module>(factory: EmscriptenWasm.ModuleFactory<T>, path: string, workerJS?: string): Promise<T>;

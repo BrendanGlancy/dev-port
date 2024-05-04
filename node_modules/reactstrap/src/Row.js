@@ -1,37 +1,38 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { mapToCssModules, tagPropType } from './utils';
+import { mapToCssModules, tagPropType, deprecated } from './utils';
 
-const rowColWidths = ['xs', 'sm', 'md', 'lg', 'xl'];
-const rowColsPropType = PropTypes.oneOfType([PropTypes.number, PropTypes.string]);
+const rowColWidths = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'];
+const rowColsPropType = PropTypes.oneOfType([
+  PropTypes.number,
+  PropTypes.string,
+]);
 
 const propTypes = {
   tag: tagPropType,
-  noGutters: PropTypes.bool,
+  noGutters: deprecated(
+    PropTypes.bool,
+    'Please use Bootstrap 5 gutter utility classes. https://getbootstrap.com/docs/5.0/layout/gutters/',
+  ),
   className: PropTypes.string,
   cssModule: PropTypes.object,
-  form: PropTypes.bool,
   xs: rowColsPropType,
   sm: rowColsPropType,
   md: rowColsPropType,
   lg: rowColsPropType,
-  xl: rowColsPropType
+  xl: rowColsPropType,
+  xxl: rowColsPropType,
+  widths: PropTypes.array,
 };
 
-const defaultProps = {
-  tag: 'div',
-  widths: rowColWidths
-};
-
-const Row = (props) => {
+function Row(props) {
   const {
     className,
     cssModule,
     noGutters,
-    tag: Tag,
-    form,
-    widths,
+    tag: Tag = 'div',
+    widths = rowColWidths,
     ...attributes
   } = props;
 
@@ -47,22 +48,19 @@ const Row = (props) => {
     }
 
     const isXs = !i;
-    colClasses.push(isXs ? `row-cols-${colSize}` : `row-cols-${colWidth}-${colSize}`);
+    colClasses.push(
+      isXs ? `row-cols-${colSize}` : `row-cols-${colWidth}-${colSize}`,
+    );
   });
 
-  const classes = mapToCssModules(classNames(
-    className,
-    noGutters ? 'no-gutters' : null,
-    form ? 'form-row' : 'row',
-    colClasses
-  ), cssModule);
-
-  return (
-    <Tag {...attributes} className={classes} />
+  const classes = mapToCssModules(
+    classNames(className, noGutters ? 'gx-0' : null, 'row', colClasses),
+    cssModule,
   );
-};
+
+  return <Tag {...attributes} className={classes} />;
+}
 
 Row.propTypes = propTypes;
-Row.defaultProps = defaultProps;
 
 export default Row;

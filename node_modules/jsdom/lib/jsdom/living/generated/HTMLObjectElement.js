@@ -22,24 +22,24 @@ exports.is = value => {
 exports.isImpl = value => {
   return utils.isObject(value) && value instanceof Impl.implementation;
 };
-exports.convert = (value, { context = "The provided value" } = {}) => {
+exports.convert = (globalObject, value, { context = "The provided value" } = {}) => {
   if (exports.is(value)) {
     return utils.implForWrapper(value);
   }
-  throw new TypeError(`${context} is not of type 'HTMLObjectElement'.`);
+  throw new globalObject.TypeError(`${context} is not of type 'HTMLObjectElement'.`);
 };
 
-function makeWrapper(globalObject) {
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    throw new Error("Internal error: invalid global object");
+function makeWrapper(globalObject, newTarget) {
+  let proto;
+  if (newTarget !== undefined) {
+    proto = newTarget.prototype;
   }
 
-  const ctor = globalObject[ctorRegistrySymbol]["HTMLObjectElement"];
-  if (ctor === undefined) {
-    throw new Error("Internal error: constructor HTMLObjectElement is not installed on the passed global object");
+  if (!utils.isObject(proto)) {
+    proto = globalObject[ctorRegistrySymbol]["HTMLObjectElement"].prototype;
   }
 
-  return Object.create(ctor.prototype);
+  return Object.create(proto);
 }
 
 exports.create = (globalObject, constructorArgs, privateData) => {
@@ -72,8 +72,8 @@ exports.setup = (wrapper, globalObject, constructorArgs = [], privateData = {}) 
   return wrapper;
 };
 
-exports.new = globalObject => {
-  const wrapper = makeWrapper(globalObject);
+exports.new = (globalObject, newTarget) => {
+  const wrapper = makeWrapper(globalObject, newTarget);
 
   exports._internalSetup(wrapper, globalObject);
   Object.defineProperty(wrapper, implSymbol, {
@@ -95,9 +95,7 @@ exports.install = (globalObject, globalNames) => {
     return;
   }
 
-  if (globalObject.HTMLElement === undefined) {
-    throw new Error("Internal error: attempting to evaluate HTMLObjectElement before HTMLElement");
-  }
+  const ctorRegistry = utils.initCtorRegistry(globalObject);
   class HTMLObjectElement extends globalObject.HTMLElement {
     constructor() {
       return HTMLConstructor_helpers_html_constructor(globalObject, interfaceName, new.target);
@@ -106,7 +104,9 @@ exports.install = (globalObject, globalNames) => {
     checkValidity() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'checkValidity' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'checkValidity' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       return esValue[implSymbol].checkValidity();
@@ -115,7 +115,9 @@ exports.install = (globalObject, globalNames) => {
     reportValidity() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'reportValidity' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'reportValidity' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       return esValue[implSymbol].reportValidity();
@@ -124,23 +126,22 @@ exports.install = (globalObject, globalNames) => {
     setCustomValidity(error) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'setCustomValidity' called on an object that is not a valid instance of HTMLObjectElement."
         );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'setCustomValidity' on 'HTMLObjectElement': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'setCustomValidity' on 'HTMLObjectElement': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'setCustomValidity' on 'HTMLObjectElement': parameter 1"
+          context: "Failed to execute 'setCustomValidity' on 'HTMLObjectElement': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -151,7 +152,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get data' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'get data' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -177,11 +180,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set data' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'set data' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       V = conversions["USVString"](V, {
-        context: "Failed to set the 'data' property on 'HTMLObjectElement': The provided value"
+        context: "Failed to set the 'data' property on 'HTMLObjectElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -196,7 +202,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get type' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'get type' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -212,11 +220,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set type' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'set type' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'type' property on 'HTMLObjectElement': The provided value"
+        context: "Failed to set the 'type' property on 'HTMLObjectElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -231,7 +242,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get name' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'get name' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -247,11 +260,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set name' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'set name' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'name' property on 'HTMLObjectElement': The provided value"
+        context: "Failed to set the 'name' property on 'HTMLObjectElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -266,7 +282,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get useMap' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'get useMap' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -282,11 +300,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set useMap' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'set useMap' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'useMap' property on 'HTMLObjectElement': The provided value"
+        context: "Failed to set the 'useMap' property on 'HTMLObjectElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -301,7 +322,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get form' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'get form' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["form"]);
@@ -311,7 +334,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get width' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'get width' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -327,11 +352,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set width' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'set width' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'width' property on 'HTMLObjectElement': The provided value"
+        context: "Failed to set the 'width' property on 'HTMLObjectElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -346,7 +374,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get height' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'get height' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -362,11 +392,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set height' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'set height' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'height' property on 'HTMLObjectElement': The provided value"
+        context: "Failed to set the 'height' property on 'HTMLObjectElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -381,7 +414,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get contentDocument' called on an object that is not a valid instance of HTMLObjectElement."
         );
       }
@@ -393,7 +426,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get willValidate' called on an object that is not a valid instance of HTMLObjectElement."
         );
       }
@@ -405,7 +438,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get validity' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'get validity' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["validity"]);
@@ -415,7 +450,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get validationMessage' called on an object that is not a valid instance of HTMLObjectElement."
         );
       }
@@ -427,7 +462,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get align' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'get align' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -443,11 +480,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set align' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'set align' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'align' property on 'HTMLObjectElement': The provided value"
+        context: "Failed to set the 'align' property on 'HTMLObjectElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -462,7 +502,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get archive' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'get archive' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -478,11 +520,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set archive' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'set archive' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'archive' property on 'HTMLObjectElement': The provided value"
+        context: "Failed to set the 'archive' property on 'HTMLObjectElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -497,7 +542,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get code' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'get code' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -513,11 +560,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set code' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'set code' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'code' property on 'HTMLObjectElement': The provided value"
+        context: "Failed to set the 'code' property on 'HTMLObjectElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -532,7 +582,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get declare' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'get declare' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -547,11 +599,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set declare' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'set declare' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       V = conversions["boolean"](V, {
-        context: "Failed to set the 'declare' property on 'HTMLObjectElement': The provided value"
+        context: "Failed to set the 'declare' property on 'HTMLObjectElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -570,7 +625,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get hspace' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'get hspace' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -590,11 +647,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set hspace' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'set hspace' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       V = conversions["unsigned long"](V, {
-        context: "Failed to set the 'hspace' property on 'HTMLObjectElement': The provided value"
+        context: "Failed to set the 'hspace' property on 'HTMLObjectElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -610,7 +670,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get standby' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'get standby' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -626,11 +688,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set standby' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'set standby' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'standby' property on 'HTMLObjectElement': The provided value"
+        context: "Failed to set the 'standby' property on 'HTMLObjectElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -645,7 +710,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get vspace' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'get vspace' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -665,11 +732,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set vspace' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'set vspace' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       V = conversions["unsigned long"](V, {
-        context: "Failed to set the 'vspace' property on 'HTMLObjectElement': The provided value"
+        context: "Failed to set the 'vspace' property on 'HTMLObjectElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -685,7 +755,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get codeBase' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'get codeBase' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -711,11 +783,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set codeBase' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'set codeBase' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'codeBase' property on 'HTMLObjectElement': The provided value"
+        context: "Failed to set the 'codeBase' property on 'HTMLObjectElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -730,7 +805,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get codeType' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'get codeType' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -746,11 +823,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set codeType' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'set codeType' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'codeType' property on 'HTMLObjectElement': The provided value"
+        context: "Failed to set the 'codeType' property on 'HTMLObjectElement': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -765,7 +845,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get border' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'get border' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -781,11 +863,14 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set border' called on an object that is not a valid instance of HTMLObjectElement.");
+        throw new globalObject.TypeError(
+          "'set border' called on an object that is not a valid instance of HTMLObjectElement."
+        );
       }
 
       V = conversions["DOMString"](V, {
         context: "Failed to set the 'border' property on 'HTMLObjectElement': The provided value",
+        globals: globalObject,
         treatNullAsEmptyString: true
       });
 
@@ -824,10 +909,7 @@ exports.install = (globalObject, globalNames) => {
     border: { enumerable: true },
     [Symbol.toStringTag]: { value: "HTMLObjectElement", configurable: true }
   });
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    globalObject[ctorRegistrySymbol] = Object.create(null);
-  }
-  globalObject[ctorRegistrySymbol][interfaceName] = HTMLObjectElement;
+  ctorRegistry[interfaceName] = HTMLObjectElement;
 
   Object.defineProperty(globalObject, interfaceName, {
     configurable: true,

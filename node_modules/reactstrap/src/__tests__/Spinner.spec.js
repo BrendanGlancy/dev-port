@@ -1,54 +1,53 @@
 import React from 'react';
-import { shallow } from 'enzyme';
-import { Spinner } from '../';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { Spinner } from '..';
+import { testForChildrenInComponent, testForCustomTag } from '../testUtils';
 
 describe('Spinner', () => {
   it('should render a span by default', () => {
-    const wrapper = shallow(<Spinner />);
-
-    expect(wrapper.type()).toBe('div');
+    render(<Spinner />);
+    expect(screen.getByText('Loading...').tagName.toLowerCase()).toMatch(
+      'span',
+    );
   });
 
   it('should render a custom tag when provided', () => {
-    const wrapper = shallow(<Spinner tag="main" />);
-
-    expect(wrapper.type()).toBe('main');
+    testForCustomTag(Spinner, {}, 'main');
   });
 
   it('should default render "Loading..." children', () => {
-    const wrapper = shallow(<Spinner />);
-
-    expect(wrapper.text()).toBe('Loading...');
+    render(<Spinner />);
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 
   it('should render children', () => {
-    const wrapper = shallow(<Spinner>Yo!</Spinner>);
+    testForChildrenInComponent(Spinner);
+  });
 
-    expect(wrapper.text()).toBe('Yo!');
+  it('should render visually-hidden children', () => {
+    render(<Spinner>Yo!</Spinner>);
+    expect(screen.getByText('Yo!')).toHaveClass('visually-hidden');
   });
 
   it('should render default type of border', () => {
-    const wrapper = shallow(<Spinner />);
-
-    expect(wrapper.hasClass('spinner-border')).toBe(true);
+    render(<Spinner />);
+    expect(screen.getByRole('status')).toHaveClass('spinner-border');
   });
 
   it('should render type if specified', () => {
-    const wrapper = shallow(<Spinner type="grow" />);
-
-    expect(wrapper.hasClass('spinner-grow')).toBe(true);
+    render(<Spinner type="grow" />);
+    expect(screen.getByRole('status')).toHaveClass('spinner-grow');
   });
 
   it('should render size if specified', () => {
-    const wrapper = shallow(<Spinner size="sm" />);
-
-    expect(wrapper.hasClass('spinner-border')).toBe(true);
-    expect(wrapper.hasClass('spinner-border-sm')).toBe(true);
+    render(<Spinner size="sm" />);
+    expect(screen.getByRole('status')).toHaveClass('spinner-border-sm');
+    expect(screen.getByRole('status')).toHaveClass('spinner-border');
   });
 
   it('should render color if specified', () => {
-    const wrapper = shallow(<Spinner color="primary" />);
-
-    expect(wrapper.hasClass('text-primary')).toBe(true);
+    render(<Spinner color="primary" />);
+    expect(screen.getByRole('status')).toHaveClass('text-primary');
   });
 });

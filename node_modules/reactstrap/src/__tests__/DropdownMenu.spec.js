@@ -1,196 +1,165 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import { screen } from '@testing-library/react';
 import { Popper } from 'react-popper';
-import { DropdownMenu } from '../';
-import { DropdownContext } from '../DropdownContext';
+import '@testing-library/jest-dom';
+import { DropdownMenu } from '..';
+import { customDropdownRender } from '../testUtils';
 
 describe('DropdownMenu', () => {
-  let isOpen;
-  let direction;
-  let inNavbar;
+  const contextProps = {
+    isOpen: false,
+    direction: 'down',
+    inNavbar: false,
+  };
 
   beforeEach(() => {
-    isOpen = false;
-    direction = 'down';
-    inNavbar = false;
+    contextProps.isOpen = false;
+    contextProps.direction = 'down';
+    contextProps.inNavbar = false;
+    Popper.mockClear();
   });
 
   it('should render children', () => {
-    isOpen = true;
-    const wrapper = mount(
-      <DropdownContext.Provider value={{ isOpen, direction, inNavbar }}>
-        <DropdownMenu>
-          <p>Content</p>
-        </DropdownMenu>
-      </DropdownContext.Provider>
-    );
+    customDropdownRender(<DropdownMenu>Content</DropdownMenu>, contextProps);
 
-    expect(wrapper.find('.dropdown-menu').hostNodes().text()).toBe('Content');
-    expect(wrapper.find('.dropdown-menu').hostNodes().length).toBe(1);
+    expect(screen.getByText(/content/i)).toBeInTheDocument();
   });
 
   it('should not have the class "show" when isOpen context is false', () => {
-    isOpen = false;
-    const wrapper = mount(
-      <DropdownContext.Provider value={{ isOpen, direction, inNavbar }}>
-        <DropdownMenu>
-          <p>Content</p>
-        </DropdownMenu>
-      </DropdownContext.Provider>
-    );
+    customDropdownRender(<DropdownMenu>Content</DropdownMenu>, contextProps);
 
-    expect(wrapper.find('.dropdown-menu').hostNodes().hasClass('show')).toBe(false);
-    expect(wrapper.find('.show').hostNodes().length).toBe(0);
+    expect(screen.getByText(/content/i)).not.toHaveClass('show');
   });
 
   it('should have the class "show" when isOpen context is true', () => {
-    isOpen = true;
-    const wrapper = mount(
-      <DropdownContext.Provider value={{ isOpen, direction, inNavbar }}>
-        <DropdownMenu>
-          <p>Content</p>
-        </DropdownMenu>
-      </DropdownContext.Provider>
-    );
-
-    expect(wrapper.find('.dropdown-menu').hostNodes().hasClass('show')).toBe(true);
-    expect(wrapper.find('.show').hostNodes().length).toBe(1);
+    contextProps.isOpen = true;
+    customDropdownRender(<DropdownMenu>Content</DropdownMenu>, contextProps);
+    expect(screen.getByText(/content/i)).toHaveClass('show');
   });
 
   it('should render left aligned menus by default', () => {
-    isOpen = true;
-    const wrapper = mount(
-      <DropdownContext.Provider value={{ isOpen, direction, inNavbar }}>
-        <DropdownMenu>Ello world</DropdownMenu>
-      </DropdownContext.Provider>
-    );
+    contextProps.isOpen = true;
+    customDropdownRender(<DropdownMenu>Ello world</DropdownMenu>, contextProps);
 
-    expect(wrapper.find('.dropdown-menu').hostNodes().hasClass('dropdown-menu-right')).toBe(false);
+    expect(screen.getByText(/ello world/i)).not.toHaveClass(
+      'dropdown-menu-end',
+    );
   });
 
   it('should render right aligned menus', () => {
-    isOpen = true;
-    const wrapper = mount(
-      <DropdownContext.Provider value={{ isOpen, direction, inNavbar }}>
-        <DropdownMenu right>Ello world</DropdownMenu>
-      </DropdownContext.Provider>
+    contextProps.isOpen = true;
+    customDropdownRender(
+      <DropdownMenu end>Ello world</DropdownMenu>,
+      contextProps,
     );
 
-    expect(wrapper.find('.dropdown-menu').hostNodes().hasClass('dropdown-menu-right')).toBe(true);
+    expect(screen.getByText(/ello world/i)).toHaveClass('dropdown-menu-end');
   });
 
   it('should render down when direction is unknown on the context', () => {
-    isOpen = true;
-    direction = 'unknown';
-    const wrapper = mount(
-      <DropdownContext.Provider value={{ isOpen, direction, inNavbar }}>
-        <DropdownMenu>Ello world</DropdownMenu>
-      </DropdownContext.Provider>
-    );
+    contextProps.isOpen = true;
+    contextProps.direction = 'unknown';
+    customDropdownRender(<DropdownMenu>Ello world</DropdownMenu>, contextProps);
 
-    expect(wrapper.find(Popper).prop('placement')).toBe('bottom-start');
+    expect(screen.getByText(/ello world/i)).toHaveAttribute(
+      'data-popper-placement',
+      'bottom-start',
+    );
   });
 
   it('should render down when direction is "down" on the context', () => {
-    isOpen = true;
-    const wrapper = mount(
-      <DropdownContext.Provider value={{ isOpen, direction, inNavbar }}>
-        <DropdownMenu>Ello world</DropdownMenu>
-      </DropdownContext.Provider>
-    );
+    contextProps.isOpen = true;
+    customDropdownRender(<DropdownMenu>Ello world</DropdownMenu>, contextProps);
 
-    expect(wrapper.find(Popper).prop('placement')).toBe('bottom-start');
+    expect(screen.getByText(/ello world/i)).toHaveAttribute(
+      'data-popper-placement',
+      'bottom-start',
+    );
   });
 
   it('should render up when direction is "up" on the context', () => {
-    isOpen = true;
-    direction = 'up';
-    const wrapper = mount(
-      <DropdownContext.Provider value={{ isOpen, direction, inNavbar }}>
-        <DropdownMenu>Ello world</DropdownMenu>
-      </DropdownContext.Provider>
+    contextProps.isOpen = true;
+    contextProps.direction = 'up';
+    customDropdownRender(<DropdownMenu>Ello world</DropdownMenu>, contextProps);
+    expect(screen.getByText(/ello world/i)).toHaveAttribute(
+      'data-popper-placement',
+      'top-start',
     );
-
-    expect(wrapper.find(Popper).prop('placement')).toBe('top-start');
+    // expect(wrapper.find(Popper).prop('placement')).toBe('top-start');
   });
 
-  it('should render left when direction is "left" on the context', () => {
-    isOpen = true;
-    direction = 'left';
-    const wrapper = mount(
-      <DropdownContext.Provider value={{ isOpen, direction, inNavbar }}>
-        <DropdownMenu>Ello world</DropdownMenu>
-      </DropdownContext.Provider>
+  it('should render left when direction is "start" on the context', () => {
+    contextProps.isOpen = true;
+    contextProps.direction = 'start';
+    customDropdownRender(<DropdownMenu>Ello world</DropdownMenu>, contextProps);
+    expect(screen.getByText(/ello world/i)).toHaveAttribute(
+      'data-popper-placement',
+      'left-start',
     );
-
-    expect(wrapper.find(Popper).prop('placement')).toBe('left-start');
+    // expect(wrapper.find(Popper).prop('placement')).toBe('left-start');
   });
 
-  it('should render right when direction is "right" on the context', () => {
-    isOpen = true;
-    direction = 'right';
-    const wrapper = mount(
-      <DropdownContext.Provider value={{ isOpen, direction, inNavbar }}>
-        <DropdownMenu>Ello world</DropdownMenu>
-      </DropdownContext.Provider>
+  it('should render right when direction is "end" on the context', () => {
+    contextProps.isOpen = true;
+    contextProps.direction = 'end';
+    customDropdownRender(<DropdownMenu>Ello world</DropdownMenu>, contextProps);
+    expect(screen.getByText(/ello world/i)).toHaveAttribute(
+      'data-popper-placement',
+      'right-start',
     );
-
-    expect(wrapper.find(Popper).prop('placement')).toBe('right-start');
+    // expect(wrapper.find(Popper).prop('placement')).toBe('right-start');
   });
 
   it('should not disable flip modifier by default', () => {
-    isOpen = true;
-    const wrapper = mount(
-      <DropdownContext.Provider value={{ isOpen, direction, inNavbar }}>
-        <DropdownMenu>Ello world</DropdownMenu>
-      </DropdownContext.Provider>
-    );
+    contextProps.isOpen = true;
+    customDropdownRender(<DropdownMenu>Ello world</DropdownMenu>, contextProps);
 
-    expect(wrapper.find(Popper).prop('modifiers')).toBe(undefined);
+    expect(Popper.mock.calls[0][0].modifiers[0]).toMatchObject({
+      name: 'flip',
+      enabled: true,
+    });
   });
 
   it('should disable flip modifier when flip is false', () => {
-    isOpen = true;
-    const wrapper = mount(
-      <DropdownContext.Provider value={{ isOpen, direction, inNavbar }}>
-        <DropdownMenu flip={false}>Ello world</DropdownMenu>
-      </DropdownContext.Provider>
+    contextProps.isOpen = true;
+    customDropdownRender(
+      <DropdownMenu flip={false}>Ello world</DropdownMenu>,
+      contextProps,
     );
 
-    expect(wrapper.find(Popper).prop('modifiers')).toEqual({ flip: { enabled: false } });
+    expect(Popper.mock.calls.length).toBe(1);
+    expect(Popper.mock.calls[0][0].modifiers[0]).toMatchObject({
+      name: 'flip',
+      enabled: false,
+    });
   });
 
-  it('should position using fixed mode when positionFixed is true', () => {
-    isOpen = true;
-    const wrapper = mount(
-      <DropdownContext.Provider value={{ isOpen, direction, inNavbar }}>
-        <DropdownMenu positionFixed>Ello world</DropdownMenu>
-      </DropdownContext.Provider>
+  it('should position using fixed mode', () => {
+    contextProps.isOpen = true;
+    customDropdownRender(
+      <DropdownMenu strategy="fixed">Ello world</DropdownMenu>,
+      contextProps,
     );
-
-    expect(wrapper.find(Popper).prop('positionFixed')).toBe(true);
+    expect(Popper.mock.calls[0][0].strategy).toBe('fixed');
   });
 
   it('should not render Popper when isOpen is false', () => {
-    const wrapper = mount(
-      <DropdownContext.Provider value={{ isOpen, direction, inNavbar }}>
-        <DropdownMenu right>Ello world</DropdownMenu>
-      </DropdownContext.Provider>
+    customDropdownRender(
+      <DropdownMenu end>Ello world</DropdownMenu>,
+      contextProps,
     );
 
-    expect(wrapper.find(Popper).length).toBe(0);
+    expect(Popper).not.toBeCalled();
   });
 
   it('should render custom tag', () => {
-    const wrapper = mount(
-      <DropdownContext.Provider value={{ isOpen, direction, inNavbar }}>
-        <DropdownMenu tag="main">Yo!</DropdownMenu>
-      </DropdownContext.Provider>
+    contextProps.isOpen = true;
+    customDropdownRender(
+      <DropdownMenu tag="main">Yo!</DropdownMenu>,
+      contextProps,
     );
 
-    expect(wrapper.text()).toBe('Yo!');
-    expect(wrapper.childAt(0).hasClass('dropdown-menu')).toBe(true);
-    expect(wrapper.getDOMNode().tagName.toLowerCase()).toBe('main');
+    expect(screen.getByText(/yo/i).tagName).toBe('MAIN');
   });
 
   describe('using container', () => {
@@ -207,17 +176,40 @@ describe('DropdownMenu', () => {
     });
 
     it('should render inside container', () => {
-      isOpen = true;
+      contextProps.isOpen = true;
       element.innerHTML = '<div id="anotherContainer"></div>';
-      const wrapper = mount(
-        <DropdownContext.Provider value={{ isOpen, direction, inNavbar }}>
-          <DropdownMenu container="#anotherContainer">My body</DropdownMenu>
-        </DropdownContext.Provider>
+      customDropdownRender(
+        <DropdownMenu container="#anotherContainer">My body</DropdownMenu>,
+        contextProps,
       );
 
-      expect(document.getElementById('anotherContainer').innerHTML).toContain('My body');
-      expect(wrapper.text()).toBe('My body');
+      expect(document.getElementById('anotherContainer').innerHTML).toContain(
+        'My body',
+      );
     });
-  })
+  });
 
+  it('should not have the class "dropdown-menu-dark" by default', () => {
+    contextProps.isOpen = true;
+    customDropdownRender(
+      <DropdownMenu>Keep it light</DropdownMenu>,
+      contextProps,
+    );
+
+    expect(screen.getByText(/keep it light/i)).not.toHaveClass(
+      'dropdown-menu-dark',
+    );
+  });
+
+  it('should have the class "dropdown-menu-dark" when dark is true', () => {
+    contextProps.isOpen = true;
+    customDropdownRender(
+      <DropdownMenu dark data-testid="dark-menu">
+        Let&apos;s go dark
+      </DropdownMenu>,
+      contextProps,
+    );
+
+    expect(screen.getByTestId('dark-menu')).toHaveClass('dropdown-menu-dark');
+  });
 });

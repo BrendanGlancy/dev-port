@@ -4,33 +4,24 @@ import classNames from 'classnames';
 import { mapToCssModules, tagPropType } from './utils';
 
 const propTypes = {
-  tag: tagPropType,
+  /** Add custom class */
   className: PropTypes.string,
+  /** Change underlying component's CSS base class name */
   cssModule: PropTypes.object,
+  /** Set a custom element for this component */
+  tag: tagPropType,
 };
 
-const defaultProps = {
-  tag: 'div'
-};
-
-const CardFooter = (props) => {
-  const {
-    className,
+function CardFooter(props) {
+  const { className, cssModule, tag: Tag = 'div', ...attributes } = props;
+  const classes = mapToCssModules(
+    classNames(className, 'card-footer'),
     cssModule,
-    tag: Tag,
-    ...attributes
-  } = props;
-  const classes = mapToCssModules(classNames(
-    className,
-    'card-footer'
-  ), cssModule);
-
-  return (
-    <Tag {...attributes} className={classes} />
   );
-};
+
+  return <Tag {...attributes} className={classes} />;
+}
 
 CardFooter.propTypes = propTypes;
-CardFooter.defaultProps = defaultProps;
 
 export default CardFooter;

@@ -7,18 +7,17 @@ const propTypes = {
   children: PropTypes.node,
   row: PropTypes.bool,
   check: PropTypes.bool,
+  switch: PropTypes.bool,
   inline: PropTypes.bool,
+  floating: PropTypes.bool,
+  noMargin: PropTypes.bool,
   disabled: PropTypes.bool,
   tag: tagPropType,
   className: PropTypes.string,
   cssModule: PropTypes.object,
 };
 
-const defaultProps = {
-  tag: 'div',
-};
-
-const FormGroup = (props) => {
+function FormGroup(props) {
   const {
     className,
     cssModule,
@@ -26,28 +25,36 @@ const FormGroup = (props) => {
     disabled,
     check,
     inline,
-    tag: Tag,
+    floating,
+    noMargin,
+    tag: Tag = 'div',
+    switch: switchProp,
     ...attributes
   } = props;
 
-  const classes = mapToCssModules(classNames(
-    className,
-    row ? 'row' : false,
-    check ? 'form-check' : 'form-group',
-    check && inline ? 'form-check-inline' : false,
-    check && disabled ? 'disabled' : false
-  ), cssModule);
-  
+  const formCheck = check || switchProp;
+
+  const classes = mapToCssModules(
+    classNames(
+      className,
+      row ? 'row' : false,
+      formCheck ? 'form-check' : false,
+      switchProp ? 'form-switch' : false,
+      formCheck || noMargin ? false : 'mb-3',
+      formCheck && inline ? 'form-check-inline' : false,
+      formCheck && disabled ? 'disabled' : false,
+      floating && 'form-floating',
+    ),
+    cssModule,
+  );
+
   if (Tag === 'fieldset') {
     attributes.disabled = disabled;
   }
 
-  return (
-    <Tag {...attributes} className={classes} />
-  );
-};
+  return <Tag {...attributes} className={classes} />;
+}
 
 FormGroup.propTypes = propTypes;
-FormGroup.defaultProps = defaultProps;
 
 export default FormGroup;

@@ -2,28 +2,39 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Transition } from 'react-transition-group';
-import { mapToCssModules, omit, pick, TransitionTimeouts, TransitionPropTypeKeys, TransitionStatuses, tagPropType } from './utils';
+import {
+  mapToCssModules,
+  omit,
+  pick,
+  TransitionTimeouts,
+  TransitionPropTypeKeys,
+  TransitionStatuses,
+  tagPropType,
+} from './utils';
 
 const propTypes = {
   ...Transition.propTypes,
+  /** Make content animation appear horizontally */
+  horizontal: PropTypes.bool,
+  /** Set if Collapse is open or closed */
   isOpen: PropTypes.bool,
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node
+    PropTypes.node,
   ]),
+  /** Set a custom element for this component */
   tag: tagPropType,
+  /** Add custom class */
   className: PropTypes.node,
   navbar: PropTypes.bool,
+  /** Change underlying component's CSS base class name */
   cssModule: PropTypes.object,
-  innerRef: PropTypes.oneOfType([
-    PropTypes.func,
-    PropTypes.string,
-    PropTypes.object
-  ]),
+  innerRef: PropTypes.shape({ current: PropTypes.object }),
 };
 
 const defaultProps = {
   ...Transition.defaultProps,
+  horizontal: false,
   isOpen: false,
   appear: false,
   enter: true,
@@ -43,53 +54,67 @@ function getTransitionClass(status) {
   return transitionStatusToClassHash[status] || 'collapse';
 }
 
-function getHeight(node) {
-  return node.scrollHeight;
-}
-
 class Collapse extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      height: null
+      dimension: null,
     };
 
-    ['onEntering', 'onEntered', 'onExit', 'onExiting', 'onExited'].forEach((name) => {
-      this[name] = this[name].bind(this);
-    });
+    this.nodeRef = props.innerRef || React.createRef();
+
+    ['onEntering', 'onEntered', 'onExit', 'onExiting', 'onExited'].forEach(
+      (name) => {
+        this[name] = this[name].bind(this);
+      },
+    );
   }
 
-  onEntering(node, isAppearing) {
-    this.setState({ height: getHeight(node) });
+  onEntering(_, isAppearing) {
+    const node = this.getNode();
+    this.setState({ dimension: this.getDimension(node) });
     this.props.onEntering(node, isAppearing);
   }
 
-  onEntered(node, isAppearing) {
-    this.setState({ height: null });
+  onEntered(_, isAppearing) {
+    const node = this.getNode();
+    this.setState({ dimension: null });
     this.props.onEntered(node, isAppearing);
   }
 
-  onExit(node) {
-    this.setState({ height: getHeight(node) });
+  onExit() {
+    const node = this.getNode();
+    this.setState({ dimension: this.getDimension(node) });
     this.props.onExit(node);
   }
 
-  onExiting(node) {
+  onExiting() {
+    const node = this.getNode();
     // getting this variable triggers a reflow
-    const _unused = node.offsetHeight; // eslint-disable-line no-unused-vars
-    this.setState({ height: 0 });
+    const _unused = this.getDimension(node); // eslint-disable-line no-unused-vars
+    this.setState({ dimension: 0 });
     this.props.onExiting(node);
   }
 
-  onExited(node) {
-    this.setState({ height: null });
+  onExited() {
+    const node = this.getNode();
+    this.setState({ dimension: null });
     this.props.onExited(node);
+  }
+
+  getNode() {
+    return this.nodeRef.current;
+  }
+
+  getDimension(node) {
+    return this.props.horizontal ? node.scrollWidth : node.scrollHeight;
   }
 
   render() {
     const {
       tag: Tag,
+      horizontal,
       isOpen,
       className,
       navbar,
@@ -99,7 +124,7 @@ class Collapse extends Component {
       ...otherProps
     } = this.props;
 
-    const { height } = this.state;
+    const { dimension } = this.state;
 
     const transitionProps = pick(otherProps, TransitionPropTypeKeys);
     const childProps = omit(otherProps, TransitionPropTypeKeys);
@@ -107,6 +132,7 @@ class Collapse extends Component {
       <Transition
         {...transitionProps}
         in={isOpen}
+        nodeRef={this.nodeRef}
         onEntering={this.onEntering}
         onEntered={this.onEntered}
         onExit={this.onExit}
@@ -115,18 +141,25 @@ class Collapse extends Component {
       >
         {(status) => {
           let collapseClass = getTransitionClass(status);
-          const classes = mapToCssModules(classNames(
-            className,
-            collapseClass,
-            navbar && 'navbar-collapse'
-          ), cssModule);
-          const style = height === null ? null : { height };
+          const classes = mapToCssModules(
+            classNames(
+              className,
+              horizontal && 'collapse-horizontal',
+              collapseClass,
+              navbar && 'navbar-collapse',
+            ),
+            cssModule,
+          );
+          const style =
+            dimension === null
+              ? null
+              : { [horizontal ? 'width' : 'height']: dimension };
           return (
             <Tag
               {...childProps}
               style={{ ...childProps.style, ...style }}
               className={classes}
-              ref={this.props.innerRef}
+              ref={this.nodeRef}
             >
               {children}
             </Tag>

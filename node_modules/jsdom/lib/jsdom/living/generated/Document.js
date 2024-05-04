@@ -22,24 +22,24 @@ exports.is = value => {
 exports.isImpl = value => {
   return utils.isObject(value) && value instanceof Impl.implementation;
 };
-exports.convert = (value, { context = "The provided value" } = {}) => {
+exports.convert = (globalObject, value, { context = "The provided value" } = {}) => {
   if (exports.is(value)) {
     return utils.implForWrapper(value);
   }
-  throw new TypeError(`${context} is not of type 'Document'.`);
+  throw new globalObject.TypeError(`${context} is not of type 'Document'.`);
 };
 
-function makeWrapper(globalObject) {
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    throw new Error("Internal error: invalid global object");
+function makeWrapper(globalObject, newTarget) {
+  let proto;
+  if (newTarget !== undefined) {
+    proto = newTarget.prototype;
   }
 
-  const ctor = globalObject[ctorRegistrySymbol]["Document"];
-  if (ctor === undefined) {
-    throw new Error("Internal error: constructor Document is not installed on the passed global object");
+  if (!utils.isObject(proto)) {
+    proto = globalObject[ctorRegistrySymbol]["Document"].prototype;
   }
 
-  return Object.create(ctor.prototype);
+  return Object.create(proto);
 }
 
 exports.create = (globalObject, constructorArgs, privateData) => {
@@ -52,17 +52,18 @@ exports.createImpl = (globalObject, constructorArgs, privateData) => {
   return utils.implForWrapper(wrapper);
 };
 
-exports._internalSetup = (wrapper, globalObject) => {
-  Node._internalSetup(wrapper, globalObject);
-
-  Object.defineProperties(
-    wrapper,
-    Object.getOwnPropertyDescriptors({
+function getUnforgeables(globalObject) {
+  let unforgeables = unforgeablesMap.get(globalObject);
+  if (unforgeables === undefined) {
+    unforgeables = Object.create(null);
+    utils.define(unforgeables, {
       get location() {
         const esValue = this !== null && this !== undefined ? this : globalObject;
 
         if (!exports.is(esValue)) {
-          throw new TypeError("'get location' called on an object that is not a valid instance of Document.");
+          throw new globalObject.TypeError(
+            "'get location' called on an object that is not a valid instance of Document."
+          );
         }
 
         return utils.tryWrapperForImpl(esValue[implSymbol]["location"]);
@@ -71,19 +72,30 @@ exports._internalSetup = (wrapper, globalObject) => {
         const esValue = this !== null && this !== undefined ? this : globalObject;
 
         if (!exports.is(esValue)) {
-          throw new TypeError("'set location' called on an object that is not a valid instance of Document.");
+          throw new globalObject.TypeError(
+            "'set location' called on an object that is not a valid instance of Document."
+          );
         }
 
         const Q = esValue["location"];
         if (!utils.isObject(Q)) {
-          throw new TypeError("Property 'location' is not an object");
+          throw new globalObject.TypeError("Property 'location' is not an object");
         }
         Reflect.set(Q, "href", V);
       }
-    })
-  );
+    });
+    Object.defineProperties(unforgeables, {
+      location: { configurable: false }
+    });
+    unforgeablesMap.set(globalObject, unforgeables);
+  }
+  return unforgeables;
+}
 
-  Object.defineProperties(wrapper, { location: { configurable: false } });
+exports._internalSetup = (wrapper, globalObject) => {
+  Node._internalSetup(wrapper, globalObject);
+
+  utils.define(wrapper, getUnforgeables(globalObject));
 };
 
 exports.setup = (wrapper, globalObject, constructorArgs = [], privateData = {}) => {
@@ -102,8 +114,8 @@ exports.setup = (wrapper, globalObject, constructorArgs = [], privateData = {}) 
   return wrapper;
 };
 
-exports.new = globalObject => {
-  const wrapper = makeWrapper(globalObject);
+exports.new = (globalObject, newTarget) => {
+  const wrapper = makeWrapper(globalObject, newTarget);
 
   exports._internalSetup(wrapper, globalObject);
   Object.defineProperty(wrapper, implSymbol, {
@@ -118,6 +130,7 @@ exports.new = globalObject => {
   return wrapper[implSymbol];
 };
 
+const unforgeablesMap = new WeakMap();
 const exposed = new Set(["Window"]);
 
 exports.install = (globalObject, globalNames) => {
@@ -125,9 +138,7 @@ exports.install = (globalObject, globalNames) => {
     return;
   }
 
-  if (globalObject.Node === undefined) {
-    throw new Error("Internal error: attempting to evaluate Document before Node");
-  }
+  const ctorRegistry = utils.initCtorRegistry(globalObject);
   class Document extends globalObject.Node {
     constructor() {
       return exports.setup(Object.create(new.target.prototype), globalObject, undefined);
@@ -136,21 +147,22 @@ exports.install = (globalObject, globalNames) => {
     getElementsByTagName(qualifiedName) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'getElementsByTagName' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'getElementsByTagName' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'getElementsByTagName' on 'Document': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'getElementsByTagName' on 'Document': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'getElementsByTagName' on 'Document': parameter 1"
+          context: "Failed to execute 'getElementsByTagName' on 'Document': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -160,14 +172,14 @@ exports.install = (globalObject, globalNames) => {
     getElementsByTagNameNS(namespace, localName) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'getElementsByTagNameNS' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'getElementsByTagNameNS' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (arguments.length < 2) {
-        throw new TypeError(
-          "Failed to execute 'getElementsByTagNameNS' on 'Document': 2 arguments required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'getElementsByTagNameNS' on 'Document': 2 arguments required, but only ${arguments.length} present.`
         );
       }
       const args = [];
@@ -177,7 +189,8 @@ exports.install = (globalObject, globalNames) => {
           curArg = null;
         } else {
           curArg = conversions["DOMString"](curArg, {
-            context: "Failed to execute 'getElementsByTagNameNS' on 'Document': parameter 1"
+            context: "Failed to execute 'getElementsByTagNameNS' on 'Document': parameter 1",
+            globals: globalObject
           });
         }
         args.push(curArg);
@@ -185,7 +198,8 @@ exports.install = (globalObject, globalNames) => {
       {
         let curArg = arguments[1];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'getElementsByTagNameNS' on 'Document': parameter 2"
+          context: "Failed to execute 'getElementsByTagNameNS' on 'Document': parameter 2",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -195,21 +209,22 @@ exports.install = (globalObject, globalNames) => {
     getElementsByClassName(classNames) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'getElementsByClassName' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'getElementsByClassName' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'getElementsByClassName' on 'Document': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'getElementsByClassName' on 'Document': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'getElementsByClassName' on 'Document': parameter 1"
+          context: "Failed to execute 'getElementsByClassName' on 'Document': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -219,21 +234,22 @@ exports.install = (globalObject, globalNames) => {
     createElement(localName) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'createElement' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'createElement' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'createElement' on 'Document': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'createElement' on 'Document': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'createElement' on 'Document': parameter 1"
+          context: "Failed to execute 'createElement' on 'Document': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -241,16 +257,17 @@ exports.install = (globalObject, globalNames) => {
         let curArg = arguments[1];
         if (curArg !== undefined) {
           if (curArg === null || curArg === undefined) {
-            curArg = ElementCreationOptions.convert(curArg, {
+            curArg = ElementCreationOptions.convert(globalObject, curArg, {
               context: "Failed to execute 'createElement' on 'Document': parameter 2"
             });
           } else if (utils.isObject(curArg)) {
-            curArg = ElementCreationOptions.convert(curArg, {
+            curArg = ElementCreationOptions.convert(globalObject, curArg, {
               context: "Failed to execute 'createElement' on 'Document': parameter 2" + " dictionary"
             });
           } else {
             curArg = conversions["DOMString"](curArg, {
-              context: "Failed to execute 'createElement' on 'Document': parameter 2"
+              context: "Failed to execute 'createElement' on 'Document': parameter 2",
+              globals: globalObject
             });
           }
         }
@@ -267,14 +284,14 @@ exports.install = (globalObject, globalNames) => {
     createElementNS(namespace, qualifiedName) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'createElementNS' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'createElementNS' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (arguments.length < 2) {
-        throw new TypeError(
-          "Failed to execute 'createElementNS' on 'Document': 2 arguments required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'createElementNS' on 'Document': 2 arguments required, but only ${arguments.length} present.`
         );
       }
       const args = [];
@@ -284,7 +301,8 @@ exports.install = (globalObject, globalNames) => {
           curArg = null;
         } else {
           curArg = conversions["DOMString"](curArg, {
-            context: "Failed to execute 'createElementNS' on 'Document': parameter 1"
+            context: "Failed to execute 'createElementNS' on 'Document': parameter 1",
+            globals: globalObject
           });
         }
         args.push(curArg);
@@ -292,7 +310,8 @@ exports.install = (globalObject, globalNames) => {
       {
         let curArg = arguments[1];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'createElementNS' on 'Document': parameter 2"
+          context: "Failed to execute 'createElementNS' on 'Document': parameter 2",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -300,16 +319,17 @@ exports.install = (globalObject, globalNames) => {
         let curArg = arguments[2];
         if (curArg !== undefined) {
           if (curArg === null || curArg === undefined) {
-            curArg = ElementCreationOptions.convert(curArg, {
+            curArg = ElementCreationOptions.convert(globalObject, curArg, {
               context: "Failed to execute 'createElementNS' on 'Document': parameter 3"
             });
           } else if (utils.isObject(curArg)) {
-            curArg = ElementCreationOptions.convert(curArg, {
+            curArg = ElementCreationOptions.convert(globalObject, curArg, {
               context: "Failed to execute 'createElementNS' on 'Document': parameter 3" + " dictionary"
             });
           } else {
             curArg = conversions["DOMString"](curArg, {
-              context: "Failed to execute 'createElementNS' on 'Document': parameter 3"
+              context: "Failed to execute 'createElementNS' on 'Document': parameter 3",
+              globals: globalObject
             });
           }
         }
@@ -326,7 +346,9 @@ exports.install = (globalObject, globalNames) => {
     createDocumentFragment() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'createDocumentFragment' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'createDocumentFragment' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol].createDocumentFragment());
@@ -335,21 +357,22 @@ exports.install = (globalObject, globalNames) => {
     createTextNode(data) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'createTextNode' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'createTextNode' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'createTextNode' on 'Document': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'createTextNode' on 'Document': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'createTextNode' on 'Document': parameter 1"
+          context: "Failed to execute 'createTextNode' on 'Document': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -359,21 +382,22 @@ exports.install = (globalObject, globalNames) => {
     createCDATASection(data) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'createCDATASection' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'createCDATASection' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'createCDATASection' on 'Document': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'createCDATASection' on 'Document': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'createCDATASection' on 'Document': parameter 1"
+          context: "Failed to execute 'createCDATASection' on 'Document': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -383,21 +407,22 @@ exports.install = (globalObject, globalNames) => {
     createComment(data) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'createComment' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'createComment' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'createComment' on 'Document': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'createComment' on 'Document': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'createComment' on 'Document': parameter 1"
+          context: "Failed to execute 'createComment' on 'Document': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -407,30 +432,30 @@ exports.install = (globalObject, globalNames) => {
     createProcessingInstruction(target, data) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'createProcessingInstruction' called on an object that is not a valid instance of Document."
         );
       }
 
       if (arguments.length < 2) {
-        throw new TypeError(
-          "Failed to execute 'createProcessingInstruction' on 'Document': 2 arguments required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'createProcessingInstruction' on 'Document': 2 arguments required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'createProcessingInstruction' on 'Document': parameter 1"
+          context: "Failed to execute 'createProcessingInstruction' on 'Document': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
       {
         let curArg = arguments[1];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'createProcessingInstruction' on 'Document': parameter 2"
+          context: "Failed to execute 'createProcessingInstruction' on 'Document': parameter 2",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -440,27 +465,28 @@ exports.install = (globalObject, globalNames) => {
     importNode(node) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'importNode' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'importNode' called on an object that is not a valid instance of Document.");
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'importNode' on 'Document': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'importNode' on 'Document': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
-        curArg = Node.convert(curArg, { context: "Failed to execute 'importNode' on 'Document': parameter 1" });
+        curArg = Node.convert(globalObject, curArg, {
+          context: "Failed to execute 'importNode' on 'Document': parameter 1"
+        });
         args.push(curArg);
       }
       {
         let curArg = arguments[1];
         if (curArg !== undefined) {
           curArg = conversions["boolean"](curArg, {
-            context: "Failed to execute 'importNode' on 'Document': parameter 2"
+            context: "Failed to execute 'importNode' on 'Document': parameter 2",
+            globals: globalObject
           });
         } else {
           curArg = false;
@@ -478,18 +504,20 @@ exports.install = (globalObject, globalNames) => {
     adoptNode(node) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'adoptNode' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'adoptNode' called on an object that is not a valid instance of Document.");
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'adoptNode' on 'Document': 1 argument required, but only " + arguments.length + " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'adoptNode' on 'Document': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
-        curArg = Node.convert(curArg, { context: "Failed to execute 'adoptNode' on 'Document': parameter 1" });
+        curArg = Node.convert(globalObject, curArg, {
+          context: "Failed to execute 'adoptNode' on 'Document': parameter 1"
+        });
         args.push(curArg);
       }
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -503,21 +531,22 @@ exports.install = (globalObject, globalNames) => {
     createAttribute(localName) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'createAttribute' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'createAttribute' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'createAttribute' on 'Document': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'createAttribute' on 'Document': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'createAttribute' on 'Document': parameter 1"
+          context: "Failed to execute 'createAttribute' on 'Document': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -527,14 +556,14 @@ exports.install = (globalObject, globalNames) => {
     createAttributeNS(namespace, qualifiedName) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'createAttributeNS' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'createAttributeNS' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (arguments.length < 2) {
-        throw new TypeError(
-          "Failed to execute 'createAttributeNS' on 'Document': 2 arguments required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'createAttributeNS' on 'Document': 2 arguments required, but only ${arguments.length} present.`
         );
       }
       const args = [];
@@ -544,7 +573,8 @@ exports.install = (globalObject, globalNames) => {
           curArg = null;
         } else {
           curArg = conversions["DOMString"](curArg, {
-            context: "Failed to execute 'createAttributeNS' on 'Document': parameter 1"
+            context: "Failed to execute 'createAttributeNS' on 'Document': parameter 1",
+            globals: globalObject
           });
         }
         args.push(curArg);
@@ -552,7 +582,8 @@ exports.install = (globalObject, globalNames) => {
       {
         let curArg = arguments[1];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'createAttributeNS' on 'Document': parameter 2"
+          context: "Failed to execute 'createAttributeNS' on 'Document': parameter 2",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -562,21 +593,20 @@ exports.install = (globalObject, globalNames) => {
     createEvent(interface_) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'createEvent' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'createEvent' called on an object that is not a valid instance of Document.");
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'createEvent' on 'Document': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'createEvent' on 'Document': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'createEvent' on 'Document': parameter 1"
+          context: "Failed to execute 'createEvent' on 'Document': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -586,7 +616,7 @@ exports.install = (globalObject, globalNames) => {
     createRange() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'createRange' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'createRange' called on an object that is not a valid instance of Document.");
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol].createRange());
@@ -595,27 +625,30 @@ exports.install = (globalObject, globalNames) => {
     createNodeIterator(root) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'createNodeIterator' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'createNodeIterator' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'createNodeIterator' on 'Document': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'createNodeIterator' on 'Document': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
-        curArg = Node.convert(curArg, { context: "Failed to execute 'createNodeIterator' on 'Document': parameter 1" });
+        curArg = Node.convert(globalObject, curArg, {
+          context: "Failed to execute 'createNodeIterator' on 'Document': parameter 1"
+        });
         args.push(curArg);
       }
       {
         let curArg = arguments[1];
         if (curArg !== undefined) {
           curArg = conversions["unsigned long"](curArg, {
-            context: "Failed to execute 'createNodeIterator' on 'Document': parameter 2"
+            context: "Failed to execute 'createNodeIterator' on 'Document': parameter 2",
+            globals: globalObject
           });
         } else {
           curArg = 0xffffffff;
@@ -628,7 +661,7 @@ exports.install = (globalObject, globalNames) => {
           if (curArg === null || curArg === undefined) {
             curArg = null;
           } else {
-            curArg = NodeFilter.convert(curArg, {
+            curArg = NodeFilter.convert(globalObject, curArg, {
               context: "Failed to execute 'createNodeIterator' on 'Document': parameter 3"
             });
           }
@@ -643,27 +676,30 @@ exports.install = (globalObject, globalNames) => {
     createTreeWalker(root) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'createTreeWalker' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'createTreeWalker' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'createTreeWalker' on 'Document': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'createTreeWalker' on 'Document': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
-        curArg = Node.convert(curArg, { context: "Failed to execute 'createTreeWalker' on 'Document': parameter 1" });
+        curArg = Node.convert(globalObject, curArg, {
+          context: "Failed to execute 'createTreeWalker' on 'Document': parameter 1"
+        });
         args.push(curArg);
       }
       {
         let curArg = arguments[1];
         if (curArg !== undefined) {
           curArg = conversions["unsigned long"](curArg, {
-            context: "Failed to execute 'createTreeWalker' on 'Document': parameter 2"
+            context: "Failed to execute 'createTreeWalker' on 'Document': parameter 2",
+            globals: globalObject
           });
         } else {
           curArg = 0xffffffff;
@@ -676,7 +712,7 @@ exports.install = (globalObject, globalNames) => {
           if (curArg === null || curArg === undefined) {
             curArg = null;
           } else {
-            curArg = NodeFilter.convert(curArg, {
+            curArg = NodeFilter.convert(globalObject, curArg, {
               context: "Failed to execute 'createTreeWalker' on 'Document': parameter 3"
             });
           }
@@ -691,21 +727,22 @@ exports.install = (globalObject, globalNames) => {
     getElementsByName(elementName) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'getElementsByName' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'getElementsByName' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'getElementsByName' on 'Document': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'getElementsByName' on 'Document': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'getElementsByName' on 'Document': parameter 1"
+          context: "Failed to execute 'getElementsByName' on 'Document': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -715,13 +752,16 @@ exports.install = (globalObject, globalNames) => {
     open() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'open' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'open' called on an object that is not a valid instance of Document.");
       }
       const args = [];
       {
         let curArg = arguments[0];
         if (curArg !== undefined) {
-          curArg = conversions["DOMString"](curArg, { context: "Failed to execute 'open' on 'Document': parameter 1" });
+          curArg = conversions["DOMString"](curArg, {
+            context: "Failed to execute 'open' on 'Document': parameter 1",
+            globals: globalObject
+          });
         } else {
           curArg = "text/html";
         }
@@ -730,7 +770,10 @@ exports.install = (globalObject, globalNames) => {
       {
         let curArg = arguments[1];
         if (curArg !== undefined) {
-          curArg = conversions["DOMString"](curArg, { context: "Failed to execute 'open' on 'Document': parameter 2" });
+          curArg = conversions["DOMString"](curArg, {
+            context: "Failed to execute 'open' on 'Document': parameter 2",
+            globals: globalObject
+          });
         } else {
           curArg = "";
         }
@@ -747,7 +790,7 @@ exports.install = (globalObject, globalNames) => {
     close() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'close' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'close' called on an object that is not a valid instance of Document.");
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -761,13 +804,14 @@ exports.install = (globalObject, globalNames) => {
     write() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'write' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'write' called on an object that is not a valid instance of Document.");
       }
       const args = [];
       for (let i = 0; i < arguments.length; i++) {
         let curArg = arguments[i];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'write' on 'Document': parameter " + (i + 1)
+          context: "Failed to execute 'write' on 'Document': parameter " + (i + 1),
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -782,13 +826,14 @@ exports.install = (globalObject, globalNames) => {
     writeln() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'writeln' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'writeln' called on an object that is not a valid instance of Document.");
       }
       const args = [];
       for (let i = 0; i < arguments.length; i++) {
         let curArg = arguments[i];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'writeln' on 'Document': parameter " + (i + 1)
+          context: "Failed to execute 'writeln' on 'Document': parameter " + (i + 1),
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -803,7 +848,7 @@ exports.install = (globalObject, globalNames) => {
     hasFocus() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'hasFocus' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'hasFocus' called on an object that is not a valid instance of Document.");
       }
 
       return esValue[implSymbol].hasFocus();
@@ -812,7 +857,7 @@ exports.install = (globalObject, globalNames) => {
     clear() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'clear' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'clear' called on an object that is not a valid instance of Document.");
       }
 
       return esValue[implSymbol].clear();
@@ -821,7 +866,9 @@ exports.install = (globalObject, globalNames) => {
     captureEvents() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'captureEvents' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'captureEvents' called on an object that is not a valid instance of Document."
+        );
       }
 
       return esValue[implSymbol].captureEvents();
@@ -830,7 +877,9 @@ exports.install = (globalObject, globalNames) => {
     releaseEvents() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'releaseEvents' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'releaseEvents' called on an object that is not a valid instance of Document."
+        );
       }
 
       return esValue[implSymbol].releaseEvents();
@@ -839,7 +888,9 @@ exports.install = (globalObject, globalNames) => {
     getSelection() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'getSelection' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'getSelection' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol].getSelection());
@@ -848,21 +899,22 @@ exports.install = (globalObject, globalNames) => {
     getElementById(elementId) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'getElementById' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'getElementById' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'getElementById' on 'Document': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'getElementById' on 'Document': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'getElementById' on 'Document': parameter 1"
+          context: "Failed to execute 'getElementById' on 'Document': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -872,7 +924,7 @@ exports.install = (globalObject, globalNames) => {
     prepend() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'prepend' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'prepend' called on an object that is not a valid instance of Document.");
       }
       const args = [];
       for (let i = 0; i < arguments.length; i++) {
@@ -881,7 +933,8 @@ exports.install = (globalObject, globalNames) => {
           curArg = utils.implForWrapper(curArg);
         } else {
           curArg = conversions["DOMString"](curArg, {
-            context: "Failed to execute 'prepend' on 'Document': parameter " + (i + 1)
+            context: "Failed to execute 'prepend' on 'Document': parameter " + (i + 1),
+            globals: globalObject
           });
         }
         args.push(curArg);
@@ -897,7 +950,7 @@ exports.install = (globalObject, globalNames) => {
     append() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'append' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'append' called on an object that is not a valid instance of Document.");
       }
       const args = [];
       for (let i = 0; i < arguments.length; i++) {
@@ -906,7 +959,8 @@ exports.install = (globalObject, globalNames) => {
           curArg = utils.implForWrapper(curArg);
         } else {
           curArg = conversions["DOMString"](curArg, {
-            context: "Failed to execute 'append' on 'Document': parameter " + (i + 1)
+            context: "Failed to execute 'append' on 'Document': parameter " + (i + 1),
+            globals: globalObject
           });
         }
         args.push(curArg);
@@ -922,7 +976,9 @@ exports.install = (globalObject, globalNames) => {
     replaceChildren() {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'replaceChildren' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'replaceChildren' called on an object that is not a valid instance of Document."
+        );
       }
       const args = [];
       for (let i = 0; i < arguments.length; i++) {
@@ -931,14 +987,15 @@ exports.install = (globalObject, globalNames) => {
           curArg = utils.implForWrapper(curArg);
         } else {
           curArg = conversions["DOMString"](curArg, {
-            context: "Failed to execute 'replaceChildren' on 'Document': parameter " + (i + 1)
+            context: "Failed to execute 'replaceChildren' on 'Document': parameter " + (i + 1),
+            globals: globalObject
           });
         }
         args.push(curArg);
       }
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
       try {
-        return utils.tryWrapperForImpl(esValue[implSymbol].replaceChildren(...args));
+        return esValue[implSymbol].replaceChildren(...args);
       } finally {
         ceReactionsPostSteps_helpers_custom_elements(globalObject);
       }
@@ -947,21 +1004,22 @@ exports.install = (globalObject, globalNames) => {
     querySelector(selectors) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'querySelector' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'querySelector' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'querySelector' on 'Document': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'querySelector' on 'Document': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'querySelector' on 'Document': parameter 1"
+          context: "Failed to execute 'querySelector' on 'Document': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -971,21 +1029,22 @@ exports.install = (globalObject, globalNames) => {
     querySelectorAll(selectors) {
       const esValue = this !== null && this !== undefined ? this : globalObject;
       if (!exports.is(esValue)) {
-        throw new TypeError("'querySelectorAll' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'querySelectorAll' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (arguments.length < 1) {
-        throw new TypeError(
-          "Failed to execute 'querySelectorAll' on 'Document': 1 argument required, but only " +
-            arguments.length +
-            " present."
+        throw new globalObject.TypeError(
+          `Failed to execute 'querySelectorAll' on 'Document': 1 argument required, but only ${arguments.length} present.`
         );
       }
       const args = [];
       {
         let curArg = arguments[0];
         curArg = conversions["DOMString"](curArg, {
-          context: "Failed to execute 'querySelectorAll' on 'Document': parameter 1"
+          context: "Failed to execute 'querySelectorAll' on 'Document': parameter 1",
+          globals: globalObject
         });
         args.push(curArg);
       }
@@ -996,7 +1055,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get implementation' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get implementation' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.getSameObject(this, "implementation", () => {
@@ -1008,7 +1069,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get URL' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get URL' called on an object that is not a valid instance of Document.");
       }
 
       return esValue[implSymbol]["URL"];
@@ -1018,7 +1079,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get documentURI' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get documentURI' called on an object that is not a valid instance of Document."
+        );
       }
 
       return esValue[implSymbol]["documentURI"];
@@ -1028,7 +1091,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get compatMode' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get compatMode' called on an object that is not a valid instance of Document."
+        );
       }
 
       return esValue[implSymbol]["compatMode"];
@@ -1038,7 +1103,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get characterSet' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get characterSet' called on an object that is not a valid instance of Document."
+        );
       }
 
       return esValue[implSymbol]["characterSet"];
@@ -1048,7 +1115,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get charset' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get charset' called on an object that is not a valid instance of Document.");
       }
 
       return esValue[implSymbol]["charset"];
@@ -1058,7 +1125,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get inputEncoding' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get inputEncoding' called on an object that is not a valid instance of Document."
+        );
       }
 
       return esValue[implSymbol]["inputEncoding"];
@@ -1068,7 +1137,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get contentType' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get contentType' called on an object that is not a valid instance of Document."
+        );
       }
 
       return esValue[implSymbol]["contentType"];
@@ -1078,7 +1149,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get doctype' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get doctype' called on an object that is not a valid instance of Document.");
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["doctype"]);
@@ -1088,7 +1159,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get documentElement' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get documentElement' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["documentElement"]);
@@ -1098,7 +1171,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get referrer' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get referrer' called on an object that is not a valid instance of Document."
+        );
       }
 
       return esValue[implSymbol]["referrer"];
@@ -1108,7 +1183,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get cookie' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get cookie' called on an object that is not a valid instance of Document.");
       }
 
       return esValue[implSymbol]["cookie"];
@@ -1118,11 +1193,12 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set cookie' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'set cookie' called on an object that is not a valid instance of Document.");
       }
 
       V = conversions["USVString"](V, {
-        context: "Failed to set the 'cookie' property on 'Document': The provided value"
+        context: "Failed to set the 'cookie' property on 'Document': The provided value",
+        globals: globalObject
       });
 
       esValue[implSymbol]["cookie"] = V;
@@ -1132,7 +1208,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get lastModified' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get lastModified' called on an object that is not a valid instance of Document."
+        );
       }
 
       return esValue[implSymbol]["lastModified"];
@@ -1142,7 +1220,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get readyState' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get readyState' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["readyState"]);
@@ -1152,7 +1232,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get title' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get title' called on an object that is not a valid instance of Document.");
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1167,11 +1247,12 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set title' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'set title' called on an object that is not a valid instance of Document.");
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'title' property on 'Document': The provided value"
+        context: "Failed to set the 'title' property on 'Document': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1186,7 +1267,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get dir' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get dir' called on an object that is not a valid instance of Document.");
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1201,11 +1282,12 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set dir' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'set dir' called on an object that is not a valid instance of Document.");
       }
 
       V = conversions["DOMString"](V, {
-        context: "Failed to set the 'dir' property on 'Document': The provided value"
+        context: "Failed to set the 'dir' property on 'Document': The provided value",
+        globals: globalObject
       });
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1220,7 +1302,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get body' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get body' called on an object that is not a valid instance of Document.");
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1235,13 +1317,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set body' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'set body' called on an object that is not a valid instance of Document.");
       }
 
       if (V === null || V === undefined) {
         V = null;
       } else {
-        V = HTMLElement.convert(V, { context: "Failed to set the 'body' property on 'Document': The provided value" });
+        V = HTMLElement.convert(globalObject, V, {
+          context: "Failed to set the 'body' property on 'Document': The provided value"
+        });
       }
 
       ceReactionsPreSteps_helpers_custom_elements(globalObject);
@@ -1256,7 +1340,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get head' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get head' called on an object that is not a valid instance of Document.");
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["head"]);
@@ -1266,7 +1350,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get images' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get images' called on an object that is not a valid instance of Document.");
       }
 
       return utils.getSameObject(this, "images", () => {
@@ -1278,7 +1362,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get embeds' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get embeds' called on an object that is not a valid instance of Document.");
       }
 
       return utils.getSameObject(this, "embeds", () => {
@@ -1290,7 +1374,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get plugins' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get plugins' called on an object that is not a valid instance of Document.");
       }
 
       return utils.getSameObject(this, "plugins", () => {
@@ -1302,7 +1386,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get links' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get links' called on an object that is not a valid instance of Document.");
       }
 
       return utils.getSameObject(this, "links", () => {
@@ -1314,7 +1398,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get forms' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get forms' called on an object that is not a valid instance of Document.");
       }
 
       return utils.getSameObject(this, "forms", () => {
@@ -1326,7 +1410,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get scripts' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get scripts' called on an object that is not a valid instance of Document.");
       }
 
       return utils.getSameObject(this, "scripts", () => {
@@ -1338,7 +1422,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get currentScript' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get currentScript' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["currentScript"]);
@@ -1348,7 +1434,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get defaultView' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get defaultView' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["defaultView"]);
@@ -1374,7 +1462,7 @@ exports.install = (globalObject, globalNames) => {
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onreadystatechange' property on 'Document': The provided value"
         });
       }
@@ -1385,7 +1473,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get anchors' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get anchors' called on an object that is not a valid instance of Document.");
       }
 
       return utils.getSameObject(this, "anchors", () => {
@@ -1397,7 +1485,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get applets' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get applets' called on an object that is not a valid instance of Document.");
       }
 
       return utils.getSameObject(this, "applets", () => {
@@ -1409,7 +1497,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get styleSheets' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get styleSheets' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.getSameObject(this, "styleSheets", () => {
@@ -1421,7 +1511,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get hidden' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get hidden' called on an object that is not a valid instance of Document.");
       }
 
       return esValue[implSymbol]["hidden"];
@@ -1431,7 +1521,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get visibilityState' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get visibilityState' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["visibilityState"]);
@@ -1441,7 +1533,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onvisibilitychange' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onvisibilitychange' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onvisibilitychange"]);
@@ -1451,13 +1545,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onvisibilitychange' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onvisibilitychange' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onvisibilitychange' property on 'Document': The provided value"
         });
       }
@@ -1468,7 +1564,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onabort' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get onabort' called on an object that is not a valid instance of Document.");
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onabort"]);
@@ -1478,13 +1574,13 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onabort' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'set onabort' called on an object that is not a valid instance of Document.");
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onabort' property on 'Document': The provided value"
         });
       }
@@ -1495,7 +1591,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onauxclick' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onauxclick' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onauxclick"]);
@@ -1505,13 +1603,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onauxclick' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onauxclick' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onauxclick' property on 'Document': The provided value"
         });
       }
@@ -1522,7 +1622,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onblur' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get onblur' called on an object that is not a valid instance of Document.");
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onblur"]);
@@ -1532,13 +1632,13 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onblur' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'set onblur' called on an object that is not a valid instance of Document.");
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onblur' property on 'Document': The provided value"
         });
       }
@@ -1549,7 +1649,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get oncancel' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get oncancel' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["oncancel"]);
@@ -1559,13 +1661,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set oncancel' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set oncancel' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'oncancel' property on 'Document': The provided value"
         });
       }
@@ -1576,7 +1680,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get oncanplay' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get oncanplay' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["oncanplay"]);
@@ -1586,13 +1692,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set oncanplay' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set oncanplay' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'oncanplay' property on 'Document': The provided value"
         });
       }
@@ -1603,7 +1711,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get oncanplaythrough' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get oncanplaythrough' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["oncanplaythrough"]);
@@ -1613,13 +1723,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set oncanplaythrough' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set oncanplaythrough' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'oncanplaythrough' property on 'Document': The provided value"
         });
       }
@@ -1630,7 +1742,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onchange' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onchange' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onchange"]);
@@ -1640,13 +1754,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onchange' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onchange' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onchange' property on 'Document': The provided value"
         });
       }
@@ -1657,7 +1773,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onclick' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get onclick' called on an object that is not a valid instance of Document.");
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onclick"]);
@@ -1667,13 +1783,13 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onclick' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'set onclick' called on an object that is not a valid instance of Document.");
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onclick' property on 'Document': The provided value"
         });
       }
@@ -1684,7 +1800,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onclose' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get onclose' called on an object that is not a valid instance of Document.");
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onclose"]);
@@ -1694,13 +1810,13 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onclose' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'set onclose' called on an object that is not a valid instance of Document.");
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onclose' property on 'Document': The provided value"
         });
       }
@@ -1711,7 +1827,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get oncontextmenu' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get oncontextmenu' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["oncontextmenu"]);
@@ -1721,13 +1839,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set oncontextmenu' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set oncontextmenu' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'oncontextmenu' property on 'Document': The provided value"
         });
       }
@@ -1738,7 +1858,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get oncuechange' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get oncuechange' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["oncuechange"]);
@@ -1748,13 +1870,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set oncuechange' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set oncuechange' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'oncuechange' property on 'Document': The provided value"
         });
       }
@@ -1765,7 +1889,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ondblclick' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get ondblclick' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["ondblclick"]);
@@ -1775,13 +1901,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ondblclick' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set ondblclick' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'ondblclick' property on 'Document': The provided value"
         });
       }
@@ -1792,7 +1920,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ondrag' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get ondrag' called on an object that is not a valid instance of Document.");
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["ondrag"]);
@@ -1802,13 +1930,13 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ondrag' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'set ondrag' called on an object that is not a valid instance of Document.");
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'ondrag' property on 'Document': The provided value"
         });
       }
@@ -1819,7 +1947,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ondragend' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get ondragend' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["ondragend"]);
@@ -1829,13 +1959,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ondragend' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set ondragend' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'ondragend' property on 'Document': The provided value"
         });
       }
@@ -1846,7 +1978,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ondragenter' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get ondragenter' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["ondragenter"]);
@@ -1856,13 +1990,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ondragenter' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set ondragenter' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'ondragenter' property on 'Document': The provided value"
         });
       }
@@ -1873,7 +2009,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ondragleave' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get ondragleave' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["ondragleave"]);
@@ -1883,13 +2021,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ondragleave' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set ondragleave' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'ondragleave' property on 'Document': The provided value"
         });
       }
@@ -1900,7 +2040,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ondragover' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get ondragover' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["ondragover"]);
@@ -1910,13 +2052,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ondragover' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set ondragover' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'ondragover' property on 'Document': The provided value"
         });
       }
@@ -1927,7 +2071,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ondragstart' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get ondragstart' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["ondragstart"]);
@@ -1937,13 +2083,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ondragstart' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set ondragstart' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'ondragstart' property on 'Document': The provided value"
         });
       }
@@ -1954,7 +2102,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ondrop' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get ondrop' called on an object that is not a valid instance of Document.");
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["ondrop"]);
@@ -1964,13 +2112,13 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ondrop' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'set ondrop' called on an object that is not a valid instance of Document.");
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'ondrop' property on 'Document': The provided value"
         });
       }
@@ -1981,7 +2129,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ondurationchange' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get ondurationchange' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["ondurationchange"]);
@@ -1991,13 +2141,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ondurationchange' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set ondurationchange' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'ondurationchange' property on 'Document': The provided value"
         });
       }
@@ -2008,7 +2160,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onemptied' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onemptied' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onemptied"]);
@@ -2018,13 +2172,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onemptied' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onemptied' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onemptied' property on 'Document': The provided value"
         });
       }
@@ -2035,7 +2191,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onended' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get onended' called on an object that is not a valid instance of Document.");
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onended"]);
@@ -2045,13 +2201,13 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onended' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'set onended' called on an object that is not a valid instance of Document.");
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onended' property on 'Document': The provided value"
         });
       }
@@ -2062,7 +2218,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onerror' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get onerror' called on an object that is not a valid instance of Document.");
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onerror"]);
@@ -2072,13 +2228,13 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onerror' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'set onerror' called on an object that is not a valid instance of Document.");
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = OnErrorEventHandlerNonNull.convert(V, {
+        V = OnErrorEventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onerror' property on 'Document': The provided value"
         });
       }
@@ -2089,7 +2245,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onfocus' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get onfocus' called on an object that is not a valid instance of Document.");
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onfocus"]);
@@ -2099,13 +2255,13 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onfocus' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'set onfocus' called on an object that is not a valid instance of Document.");
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onfocus' property on 'Document': The provided value"
         });
       }
@@ -2116,7 +2272,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get oninput' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get oninput' called on an object that is not a valid instance of Document.");
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["oninput"]);
@@ -2126,13 +2282,13 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set oninput' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'set oninput' called on an object that is not a valid instance of Document.");
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'oninput' property on 'Document': The provided value"
         });
       }
@@ -2143,7 +2299,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get oninvalid' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get oninvalid' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["oninvalid"]);
@@ -2153,13 +2311,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set oninvalid' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set oninvalid' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'oninvalid' property on 'Document': The provided value"
         });
       }
@@ -2170,7 +2330,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onkeydown' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onkeydown' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onkeydown"]);
@@ -2180,13 +2342,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onkeydown' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onkeydown' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onkeydown' property on 'Document': The provided value"
         });
       }
@@ -2197,7 +2361,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onkeypress' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onkeypress' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onkeypress"]);
@@ -2207,13 +2373,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onkeypress' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onkeypress' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onkeypress' property on 'Document': The provided value"
         });
       }
@@ -2224,7 +2392,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onkeyup' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get onkeyup' called on an object that is not a valid instance of Document.");
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onkeyup"]);
@@ -2234,13 +2402,13 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onkeyup' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'set onkeyup' called on an object that is not a valid instance of Document.");
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onkeyup' property on 'Document': The provided value"
         });
       }
@@ -2251,7 +2419,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onload' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get onload' called on an object that is not a valid instance of Document.");
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onload"]);
@@ -2261,13 +2429,13 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onload' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'set onload' called on an object that is not a valid instance of Document.");
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onload' property on 'Document': The provided value"
         });
       }
@@ -2278,7 +2446,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onloadeddata' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onloadeddata' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onloadeddata"]);
@@ -2288,13 +2458,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onloadeddata' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onloadeddata' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onloadeddata' property on 'Document': The provided value"
         });
       }
@@ -2305,7 +2477,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onloadedmetadata' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onloadedmetadata' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onloadedmetadata"]);
@@ -2315,13 +2489,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onloadedmetadata' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onloadedmetadata' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onloadedmetadata' property on 'Document': The provided value"
         });
       }
@@ -2332,7 +2508,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onloadend' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onloadend' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onloadend"]);
@@ -2342,13 +2520,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onloadend' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onloadend' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onloadend' property on 'Document': The provided value"
         });
       }
@@ -2359,7 +2539,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onloadstart' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onloadstart' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onloadstart"]);
@@ -2369,13 +2551,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onloadstart' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onloadstart' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onloadstart' property on 'Document': The provided value"
         });
       }
@@ -2386,7 +2570,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onmousedown' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onmousedown' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onmousedown"]);
@@ -2396,13 +2582,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onmousedown' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onmousedown' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onmousedown' property on 'Document': The provided value"
         });
       }
@@ -2429,7 +2617,7 @@ exports.install = (globalObject, globalNames) => {
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onmouseenter' property on 'Document': The provided value"
         });
       }
@@ -2456,7 +2644,7 @@ exports.install = (globalObject, globalNames) => {
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onmouseleave' property on 'Document': The provided value"
         });
       }
@@ -2467,7 +2655,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onmousemove' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onmousemove' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onmousemove"]);
@@ -2477,13 +2667,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onmousemove' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onmousemove' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onmousemove' property on 'Document': The provided value"
         });
       }
@@ -2494,7 +2686,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onmouseout' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onmouseout' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onmouseout"]);
@@ -2504,13 +2698,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onmouseout' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onmouseout' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onmouseout' property on 'Document': The provided value"
         });
       }
@@ -2521,7 +2717,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onmouseover' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onmouseover' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onmouseover"]);
@@ -2531,13 +2729,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onmouseover' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onmouseover' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onmouseover' property on 'Document': The provided value"
         });
       }
@@ -2548,7 +2748,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onmouseup' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onmouseup' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onmouseup"]);
@@ -2558,13 +2760,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onmouseup' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onmouseup' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onmouseup' property on 'Document': The provided value"
         });
       }
@@ -2575,7 +2779,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onwheel' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get onwheel' called on an object that is not a valid instance of Document.");
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onwheel"]);
@@ -2585,13 +2789,13 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onwheel' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'set onwheel' called on an object that is not a valid instance of Document.");
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onwheel' property on 'Document': The provided value"
         });
       }
@@ -2602,7 +2806,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onpause' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get onpause' called on an object that is not a valid instance of Document.");
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onpause"]);
@@ -2612,13 +2816,13 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onpause' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'set onpause' called on an object that is not a valid instance of Document.");
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onpause' property on 'Document': The provided value"
         });
       }
@@ -2629,7 +2833,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onplay' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get onplay' called on an object that is not a valid instance of Document.");
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onplay"]);
@@ -2639,13 +2843,13 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onplay' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'set onplay' called on an object that is not a valid instance of Document.");
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onplay' property on 'Document': The provided value"
         });
       }
@@ -2656,7 +2860,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onplaying' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onplaying' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onplaying"]);
@@ -2666,13 +2872,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onplaying' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onplaying' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onplaying' property on 'Document': The provided value"
         });
       }
@@ -2683,7 +2891,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onprogress' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onprogress' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onprogress"]);
@@ -2693,13 +2903,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onprogress' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onprogress' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onprogress' property on 'Document': The provided value"
         });
       }
@@ -2710,7 +2922,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onratechange' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onratechange' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onratechange"]);
@@ -2720,13 +2934,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onratechange' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onratechange' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onratechange' property on 'Document': The provided value"
         });
       }
@@ -2737,7 +2953,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onreset' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'get onreset' called on an object that is not a valid instance of Document.");
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onreset"]);
@@ -2747,13 +2963,13 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onreset' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError("'set onreset' called on an object that is not a valid instance of Document.");
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onreset' property on 'Document': The provided value"
         });
       }
@@ -2764,7 +2980,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onresize' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onresize' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onresize"]);
@@ -2774,13 +2992,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onresize' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onresize' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onresize' property on 'Document': The provided value"
         });
       }
@@ -2791,7 +3011,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onscroll' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onscroll' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onscroll"]);
@@ -2801,13 +3023,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onscroll' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onscroll' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onscroll' property on 'Document': The provided value"
         });
       }
@@ -2818,7 +3042,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'get onsecuritypolicyviolation' called on an object that is not a valid instance of Document."
         );
       }
@@ -2830,7 +3054,7 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError(
+        throw new globalObject.TypeError(
           "'set onsecuritypolicyviolation' called on an object that is not a valid instance of Document."
         );
       }
@@ -2838,7 +3062,7 @@ exports.install = (globalObject, globalNames) => {
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onsecuritypolicyviolation' property on 'Document': The provided value"
         });
       }
@@ -2849,7 +3073,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onseeked' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onseeked' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onseeked"]);
@@ -2859,13 +3085,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onseeked' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onseeked' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onseeked' property on 'Document': The provided value"
         });
       }
@@ -2876,7 +3104,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onseeking' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onseeking' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onseeking"]);
@@ -2886,13 +3116,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onseeking' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onseeking' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onseeking' property on 'Document': The provided value"
         });
       }
@@ -2903,7 +3135,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onselect' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onselect' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onselect"]);
@@ -2913,13 +3147,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onselect' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onselect' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onselect' property on 'Document': The provided value"
         });
       }
@@ -2930,7 +3166,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onstalled' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onstalled' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onstalled"]);
@@ -2940,13 +3178,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onstalled' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onstalled' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onstalled' property on 'Document': The provided value"
         });
       }
@@ -2957,7 +3197,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onsubmit' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onsubmit' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onsubmit"]);
@@ -2967,13 +3209,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onsubmit' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onsubmit' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onsubmit' property on 'Document': The provided value"
         });
       }
@@ -2984,7 +3228,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onsuspend' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onsuspend' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onsuspend"]);
@@ -2994,13 +3240,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onsuspend' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onsuspend' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onsuspend' property on 'Document': The provided value"
         });
       }
@@ -3011,7 +3259,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ontimeupdate' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get ontimeupdate' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["ontimeupdate"]);
@@ -3021,13 +3271,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ontimeupdate' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set ontimeupdate' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'ontimeupdate' property on 'Document': The provided value"
         });
       }
@@ -3038,7 +3290,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get ontoggle' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get ontoggle' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["ontoggle"]);
@@ -3048,13 +3302,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set ontoggle' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set ontoggle' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'ontoggle' property on 'Document': The provided value"
         });
       }
@@ -3065,7 +3321,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onvolumechange' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onvolumechange' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onvolumechange"]);
@@ -3075,13 +3333,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onvolumechange' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onvolumechange' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onvolumechange' property on 'Document': The provided value"
         });
       }
@@ -3092,7 +3352,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get onwaiting' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get onwaiting' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["onwaiting"]);
@@ -3102,13 +3364,15 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'set onwaiting' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'set onwaiting' called on an object that is not a valid instance of Document."
+        );
       }
 
       if (!utils.isObject(V)) {
         V = null;
       } else {
-        V = EventHandlerNonNull.convert(V, {
+        V = EventHandlerNonNull.convert(globalObject, V, {
           context: "Failed to set the 'onwaiting' property on 'Document': The provided value"
         });
       }
@@ -3119,7 +3383,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get activeElement' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get activeElement' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["activeElement"]);
@@ -3129,7 +3395,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get children' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get children' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.getSameObject(this, "children", () => {
@@ -3141,7 +3409,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get firstElementChild' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get firstElementChild' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["firstElementChild"]);
@@ -3151,7 +3421,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get lastElementChild' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get lastElementChild' called on an object that is not a valid instance of Document."
+        );
       }
 
       return utils.tryWrapperForImpl(esValue[implSymbol]["lastElementChild"]);
@@ -3161,7 +3433,9 @@ exports.install = (globalObject, globalNames) => {
       const esValue = this !== null && this !== undefined ? this : globalObject;
 
       if (!exports.is(esValue)) {
-        throw new TypeError("'get childElementCount' called on an object that is not a valid instance of Document.");
+        throw new globalObject.TypeError(
+          "'get childElementCount' called on an object that is not a valid instance of Document."
+        );
       }
 
       return esValue[implSymbol]["childElementCount"];
@@ -3307,10 +3581,7 @@ exports.install = (globalObject, globalNames) => {
       configurable: true
     }
   });
-  if (globalObject[ctorRegistrySymbol] === undefined) {
-    globalObject[ctorRegistrySymbol] = Object.create(null);
-  }
-  globalObject[ctorRegistrySymbol][interfaceName] = Document;
+  ctorRegistry[interfaceName] = Document;
 
   Object.defineProperty(globalObject, interfaceName, {
     configurable: true,
