@@ -1,4 +1,6 @@
 import { addFormatToken } from '../format/format';
+import { addUnitAlias } from './aliases';
+import { addUnitPriority } from './priorities';
 import { addRegexToken, match3, match1to3 } from '../parse/regex';
 import { addParseToken } from '../parse/token';
 import toInt from '../utils/to-int';
@@ -6,6 +8,13 @@ import toInt from '../utils/to-int';
 // FORMATTING
 
 addFormatToken('DDD', ['DDDD', 3], 'DDDo', 'dayOfYear');
+
+// ALIASES
+
+addUnitAlias('dayOfYear', 'DDD');
+
+// PRIORITY
+addUnitPriority('dayOfYear', 4);
 
 // PARSING
 

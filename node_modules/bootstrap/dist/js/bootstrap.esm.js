@@ -1,6 +1,6 @@
 /*!
-  * Bootstrap v5.3.3 (https://getbootstrap.com/)
-  * Copyright 2011-2024 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
+  * Bootstrap v5.3.2 (https://getbootstrap.com/)
+  * Copyright 2011-2023 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
 import * as Popper from '@popperjs/core';
@@ -206,6 +206,7 @@ const noop = () => {};
 const reflow = element => {
   element.offsetHeight; // eslint-disable-line no-unused-expressions
 };
+
 const getjQuery = () => {
   if (window.jQuery && !document.body.hasAttribute('data-bs-no-jquery')) {
     return window.jQuery;
@@ -643,7 +644,7 @@ class Config {
  * Constants
  */
 
-const VERSION = '5.3.3';
+const VERSION = '5.3.2';
 
 /**
  * Class definition
@@ -724,9 +725,9 @@ const getSelector = element => {
     if (hrefAttribute.includes('#') && !hrefAttribute.startsWith('#')) {
       hrefAttribute = `#${hrefAttribute.split('#')[1]}`;
     }
-    selector = hrefAttribute && hrefAttribute !== '#' ? hrefAttribute.trim() : null;
+    selector = hrefAttribute && hrefAttribute !== '#' ? parseSelector(hrefAttribute.trim()) : null;
   }
-  return selector ? selector.split(',').map(sel => parseSelector(sel)).join(',') : null;
+  return selector;
 };
 const SelectorEngine = {
   find(selector, element = document.documentElement) {
@@ -2072,6 +2073,7 @@ const Default$8 = {
   // if false, we use the backdrop helper without adding any element to the dom
   rootElement: 'body' // give the choice to place backdrop under different elements
 };
+
 const DefaultType$8 = {
   className: 'string',
   clickCallback: '(function|null)',
@@ -2196,6 +2198,7 @@ const Default$7 = {
   autofocus: true,
   trapElement: null // The element to trap focus inside of
 };
+
 const DefaultType$7 = {
   autofocus: 'boolean',
   trapElement: 'element'
@@ -2922,10 +2925,7 @@ const DefaultAllowlist = {
   br: [],
   col: [],
   code: [],
-  dd: [],
   div: [],
-  dl: [],
-  dt: [],
   em: [],
   hr: [],
   h1: [],

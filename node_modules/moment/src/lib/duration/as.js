@@ -1,5 +1,6 @@
 import { daysToMonths, monthsToDays } from './bubble';
 import { normalizeUnits } from '../units/aliases';
+import toInt from '../utils/to-int';
 
 export function as(units) {
     if (!this.isValid()) {
@@ -45,6 +46,19 @@ export function as(units) {
     }
 }
 
+// TODO: Use this.as('ms')?
+export function valueOf() {
+    if (!this.isValid()) {
+        return NaN;
+    }
+    return (
+        this._milliseconds +
+        this._days * 864e5 +
+        (this._months % 12) * 2592e6 +
+        toInt(this._months / 12) * 31536e6
+    );
+}
+
 function makeAs(alias) {
     return function () {
         return this.as(alias);
@@ -59,8 +73,7 @@ var asMilliseconds = makeAs('ms'),
     asWeeks = makeAs('w'),
     asMonths = makeAs('M'),
     asQuarters = makeAs('Q'),
-    asYears = makeAs('y'),
-    valueOf = asMilliseconds;
+    asYears = makeAs('y');
 
 export {
     asMilliseconds,
@@ -72,5 +85,4 @@ export {
     asMonths,
     asQuarters,
     asYears,
-    valueOf,
 };

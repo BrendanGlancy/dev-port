@@ -1,5 +1,7 @@
 import { makeGetSet } from '../moment/get-set';
 import { addFormatToken } from '../format/format';
+import { addUnitAlias } from './aliases';
+import { addUnitPriority } from './priorities';
 import {
     addRegexToken,
     match1,
@@ -41,6 +43,14 @@ addFormatToken(0, ['SSSSSSSS', 8], 0, function () {
 addFormatToken(0, ['SSSSSSSSS', 9], 0, function () {
     return this.millisecond() * 1000000;
 });
+
+// ALIASES
+
+addUnitAlias('millisecond', 'ms');
+
+// PRIORITY
+
+addUnitPriority('millisecond', 16);
 
 // PARSING
 
