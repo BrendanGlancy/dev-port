@@ -4,82 +4,82 @@
     "heading": null,
     "entries": [
       {
-        "icon": "iconoir-figma",
-        "text": "Prototyping",
+        "icon": "iconoir-cpu-warning",
+        "text": "Cybersecurity",
         "topics": [
-          "Wireframing",
-          "High-Fidelity Prototyping",
-          "Consulting & Strategy",
-          "Comprehensive Documentation"
+          "Protocol Implementation",
+          "Risk Assessment",
+          "Penetration Testing",
+          "Compliance and Training"
         ]
       },
       {
-        "icon": "iconoir-input-output",
-        "text": "System Design",
+        "icon": "iconoir-server-connection",
+        "text": "IT Infrastructure",
         "topics": [
-          "Architectural Planning",
-          "Data Modeling",
-          "API Design and Integration",
-          "Documentation and Training"
-        ]
-      },
-      {
-        "icon": "iconoir-design-pencil",
-        "text": "DevOps",
-        "topics": [
-          "Continuous Integration and Deployment (CI/CD)",
-          "Containerization and Orchestration",
-          "Disaster Recovery",
-          "Training and Consultation"
+          "Server Management",
+          "Network Security",
+          "Hardware Setup and Maintenance",
+          "Troubleshooting and Support"
         ]
       },
       {
         "icon": "iconoir-code",
-        "text": "Development",
+        "text": "Software Development",
         "topics": [
-          "Web Development",
-          "Mobile App Development",
-          "API Development and Integration",
-          "Database Design and Management"
+          "Full Stack Development",
+          "API Design and Integration",
+          "Database Design",
+          "Performance Optimization"
+        ]
+      },
+      {
+        "icon": "iconoir-design-pencil",
+        "text": "Project Consulting",
+        "topics": [
+          "Technology Strategy",
+          "System Architecture",
+          "Vendor Relations",
+          "Business Continuity Planning"
         ]
       }
     ]
   },
   "offerings": [
     {
-      "title": "Prototyping",
+      "title": "Cybersecurity",
       "description": [
-        "- <b>Wireframing</b>: Creating ui mockups with foundational elements to grasp the business requirements.",
-        "- <b>High-Fidelity Prototyping</b>: High-fidelity prototypes are produced, featuring rich detail and mock data.",
-        "- <b>Consulting & Strategy</b>: Drawing upon years of professional experience, expert opinion on the best UI/UX practices is offered, aimed at providing a competitive edge.",
-        "- <b>Comprehensive Documentation</b>: Detailed guides and documentation are provided to facilitate an easy transition from the prototype to the final product."
+        "- <b>Protocol Implementation</b>: Implementing cutting-edge cybersecurity protocols to secure IT infrastructures.",
+        "- <b>Risk Assessment</b>: Performing thorough risk assessments to identify and mitigate potential security threats.",
+        "- <b>Penetration Testing</b>: Conducting penetration testing to evaluate the security of IT systems against attacks.",
+        "- <b>Compliance and Training</b>: Ensuring compliance with regulatory standards and providing cybersecurity training to staff."
       ]
     },
     {
-      "title": "System Design",
+      "title": "IT Infrastructure",
       "description": [
-        "- <b>Architectural Planning</b>: Initial consultations focus on outlining the system architecture that best serves the applications goals and constraints.",
-        "- <b>Data Modeling</b>: A robust data model is constructed to aid the system's goals, taking into account both present needs and potential future scalability.",
-        "- <b>API Design and Integration</b>: Comprehensive API design and integration services are provided to ensure smooth communication between different system components or third-party services.",
-        "- <b>Documentation and Training</b>: Detailed documentation is provided for each component and process in the system."
+        "- <b>Server Management</b>: Managing and maintaining servers to ensure high availability and performance.",
+        "- <b>Network Security</b>: Implementing and monitoring security measures for the protection of computer networks and information.",
+        "- <b>Hardware Setup and Maintenance</b>: Setting up and maintaining hardware infrastructure to support organizational needs.",
+        "- <b>Troubleshooting and Support</b>: Providing rapid response to IT issues and maintaining smooth operations."
       ]
     },
     {
-      "title": "DevOps",
+      "title": "Software Development",
       "description": [
-        "- <b>Continuous Integration and Deployment (CI/CD)</b>: Implementing a seamless pipeline for code integration and deployment, enabling faster release cycles and immediate feedback.",
-        "- <b>Containerization and Orchestration</b>: Deploying containerization technologies such as Docker and orchestration tools like Kubernetes to manage microservices efficiently.",
-        "- <b>Disaster Recovery</b>: Planning and implementing disaster recovery strategies that ensure minimal downtime and data loss in case of any failure or catastrophic event.",
-        "- <b>Training and Consultation</b>: Providing comprehensive training programs and consultation services to upskill the internal team, enabling them to manage the DevOps lifecycle more efficiently."
+        "- <b>Full Stack Development</b>: Developing responsive and scalable web applications using modern frameworks and technologies.",
+        "- <b>API Design and Integration</b>: Designing and integrating APIs to enhance application functionality and interoperability.",
+        "- <b>Database Design</b>: Architecting and managing databases to ensure efficient data storage and retrieval.",
+        "- <b>Performance Optimization</b>: Optimizing application performance to improve user experience and system efficiency."
       ]
     },
     {
-      "title": "Development",
+      "title": "Project Consulting",
       "description": [
-        "- <b>Web Development</b>: Crafting responsive and dynamic websites or web applications, using a combination of front-end and back-end technologies, to meet various online business needs.",
-        "- <b>Mobile App Development</b>: Creating native and cross-platform mobile applications that offer seamless user experiences across iOS Android and other mobile platforms.",
-        "- <b>API Development and Integration</b>: Building and integrating APIs to enable seamless communication between different software components, be it internal systems or third-party services.",
-        "- <b>Database Design and Management</b>: Designing efficient database schemas and offering database management services that ensure high performance, security and scalability."
+        "- <b>Technology Strategy</b>: Advising on technology solutions that align with business objectives.",
+        "- <b>System Architecture</b>: Designing IT architectures that support scalable and secure applications.",
+        "- <b>Vendor Relations</b>: Managing relationships with vendors to optimize technology investments.",
+        "- <b>Business Continuity Planning</b>: Developing strategies to maintain business operations under adverse conditions."
       ]
     }
   ],
@@ -89,7 +89,7 @@
     "media": null,
     "button": {
       "link": "/contact",
-      "icon": "/assets/icons/cta-icon.svg"
+      "icon": "/assets/icons/icon-2.svg"
     },
     "profiles": [
       {
@@ -104,10 +104,10 @@
   },
   "contact": {
     "heading": "Let's <br /> <span>collaborate.</span>",
-    "media": "/assets/icons/icon2.png",
+    "media": "/assets/icons/icon2-2.png",
     "button": {
       "link": "/contact",
-      "icon": "/assets/icons/cta-icon.svg"
+      "icon": "/assets/icons/icon-2.svg"
     }
   },
   "credentials": {
@@ -116,7 +116,7 @@
     "media": "/assets/signature.png",
     "button": {
       "link": "/credentials",
-      "icon": "/assets/icons/cta-icon.svg"
+      "icon": "/assets/icons/icon-2.svg"
     }
   }
 }

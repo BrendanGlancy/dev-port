@@ -70,7 +70,7 @@ const OfferingsPage = () => {
             <div className="col-md-12">
               <div className="d-flex profile-contact-credentials-wrap gap-24">
                 <div data-aos="zoom-in" className="h-full">
-                  <div className="about-crenditials-box info-box shadow-box">
+                  <div className="about-credentials-box info-box shadow-box">
                     <Link className="overlay-link" href="/credentials" />
                     <img src="/assets/bg1.png" alt="BG" className="bg-img" />
                     <img src={en.offerings.credentials.media} alt="Sign" />
