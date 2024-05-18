@@ -1,0 +1,15 @@
+{
+	"name": "Brendan Glancy",
+	"logo": "",
+
+	"username": {
+		"github": "brendanglancy",
+		"medium": "@--brendanglancy"
+	},
+
+	"portfolio": {
+		"forkthis": "Steal this theme! Its open-source 🥰",
+		"repo_html": "https://www.github.com/brendanglancy/dev-port",
+		"repo_api": "https://api.github.com/repos/brendanglancy/dev-port"
+	}
+}

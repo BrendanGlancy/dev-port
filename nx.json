@@ -2,65 +2,14 @@
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "targetDefaults": {
     "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"],
-      "cache": true
-    },
-    "e2e": {
-      "inputs": ["default", "^production"],
       "cache": true
     },
     "lint": {
-      "inputs": [
-        "default",
-        "{workspaceRoot}/.eslintrc.json",
-        "{workspaceRoot}/.eslintignore"
-      ],
       "cache": true
     },
-    "@nx/jest:jest": {
-      "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"],
-      "cache": true,
-      "options": {
-        "passWithNoTests": true
-      },
-      "configurations": {
-        "ci": {
-          "ci": true,
-          "codeCoverage": true
-        }
-      }
+    "test": {
+      "cache": true
     }
   },
-  "namedInputs": {
-    "default": ["{projectRoot}/**/*", "sharedGlobals"],
-    "production": [
-      "default",
-      "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
-      "!{projectRoot}/tsconfig.spec.json",
-      "!{projectRoot}/jest.config.[jt]s",
-      "!{projectRoot}/src/test-setup.[jt]s",
-      "!{projectRoot}/test-setup.[jt]s",
-      "!{projectRoot}/.eslintrc.json"
-    ],
-    "sharedGlobals": []
-  },
-  "generators": {
-    "@nx/react": {
-      "application": {
-        "babel": true
-      },
-      "library": {
-        "unitTestRunner": "none"
-      }
-    },
-    "@nx/next": {
-      "application": {
-        "style": "scss",
-        "linter": "eslint"
-      }
-    }
-  },
-  "nxCloudAccessToken": "N2YzZTlmN2MtMzQ0NC00OWNhLWIxNWMtM2UzNmU3ZGZjNjU5fHJlYWQtd3JpdGU=",
   "defaultBase": "main"
 }

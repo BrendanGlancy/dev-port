@@ -1,0 +1,47 @@
+{
+	"acknowledgments": [
+		{
+			"person": "Austin Coontz - Penetration Tester",
+			"link": "https://austin-coontz.vercel.app/",
+			"note": "Made him use Neovim"
+		},
+		{
+			"person": "Vercel - Platform",
+			"link": "https://vercel.com/docs",
+			"note": "Host your own Next.js project for free!"
+		},
+		{
+			"person": "Neovim",
+			"link": "https://neovim.io/",
+			"note": "Helped me steal this template, blazingly fast"
+		}
+	],
+
+	"links": [
+		{
+			"person": "OVS Knife Co",
+			"link": "https://www.ovsknife.com",
+			"note": "Latest Web Dev"
+		},
+		{
+			"person": "Empire Casting Co",
+			"link": "https://empirecastingco.com/",
+			"note": "Where I work, didn't do the website"
+		}
+	],
+
+	"social": [
+		{
+			"url": "https://brendanglancy.com",
+			"icon": "dev"
+		},
+		{
+			"url": "https://www.linkedin.com/in/brendanglancy/",
+			"icon": "linkedin"
+		},
+		{
+			"url": "https://github.com/brendanglancy",
+			"icon": "github"
+		}
+	]
+}

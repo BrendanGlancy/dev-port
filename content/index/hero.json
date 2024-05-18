@@ -1,0 +1,37 @@
+{
+	"intro": {
+		"start": "const Brendan = ( name, passion ) =>",
+		"end": "Hello, my name is",
+		"speed": 84,
+		"deletionSpeed": 80,
+		"wrapper": "h2",
+		"startDelay": 1000,
+		"deleteDelay": 3000,
+		"restartDelay": 12000
+	},
+
+	"header": {
+		"name": "Brendan Glancy",
+		"usp": "I use neovim btw"
+	},
+
+	"paragraph": "On my fifth reinstallation of a Linux Distro, I'm incredibly talented at breaking them",
+
+	"buttons": {
+		"primary": {
+			"title": "Contact Me",
+			"url": "",
+			"leaveSite": false
+		},
+		"secondary": {
+			"title": "LinkedIn",
+			"url": "",
+			"leaveSite": "true"
+		},
+		"github": {
+			"title": "Github",
+			"url": "",
+			"leaveSite": "true"
+		}
+	}
+}

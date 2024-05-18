@@ -1,0 +1,33 @@
+button {
+
+	&.primary {
+		background-color: var(--secondary);
+		color: var(--background);
+
+		&:hover {
+			background-color: var(--secondary-bright);
+		}
+	}
+
+	&.secondary {
+		background-color: transparent;
+		border: 1px solid var(--primary-dim);
+		color: var(--primary);
+
+		&:hover {
+			color: var(--primary-bright);
+			background-color: var(--primary-dark);
+		}
+	}
+
+	&.github {
+		background-color: transparent;
+		border: 1px solid var(--primary-dim);
+		color: var(--primary);
+
+		&:hover {
+			color: var(--primary-bright);
+			background-color: var(--primary-dark);
+		}
+	}
+}
