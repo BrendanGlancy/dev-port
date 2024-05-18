@@ -8,7 +8,7 @@ Welcome to my software developer portfolio template built with Next.js and Boots
 
 <p align="center">
   <kbd>
-    <img src="https://user-images.githubusercontent.com/61941978/218782582-2109dfb4-3625-42f7-8857-365c538e4319.png"></img>
+    <img src="https://github.com/BrendanGlancy/dev-port/assets/61941978/90b138e0-f706-4b2c-9729-a902103203d1"></img>
   </kbd>
 </p>
 
