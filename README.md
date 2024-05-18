@@ -1,58 +1,72 @@
+<h1 align="center">Welcome to my portfolio 👋</h1>
 
-<div align="center">
-  <h1>andrewnelson.net | portfolio</h1>
-  <p></p>
-  <img src="https://img.shields.io/badge/stability-beta-blue.svg" alt="Experimental">
-  <img src="https://vercelbadge.vercel.app/api/atlamors/portfolio-theme" alt="Vercel">
-  <img src="https://therealsujitk-vercel-badge.vercel.app/?app=portfolio-theme-jqe0jhmif-atlamors.vercel.app" alt="Vercel Deployed">
-  <img src="https://img.shields.io/github/license/atlamors/portfolio-theme" alt="Liscence">
-  <br><br>
-</div>
+<br>
+<h3>
+Welcome to my software developer portfolio template built with Next.js and Bootstrap, which helps you showcase your work and skills as a software developer. With this portfolio, you'll be able to impress potential employers or clients with your work and expertise.
+</h3>
+<br>
 
-<img src="https://www.andrewnelson.net/img/preview.png">
+<p align="center">
+  <kbd>
+    <img src="https://user-images.githubusercontent.com/61941978/218782582-2109dfb4-3625-42f7-8857-365c538e4319.png"></img>
+  </kbd>
+</p>
 
-## Updates
-#### Dev Update — July 6th, 2023 🥰
-We have relocated to a beautiful home in the suburbs of Langely, BC. There has been a LOT of work unpacking, organizing, and landscaping to get this home perfect for our two toddlers! I am hoping to resume development of the theme in the next couple months!
+## Demo
 
-On a really interesting note, Webflow has launched a React component export tool. I am considering moving all component design and management over to Webflow for easier tooling for marketing teams and visual designers! 
-#### Dev Update — Feb 13th, 2023 [Updated: March 05th, 2023]
-Jest has been setup, but no progress on building tests has been made. Life is busy atm! 
-#### Dev Update — Feb 10th, 2023
-I am currently taking a short break in development of this theme. I am in the final phases of a job search, and getting ready to move into a bigger place to give some much needed room to my growing family! I am hoping to continue development before the end of next quarter!
+To view a live demo, click here: https://brendanglancy.software/
 
-## This website is still being developed! 🥳
-The porftofolio application has currently hit the Beta phase and is ready to be forked if you are familiar with React and Next. The next release cycle will focus on a better DX—moving from local JSON to MongoDB, setting up Sanity for GUI page editing, Unit Testing with Jest, adding TypeScript, etc.
+## Getting Started
 
-#### Next & App Architecure
-- [ ] Next.js v13 : Waiting for /app/ folder to leave beta
-- [ ] Sanity.io
+To get a local copy up and running, follow these simple example steps.
 
-#### App Architecure & Design Systems
-- [ ] App\Systems\Margins : Continuing to develop Design Token System
-- [ ] App\Systems\Padding : Continuing to develop Design Token System
+### Prerequisites
 
-#### Pages
-- [x] Pages\About
-- [ ] Pages\Case Studies
-- [x] Pages\Articles : API options and connections for Dev.to and HackerNoon not complete
-- [x] Pages\Projects : Single project details page
+You'll need the following software installed on your computer:
 
-#### Articles Page
-- [x] Pages\Articles\Medium\API
-- [ ] Pages\Articles\Dev.to\API
-- [ ] Pages\Articles\HackerNoon\API
+- Git
+- Node.js (which comes with npm)
 
-#### Projects Page
-- [ ] Pages\Projects\Project : Single project details page
+## How To Use
 
+From your command line, clone and run developer-portfolio:
 
-## Please fork this repo! 🦄
+```bash
+# Clone this repository
+$ git clone https://github.com/BrendanGlancy/dev-port.git
 
-Fork, Install, Editing, and Deploy instructions coming soon(ish)!
+# Go into the repository
+$ cd developer-portfolio
 
-This is my first open-source contribution, and it was also a great oppoortunity for me to learn! 
+# Install dependencies
+$ yarn
 
-It is my hope that by sharing this project it can give others a chance to enjoy learning Nextjs (and have as much fun as I did), and hopefully brings value to people as a portfolio and networking tool!
+#Start's development server
+$ yarn dev
+```
 
+## Linking Portfolio to Github
 
+You can link your portfolio to your Github account by changing the githubUserName in `portfolio.js` file.
+
+```javascript
+  //  portfolio.js
+  githubUserName: 'YOUR GITHUB USERNAME HERE',
+```
+
+#### Using Emojis
+
+For adding emoji 😃 into the texts in `Portfolio.js`, use the `emoji()` function and pass the text you need as an argument. This would help in keeping emojis compatible across different browsers and platforms.
+
+## Technologies Used
+
+- [Next.js](https://nextjs.org/)
+- [Nx]()
+- [Docker]()
+- [Vercel]()
+
+## Updated Readme coming soon
+
+**This project has changed immensely** so this readme is not updated correctly
+
+Please don't forget to give my repository a star! ⭐️
