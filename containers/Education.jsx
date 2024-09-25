@@ -6,7 +6,7 @@ import { Container, Row, Col } from "reactstrap";
 const Education = () => {
   return (
     educationInfo && (
-      <section className="section pb-5 bg-gradient-info my-5">
+      <section className="pb-5 bg-gradient-info">
         <Container>
           <div className="d-flex px-3">
             <div>

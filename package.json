@@ -42,5 +42,8 @@
   "devDependencies": {
     "eslint": "7.32.0",
     "eslint-config-next": "11.1.2"
+  },
+  "scripts": {
+    "dev": "NODE_OPTIONS='--openssl-legacy-provider' next dev"
   }
 }
