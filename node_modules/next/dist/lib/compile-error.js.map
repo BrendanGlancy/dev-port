@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../lib/compile-error.ts"],"sourcesContent":["export class CompileError extends Error {}\n"],"names":[],"mappings":";;;;MAAa,YAAY,SAAS,KAAK;;QAA1B,YAAY,GAAZ,YAAY"}

@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../lib/non-nullable.ts"],"sourcesContent":["export function nonNullable<T>(value: T): value is NonNullable<T> {\n  return value !== null && value !== undefined\n}\n"],"names":[],"mappings":";;;;QAAgB,WAAW,GAAX,WAAW;SAAX,WAAW,CAAI,KAAQ,EAA2B,CAAC;WAC1D,KAAK,KAAK,IAAI,IAAI,KAAK,KAAK,SAAS;AAC9C,CAAC"}
