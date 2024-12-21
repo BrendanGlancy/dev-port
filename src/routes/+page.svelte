@@ -1,6 +1,7 @@
 <script>
     import Github from "$lib/github.svelte";
     import Navbar from "$lib/navbar.svelte";
+    import Footer from "$lib/footer.svelte";
 </script>
 
 <svelte:head>
@@ -10,13 +11,11 @@
 <main>
     <p>Hello, I'm</p>
     <h2>Brendan Glancy</h2>
-    <h2 class="dark-gray">Neovim btw</h2>
-    <h2 class="dark-gray">Arch btw</h2>
-    <h2 class="dark-gray">Tmux btw</h2>
-    <h2 class="dark-gray">i3 btw</h2>
+    <h2 class="dark-gray">I use Neovim btw</h2>
 </main>
 <Navbar />
 <Github />
+<Footer />
 
 <style>
     /* Apply a black gradient background */

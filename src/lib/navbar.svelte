@@ -1,9 +1,21 @@
 <script>
+    import { onMount } from "svelte";
+
+    let scrolled = false;
+
+    const handleScroll = () => {
+        scrolled = window.scrollY > 50;
+    };
+
+    onMount(() => {
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    });
 </script>
 
 <div class="container">
     <div class="menuHeader">
-        <nav class="menu">
+        <nav class="menu {scrolled ? 'scrolled' : ''}">
             <ul class="menuContent">
                 <li class="menuHeader">
                     <a href="/home">Home</a>
@@ -15,10 +27,11 @@
                     <a href="#socials">Socials</a>
                 </li>
                 <li class="menuHeader">
-                    <a href="https://www.linkedin.com/in/brendan-glancy/">LinkedIn</a>
+                    <a href="https://www.linkedin.com/in/brendan-glancy/"
+                        >LinkedIn</a
+                    >
                 </li>
-                <li class="menuHeader">
-                </li>
+                <li class="menuHeader"></li>
             </ul>
         </nav>
     </div>
@@ -50,8 +63,6 @@
                 margin: 1rem;
 
                 font-weight: 600;
-                font-family: var(--font-sans);
-                color: var(--primary-dark);
                 text-decoration: none;
             }
         }
@@ -63,10 +74,10 @@
             border-radius: 1rem;
             position: relative;
             border-radius: 1rem;
-            border: 2px solid white;
 
             a {
                 font-weight: 700;
+                color: white;
 
                 &:hover {
                     color: #888889;
@@ -81,10 +92,15 @@
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background: var(--primary-dark);
                 opacity: 50%;
                 border-radius: 1rem;
             }
+        }
+
+        /* Navbar non-transparent state when scrolled */
+        .menu.scrolled {
+            backdrop-filter: blur(10px);
+            border: none;
         }
 
         ul {
