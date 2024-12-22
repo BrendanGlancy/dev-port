@@ -32,7 +32,7 @@
                     stars: repo.stargazers_count,
                 }))
                 .sort((a, b) => b.stars - a.stars)
-                .slice(0, 6);
+                .slice(0, 3);
         } catch (error) {
             errorMessage = "Failed to fetch repositories.";
         }
@@ -64,7 +64,8 @@
                     type: event.type,
                     repo: event.repo.name,
                     date: event.created_at,
-                }));
+                }))
+                .slice(0, 9);
         } catch (error) {
             errorMessage = "Failed to fetch contributions";
             console.error("fetch failed: ", error);
@@ -124,7 +125,6 @@
                         <li class="project">
                             <div class="project-header">
                                 <strong>{contribution.type}</strong>
-                                in
                                 <a
                                     href={`https://github.com/${contribution.repo}`}
                                     target="_blank"
@@ -239,5 +239,42 @@
     .no-contributions {
         color: #ccc;
         font-size: 1rem;
+    }
+
+    .contributions-section {
+        background-color: #0d1117;
+        color: white;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .heatmap {
+        display: flex;
+        justify-content: center;
+        gap: 2px;
+    }
+
+    .week {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .day {
+        width: 12px;
+        height: 12px;
+        border-radius: 2px;
+        background-color: #161b22;
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .day:hover {
+        transform: scale(1.2);
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+
+    .error {
+        color: red;
+        font-size: 1.2rem;
     }
 </style>

@@ -6,15 +6,15 @@
         <h3>ACKNOWLEDGMENTS</h3>
         <ul>
             <li>
-                <strong>Austin Coontz - Penetration Tester</strong> <a href="#">↗</a>
+                <strong>Austin Coontz - Penetration Tester</strong> <a href="https://coontzy1.github.io/">↗</a>
                 <p>Made him use Neovim</p>
             </li>
             <li>
-                <strong>Vercel - Platform</strong> <a href="#">↗</a>
-                <p>Host your own Next.js project for free!</p>
+                <strong>Ethan Tomford</strong> <a href="https://ethantomford.com/">↗</a>
+                <p>Helped him cheat on the OSCP</p>
             </li>
             <li>
-                <strong>Neovim</strong> <a href="#">↗</a>
+                <strong>Neovim</strong> <a href="https://neovim.io/">↗</a>
                 <p>Helped me steal this template, blazingly fast</p>
             </li>
         </ul>
@@ -23,11 +23,11 @@
         <h3>LINKS</h3>
         <ul>
             <li>
-                <strong>OVS Knife Co</strong> <a href="#">↗</a>
+                <strong>OVS Knife Co</strong> <a href="https://www.ovsknife.com/home">↗</a>
                 <p>Latest Web Dev</p>
             </li>
             <li>
-                <strong>Empire Casting Co</strong> <a href="#">↗</a>
+                <strong>Empire Casting Co</strong> <a href="https://empirecastingco.com/">↗</a>
                 <p>Where I work, didn't do the website</p>
             </li>
         </ul>
@@ -35,9 +35,8 @@
     <div class="footer-section">
         <h3>SOCIAL</h3>
         <div class="social-links">
-            <a href="#">DEV</a>
-            <a href="#">LinkedIn</a>
-            <a href="#">GitHub</a>
+            <a href="https://www.linkedin.com/in/brendan-glancy/">LinkedIn</a>
+            <a href="https://github.com/BrendanGlancy">GitHub</a>
         </div>
     </div>
     <div class="footer-bottom">
@@ -59,9 +58,9 @@
     }
 
     .footer-section {
-        flex: 1 1 10vw;
+        flex: 1 1 30%;
         margin: 1.5rem;
-        padding: 120px;
+        padding: 1.5rem;
     }
 
     .footer-section h3 {
@@ -96,7 +95,7 @@
     }
 
     .footer-bottom {
-        flex: 1 1 50%;
+        flex: 1 1 100%;
         text-align: center;
         margin-top: 2rem;
         font-size: 0.9rem;
@@ -116,6 +115,36 @@
         }
         100% {
             background-position: 0% 50%;
+        }
+    }
+
+    /* Mobile Styling */
+    @media (max-width: 768px) {
+        .footer-container {
+            flex-direction: column;
+            padding: 1rem;
+        }
+
+        .footer-section {
+            flex: 1 1 100%;
+            margin: 1rem 0;
+            padding: 1rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1rem;
+        }
+
+        .footer-section ul li p {
+            font-size: 0.8rem;
+        }
+
+        .footer-section .social-links a {
+            font-size: 1rem;
+        }
+
+        .footer-bottom {
+            margin-top: 1rem;
         }
     }
 </style>

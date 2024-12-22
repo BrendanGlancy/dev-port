@@ -2,18 +2,31 @@
     import { onMount } from "svelte";
 
     let scrolled = false;
+    let isMobile = false;
 
     const handleScroll = () => {
         scrolled = window.scrollY > 50;
     };
 
+    const updateIsMobile = () => {
+        isMobile = window.innerWidth <= 738;
+    };
+
     onMount(() => {
         window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
+        window.addEventListener("resize", updateIsMobile);
+
+        // Initial check for mobile
+        updateIsMobile();
+
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+            window.removeEventListener("resize", updateIsMobile);
+        };
     });
 </script>
 
-<div class="container">
+<div class="container {isMobile ? 'hidden' : ''}">
     <div class="menuHeader">
         <nav class="menu {scrolled ? 'scrolled' : ''}">
             <ul class="menuContent">
@@ -109,5 +122,9 @@
             align-items: center;
             gap: 4rem;
         }
+    }
+
+    .container.hidden {
+        display: none;
     }
 </style>
