@@ -58,8 +58,9 @@
     }
 
     .footer-section {
-        flex: 1 1 30%;
-        margin: 1rem;
+        flex: 1 1 10vw;
+        margin: 1.5rem;
+        padding: 120px;
     }
 
     .footer-section h3 {
@@ -94,7 +95,7 @@
     }
 
     .footer-bottom {
-        flex: 1 1 100%;
+        flex: 1 1 50%;
         text-align: center;
         margin-top: 2rem;
         font-size: 0.9rem;

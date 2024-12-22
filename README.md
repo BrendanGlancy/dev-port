@@ -1,38 +1,77 @@
-# sv
+<h1 align="center">Welcome to my portfolio 👋</h1>
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+<br>
+<h3>
+Welcome to my software developer portfolio template built with Next.js and Bootstrap, which helps you showcase your work and skills as a software developer. With this portfolio, you'll be able to impress potential employers or clients with your work and expertise.
+</h3>
+<br>
 
-## Creating a project
+<p align="center">
+  <kbd>
+    <img src="https://user-images.githubusercontent.com/61941978/218782582-2109dfb4-3625-42f7-8857-365c538e4319.png"></img>
+  </kbd>
+</p>
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Demo
+
+To view a live demo, click here: https://brendanglancy.software/
+
+## Getting Started
+
+To get a local copy up and running, follow these simple example steps.
+
+### Prerequisites
+
+You'll need the following software installed on your computer:
+
+- Git
+- Node.js (which comes with npm)
+
+## How To Use
+
+From your command line, clone and run developer-portolio:
 
 ```bash
-# create a new project in the current directory
-npx sv create
+# Clone this repository
+$ git clone https://github.com/BrendanGlancy/dev-port.git
 
-# create a new project in my-app
-npx sv create my-app
+# Go into the repository
+$ cd developer-portfolio
+
+# Install dependencies
+$ yarn
+
+#Start's development server
+$ yarn dev
 ```
 
-## Developing
+## Linking Portfolio to Github
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+You can link your portfolio to your Github account by changing the githubUserName in `portfolio.js` file.
 
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+```javascript
+  //  portfolio.js
+  githubUserName: 'YOUR GITHUB USERNAME HERE',
 ```
 
-## Building
+#### Using Emojis
 
-To create a production version of your app:
+For adding emoji 😃 into the texts in `Portfolio.js`, use the `emoji()` function and pass the text you need as an argument. This would help in keeping emojis compatible across different browsers and platforms.
 
-```bash
-npm run build
-```
+## Technologies Used
 
-You can preview the production build with `npm run preview`.
+-   [Next.js](https://nextjs.org/)
+-   [axios](https://www.npmjs.com/package/axios)
+-   [reactstrap](https://reactstrap.github.io/)
+-   [react-reveal](https://www.react-reveal.com/)
+-   [react-lottie](https://www.npmjs.com/package/react-lottie)
+-   [react-easy-emoji](https://github.com/appfigures/react-easy-emoji)
+-   [react-headroom](https://github.com/KyleAMathews/react-headroom)
+-   [color-thief](https://github.com/lokesh/color-thief)
+-   [emailjs](https://www.emailjs.com/)
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+## Illustrations
+
+-   [Lottie File Source](https://lottiefiles.com)
+
+Please don't forget to give my repository a star! ⭐️
