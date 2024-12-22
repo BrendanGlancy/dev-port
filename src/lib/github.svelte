@@ -1,9 +1,34 @@
 <script>
     import { onMount } from "svelte";
 
+    import Fa from "svelte-fa";
+    import { faStar, faCodeFork } from "@fortawesome/free-solid-svg-icons";
+
     let repos = [];
+    let userData = [];
     let contributions = [];
     let errorMessage = "";
+
+    async function fetchUserData() {
+        let username = "brendanglancy";
+        const apiUrl = `https://api.github.com/users/${username}`;
+
+        try {
+            const response = await fetch(apiUrl, {
+                headers: {
+                    Accept: "application/vnd.github.v3+json",
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status}`);
+            }
+
+            userData = await response.json();
+        } catch (error) {
+            errorMessage = "Failed to fetch profile";
+        }
+    }
 
     async function fetchGithub() {
         let username = "brendanglancy";
@@ -24,17 +49,22 @@
 
             const data = await response.json();
 
+            console.log("repo data: ", data);
             repos = data
                 .map((repo) => ({
                     name: repo.name,
                     description: repo.description,
                     url: repo.html_url,
                     stars: repo.stargazers_count,
+                    forks: repo.forks_count,
+                    date: repo.pushed_at,
                 }))
                 .sort((a, b) => b.stars - a.stars)
                 .slice(0, 3);
         } catch (error) {
             errorMessage = "Failed to fetch repositories.";
+
+            console.error("fetch failed: ", error);
         }
     }
 
@@ -73,6 +103,7 @@
     }
 
     onMount(() => {
+        fetchUserData();
         fetchGithub();
         fetchContributions();
     });
@@ -84,10 +115,22 @@
     {:else if repos.length === 0}
         <p>Loading repositories...</p>
     {:else}
-        <div class="container">
+        <div class="header-container">
             <header>
                 <h2>Recent Projects</h2>
+                <div class="profile">
+                    <img src={userData.avatar_url} alt="Profile" />
+                    <div class="user">
+                        {userData.login}
+                        <a
+                            href="https://github.com/brendanglancy"
+                            target="_blank">https://github.com/brendanglancy</a
+                        >
+                    </div>
+                </div>
             </header>
+        </div>
+        <div class="container">
             <ul class="projects">
                 {#each repos as repo}
                     <li class="project">
@@ -105,11 +148,17 @@
                             {repo.description || "No description available."}
                         </p>
                         <div class="tags">
-                            <span>⭐ {repo.stars}</span>
-                            <span>🔗 {repo.forks}</span>
+                            <span>
+                                <Fa icon={faStar} />
+                                {repo.stars}
+                            </span>
+                            <span>
+                                <Fa icon={faCodeFork} />
+                                {repo.forks}
+                            </span>
                         </div>
                         <div class="footer">
-                            <span>Last updated: {repo.updated_at}</span>
+                            <span>Last updated: {repo.date}</span>
                         </div>
                     </li>
                 {/each}
@@ -169,9 +218,9 @@
     }
 
     header h2 {
-        font-size: 1.8rem;
+        font-size: 18px;
         margin-bottom: 1rem;
-        color: #fff;
+        color: #bfbfbf;
     }
 
     .projects {
@@ -201,6 +250,31 @@
         text-align: left;
     }
 
+    header {
+        max-width: 1200px;
+        margin: auto;
+        text-align: left;
+
+        .user {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+
+    .profile {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .profile img {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin: 10px;
+    }
+
     .project:hover {
         transform: translateY(-5px);
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
@@ -228,6 +302,7 @@
         gap: 1rem;
         font-size: 0.85rem;
         justify-content: space-between;
+        color: #aaa;
     }
 
     .footer {
@@ -239,38 +314,6 @@
     .no-contributions {
         color: #ccc;
         font-size: 1rem;
-    }
-
-    .contributions-section {
-        background-color: #0d1117;
-        color: white;
-        padding: 2rem;
-        text-align: center;
-    }
-
-    .heatmap {
-        display: flex;
-        justify-content: center;
-        gap: 2px;
-    }
-
-    .week {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-    }
-
-    .day {
-        width: 12px;
-        height: 12px;
-        border-radius: 2px;
-        background-color: #161b22;
-        transition: transform 0.2s ease-in-out;
-    }
-
-    .day:hover {
-        transform: scale(1.2);
-        box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
     }
 
     .error {
