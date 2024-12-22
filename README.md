@@ -2,7 +2,7 @@
 
 <br>
 <h3>
-Welcome to my software developer portfolio template built with Next.js and Bootstrap, which helps you showcase your work and skills as a software developer. With this portfolio, you'll be able to impress potential employers or clients with your work and expertise.
+Welcome to my software developer portfolio template built with Svelte, which helps you showcase your work and skills as a software developer. With this portfolio, you'll be able to impress potential employers or clients with your work and expertise.
 </h3>
 <br>
 
@@ -16,7 +16,7 @@ Welcome to my software developer portfolio template built with Next.js and Boots
 
 ## Demo
 
-To view a live demo, click here: https://brendanglancy.software/
+To view a live demo, click here: https://brendanglancy.com/
 
 ## Getting Started
 
@@ -38,13 +38,13 @@ From your command line, clone and run developer-portolio:
 $ git clone https://github.com/BrendanGlancy/dev-port.git
 
 # Go into the repository
-$ cd developer-portfolio
+$ cd dev-port
 
 # Install dependencies
-$ yarn
+$ npm i
 
 #Start's development server
-$ yarn dev
+$ npm run dev
 ```
 
 ## Linking Portfolio to Github
