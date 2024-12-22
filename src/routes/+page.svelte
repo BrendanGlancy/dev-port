@@ -39,7 +39,7 @@
     }
 
     main {
-        background: radial-gradient(circle, #0d0c0e, #3a014f, #3d7c88, #0d4680);
+        background: radial-gradient(circle, #0d0c0e, #0C1019, #3a014f, #3d7c88, #0d4680);
         background-size: 400% 400%;
         animation: gradientAnimation 80s infinite;
 

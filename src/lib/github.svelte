@@ -32,7 +32,7 @@
                     stars: repo.stargazers_count,
                 }))
                 .sort((a, b) => b.stars - a.stars)
-                .slice(0, 4);
+                .slice(0, 6);
         } catch (error) {
             errorMessage = "Failed to fetch repositories.";
         }
@@ -83,48 +83,69 @@
     {:else if repos.length === 0}
         <p>Loading repositories...</p>
     {:else}
-        <ul class="container">
-            {#each repos as repo}
-                <div class="project">
-                    <li>
-                        <a
-                            href={repo.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <strong>{repo.name}</strong>
-                        </a>
-                        <p>
-                            {repo.description || "No description available."}
-                        </p>
-                        <p>⭐ {repo.stars}</p>
-                    </li>
-                </div>
-            {/each}
-        </ul>
-
-        {#if contributions.length > 0}
-            <ul class="container">
-                {#each contributions as contribution}
-                    <div class="project">
-                        <li>
-                            <strong>{contribution.type}</strong> in
+        <div class="container">
+            <header>
+                <h2>Recent Projects</h2>
+            </header>
+            <ul class="projects">
+                {#each repos as repo}
+                    <li class="project">
+                        <div class="project-header">
                             <a
-                                href={`https://github.com/${contribution.repo}`}
+                                href={repo.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
-                                {contribution.repo}
+                                <strong>{repo.name}</strong>
                             </a>
-                            <p>Date: {contribution.date}</p>
-                            <p>Type: {contribution.type}</p>
-                        </li>
-                    </div>
+                            <p class="repo-url">{repo.homepage || repo.url}</p>
+                        </div>
+                        <p class="description">
+                            {repo.description || "No description available."}
+                        </p>
+                        <div class="tags">
+                            <span>⭐ {repo.stars}</span>
+                            <span>🔗 {repo.forks}</span>
+                        </div>
+                        <div class="footer">
+                            <span>Last updated: {repo.updated_at}</span>
+                        </div>
+                    </li>
                 {/each}
             </ul>
-        {:else}
-            <p>No recent contributions found.</p>
-        {/if}
+        </div>
+        <div class="container contributions">
+            <header>
+                <h2>Recent Contributions</h2>
+            </header>
+            {#if contributions.length > 0}
+                <ul class="projects">
+                    {#each contributions as contribution}
+                        <li class="project">
+                            <div class="project-header">
+                                <strong>{contribution.type}</strong>
+                                in
+                                <a
+                                    href={`https://github.com/${contribution.repo}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    {contribution.repo}
+                                </a>
+                            </div>
+                            <p class="description">
+                                Date: {contribution.date}
+                            </p>
+                            <div class="footer">
+                                <p>Type: {contribution.type}</p>
+                            </div>
+                        </li>
+                    {/each}
+                </ul>
+            {:else}
+                <p class="no-contributions">No recent contributions found.</p>
+            {/if}
+        </div>
     {/if}
 </section>
 
@@ -132,31 +153,91 @@
     section {
         background-color: #08090a;
         color: #fff;
-        overflow: hidden;
+        padding: 2rem;
+        text-align: center;
     }
 
     a {
         text-decoration: none;
+        color: #00bfff;
     }
 
     .container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        text-align: center;
+    }
+
+    header h2 {
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+        color: #fff;
+    }
+
+    .projects {
         display: flex;
         flex-wrap: wrap;
-        gap: 1rem;
         justify-content: center;
+        gap: 2rem;
         list-style: none;
-        padding: 10vw;
+        padding: 0;
+        margin: 0;
     }
 
     .project {
+        background: #1a1b1f;
+        border: 1px solid #333;
+        border-radius: 10px;
+        padding: 1.5rem;
+        width: 300px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         justify-content: space-between;
         gap: 1rem;
-        width: 25vw;
-        border: 1px solid white;
-        border-radius: 1rem;
-        padding: 1rem;
-        overflow: hidden;
+        transition:
+            transform 0.2s,
+            box-shadow 0.2s;
+        text-align: left;
+    }
+
+    .project:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .project-header {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .repo-url {
+        font-size: 0.9rem;
+        color: #aaa;
+    }
+
+    .description {
+        font-size: 0.9rem;
+        color: #ccc;
+        margin: 0.5rem 0;
+    }
+
+    .tags {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.85rem;
+        justify-content: space-between;
+    }
+
+    .footer {
+        font-size: 0.8rem;
+        color: #666;
+        text-align: right;
+    }
+
+    .no-contributions {
+        color: #ccc;
+        font-size: 1rem;
     }
 </style>
