@@ -58,7 +58,7 @@
     }
 
     .footer-section {
-        flex: 1 1 30%;
+        flex: 1 1 25%;
         margin: 1.5rem;
         padding: 1.5rem;
     }
