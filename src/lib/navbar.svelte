@@ -87,6 +87,8 @@
             border-radius: 1rem;
             position: relative;
             border-radius: 1rem;
+            background-color: #0D0D0F;
+            opacity: 60%;
 
             a {
                 font-weight: 700;
@@ -113,7 +115,7 @@
         /* Navbar non-transparent state when scrolled */
         .menu.scrolled {
             backdrop-filter: blur(10px);
-            border: none;
+            background-color: transparent;
         }
 
         ul {

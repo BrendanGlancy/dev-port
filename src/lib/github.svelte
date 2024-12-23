@@ -202,6 +202,7 @@
 <style>
     section {
         background-color: #08090a;
+        background: radial-gradient(circle, #0e1311, #0d1117, #000);
         color: #fff;
         padding: 2rem;
         text-align: center;
