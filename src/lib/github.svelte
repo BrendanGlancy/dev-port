@@ -41,15 +41,12 @@
                 },
             });
 
-            console.log("Response:", response); // Debug the response
-
             if (!response.ok) {
                 throw new Error(`Error: ${response.status}`);
             }
 
             const data = await response.json();
 
-            console.log("repo data: ", data);
             repos = data
                 .map((repo) => ({
                     name: repo.name,
@@ -58,6 +55,7 @@
                     stars: repo.stargazers_count,
                     forks: repo.forks_count,
                     date: repo.pushed_at,
+                    language: repo.language,
                 }))
                 .sort((a, b) => b.stars - a.stars)
                 .slice(0, 3);
@@ -148,6 +146,9 @@
                             {repo.description || "No description available."}
                         </p>
                         <div class="tags">
+                            <span>
+                                {repo.language}
+                            </span>
                             <span>
                                 <Fa icon={faStar} />
                                 {repo.stars}
@@ -302,7 +303,7 @@
         gap: 1rem;
         font-size: 0.85rem;
         justify-content: space-between;
-        color: #aaa;
+        color: #888889;
     }
 
     .footer {

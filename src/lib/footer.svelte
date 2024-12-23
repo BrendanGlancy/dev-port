@@ -1,49 +1,111 @@
 <script>
+    import { onMount } from "svelte";
+
+    import Fa from "svelte-fa";
+    import {
+        faStar,
+        faCodeFork,
+        faUpRightFromSquare,
+    } from "@fortawesome/free-solid-svg-icons";
+    import { faGithub } from "@fortawesome/free-brands-svg-icons";
+
+    let data = [];
+    let errorMessage = "";
+
+    async function fetchRepoData() {
+        const apiUrl = `https://api.github.com/repos/BrendanGlancy/dev-port`;
+
+        try {
+            const response = await fetch(apiUrl, {
+                headers: {
+                    Accept: "application/vnd.github.v3+json",
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status}`);
+            }
+
+            data = await response.json();
+        } catch (error) {
+            errorMessage = "Failed to fetch profile";
+            console.log(error);
+        }
+    }
+
+    onMount(() => {
+        fetchRepoData();
+    });
 </script>
 
-<footer class="footer-container">
-    <div class="footer-section">
-        <h3>ACKNOWLEDGMENTS</h3>
-        <ul>
-            <li>
-                <strong>Austin Coontz - Penetration Tester</strong> <a href="https://coontzy1.github.io/">↗</a>
-                <p>Made him use Neovim</p>
-            </li>
-            <li>
-                <strong>Ethan Tomford</strong> <a href="https://ethantomford.com/">↗</a>
-                <p>Helped him cheat on the OSCP</p>
-            </li>
-            <li>
-                <strong>Neovim</strong> <a href="https://neovim.io/">↗</a>
-                <p>Helped me steal this template, blazingly fast</p>
-            </li>
-        </ul>
-    </div>
-    <div class="footer-section">
-        <h3>LINKS</h3>
-        <ul>
-            <li>
-                <strong>OVS Knife Co</strong> <a href="https://www.ovsknife.com/home">↗</a>
-                <p>Latest Web Dev</p>
-            </li>
-            <li>
-                <strong>Empire Casting Co</strong> <a href="https://empirecastingco.com/">↗</a>
-                <p>Where I work, didn't do the website</p>
-            </li>
-        </ul>
-    </div>
-    <div class="footer-section">
-        <h3>SOCIAL</h3>
-        <div class="social-links">
-            <a href="https://www.linkedin.com/in/brendan-glancy/">LinkedIn</a>
-            <a href="https://github.com/BrendanGlancy">GitHub</a>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <p>Steal this theme! It's open-source 🐒</p>
-        <p>🍴 Forks: 19 ⭐ Stars: 63</p>
-    </div>
-</footer>
+<section>
+    {#if errorMessage}
+        <p class="error">{errorMessage}</p>
+    {:else}
+        <footer class="footer-container">
+            <div class="footer-section">
+                <h3>ACKNOWLEDGMENTS</h3>
+                <ul>
+                    <li>
+                        <strong>Austin Coontz - Penetration Tester</strong>
+                        <a href="https://coontzy1.github.io/"
+                            ><Fa icon={faUpRightFromSquare} /></a
+                        >
+                        <p>Made him use Neovim</p>
+                    </li>
+                    <li>
+                        <strong>Ethan Tomford</strong>
+                        <a href="https://ethantomford.com/"
+                            ><Fa icon={faUpRightFromSquare} /></a
+                        >
+                        <p>Helped him cheat on the OSCP</p>
+                    </li>
+                    <li>
+                        <strong>Neovim</strong>
+                        <a href="https://neovim.io/"
+                            ><Fa icon={faUpRightFromSquare} /></a
+                        >
+                        <p>Helped me steal this template, blazingly fast</p>
+                    </li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>LINKS</h3>
+                <ul>
+                    <li>
+                        <strong>OVS Knife Co</strong>
+                        <a href="https://www.ovsknife.com/home"
+                            ><Fa icon={faUpRightFromSquare} /></a
+                        >
+                        <p>Latest Web Dev</p>
+                    </li>
+                    <li>
+                        <strong>Empire Casting Co</strong>
+                        <a href="https://empirecastingco.com/"
+                            ><Fa icon={faUpRightFromSquare} /></a
+                        >
+                        <p>Where I work, didn't do the website</p>
+                    </li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>SOCIAL</h3>
+                <div class="social-links">
+                    <a href="https://www.linkedin.com/in/brendan-glancy/"
+                        >LinkedIn</a
+                    >
+                    <a href="https://github.com/BrendanGlancy">GitHub</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Steal this theme! It's open-source <Fa icon={faGithub} /></p>
+                <p>
+                    <Fa icon={faCodeFork} /> Forks: {data.forks}  <Fa icon={faStar} /> Stars: {data.stargazers_count}
+                </p>
+            </div>
+        </footer>
+    {/if}
+</section>
 
 <style>
     .footer-container {
@@ -51,10 +113,15 @@
         flex-wrap: wrap;
         justify-content: space-between;
         padding: 2rem;
-        background: radial-gradient(circle, #0C1019, #0d1117, #000);
+        background: radial-gradient(circle, #0c1019, #0d1117, #000);
         color: #c9d1d9;
         font-family: sans-serif;
         animation: gradientAnimation 80s infinite;
+    }
+
+    a {
+        color: #8b949e;
+        text-decoration: none;
     }
 
     .footer-section {
