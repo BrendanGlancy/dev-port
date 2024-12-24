@@ -1,7 +1,7 @@
 <script>
-    import Github from "$lib/github.svelte";
-    import Navbar from "$lib/navbar.svelte";
-    import Footer from "$lib/footer.svelte";
+    import Github from "$lib/components/github.svelte";
+    import Navbar from "$lib/components/navbar.svelte";
+    import Footer from "$lib/components/footer.svelte";
 </script>
 
 <svelte:head>
