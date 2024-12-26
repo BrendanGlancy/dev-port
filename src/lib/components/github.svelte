@@ -1,16 +1,18 @@
 <script>
     import { onMount } from "svelte";
-
     import Fa from "svelte-fa";
     import { faStar, faCodeFork } from "@fortawesome/free-solid-svg-icons";
 
+    import Loading from "$lib/components/loading.svelte";
+
     let repos = [];
-    let userData = [];
+    let userData = {};
     let contributions = [];
     let errorMessage = "";
 
+    // Fetch GitHub User Data
     async function fetchUserData() {
-        let username = "brendanglancy";
+        const username = "brendanglancy";
         const apiUrl = `https://api.github.com/users/${username}`;
 
         try {
@@ -20,54 +22,84 @@
                 },
             });
 
-            if (!response.ok) {
-                throw new Error(`Error: ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`Error: ${response.status}`);
 
             userData = await response.json();
         } catch (error) {
-            errorMessage = "Failed to fetch profile";
+            errorMessage = `Failed to fetch user profile: ${error.message}`;
+            console.error(error);
         }
     }
 
     async function fetchGithub() {
-        let username = "brendanglancy";
+        const username = "brendanglancy";
         const apiUrl = `https://api.github.com/users/${username}/repos`;
+        const apiRustscan = `https://api.github.com/orgs/rustscan/repos`;
 
         try {
-            const response = await fetch(apiUrl, {
+            // Fetch RustScan repositories
+            const responseRustscan = await fetch(apiRustscan, {
                 headers: {
                     Accept: "application/vnd.github.v3+json",
                 },
             });
 
-            if (!response.ok) {
-                throw new Error(`Error: ${response.status}`);
+            if (!responseRustscan.ok) {
+                throw new Error(
+                    `Error fetching RustScan repos: ${responseRustscan.status}`,
+                );
             }
 
-            const data = await response.json();
+            const rustscanData = await responseRustscan.json();
 
-            repos = data
-                .map((repo) => ({
-                    name: repo.name,
-                    description: repo.description,
-                    url: repo.html_url,
-                    stars: repo.stargazers_count,
-                    forks: repo.forks_count,
-                    date: repo.pushed_at,
-                    language: repo.language,
-                }))
+            const rustscanRepos = rustscanData.map((repo) => ({
+                name: repo.name,
+                description: repo.description,
+                url: repo.html_url,
+                stars: repo.stargazers_count,
+                forks: repo.forks_count,
+                date: repo.pushed_at,
+                language: repo.language,
+            }));
+
+            // Fetch personal repositories
+            const responsePersonal = await fetch(apiUrl, {
+                headers: {
+                    Accept: "application/vnd.github.v3+json",
+                },
+            });
+
+            if (!responsePersonal.ok) {
+                throw new Error(
+                    `Error fetching personal repos: ${responsePersonal.status}`,
+                );
+            }
+
+            const personalData = await responsePersonal.json();
+
+            const personalRepos = personalData.map((repo) => ({
+                name: repo.name,
+                description: repo.description,
+                url: repo.html_url,
+                stars: repo.stargazers_count,
+                forks: repo.forks_count,
+                date: repo.pushed_at,
+                language: repo.language,
+            }));
+
+            // Combine and sort both repository lists
+            repos = [...rustscanRepos, ...personalRepos]
                 .sort((a, b) => b.stars - a.stars)
                 .slice(0, 3);
         } catch (error) {
-            errorMessage = "Failed to fetch repositories.";
-
-            console.error("fetch failed: ", error);
+            errorMessage = `Failed to fetch repositories: ${error.message}`;
+            console.error(error);
         }
     }
 
+    // Fetch User Contributions
     async function fetchContributions() {
-        let username = "brendanglancy";
+        const username = "brendanglancy";
         const apiContributions = `https://api.github.com/users/${username}/events/public`;
 
         try {
@@ -77,11 +109,10 @@
                 },
             });
 
-            if (!response.ok) {
-                throw new Error(`Error: ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`Error: ${response.status}`);
 
             const data = await response.json();
+
             contributions = data
                 .filter((event) =>
                     ["PushEvent", "PullRequestEvent", "IssueEvent"].includes(
@@ -95,11 +126,12 @@
                 }))
                 .slice(0, 9);
         } catch (error) {
-            errorMessage = "Failed to fetch contributions";
-            console.error("fetch failed: ", error);
+            errorMessage = `Failed to fetch contributions: ${error.message}`;
+            console.error(error);
         }
     }
 
+    // Fetch All Data on Mount
     onMount(() => {
         fetchUserData();
         fetchGithub();
@@ -111,7 +143,7 @@
     {#if errorMessage}
         <p class="error">{errorMessage}</p>
     {:else if repos.length === 0}
-        <p>Loading repositories...</p>
+        <Loading />
     {:else}
         <div class="header-container">
             <header>

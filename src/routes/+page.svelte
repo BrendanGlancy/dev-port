@@ -8,12 +8,12 @@
     <title>Brendan Glancy</title>
 </svelte:head>
 
+<Navbar />
 <main>
     <p>Hello, I'm</p>
     <h2>Brendan Glancy</h2>
     <h2 class="dark-gray">I use Neovim btw</h2>
 </main>
-<Navbar />
 <Github />
 <Footer />
 
