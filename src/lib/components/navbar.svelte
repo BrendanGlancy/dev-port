@@ -3,9 +3,13 @@
 
     let scrolled = false;
     let isMobile = false;
+    let scrolledPastHero = false;
 
     const handleScroll = () => {
         scrolled = window.scrollY > 50;
+
+        const heroHeight = document.getElementById("hero").offsetHeight;
+        scrolledPastHero = window.scrollY > heroHeight;
     };
 
     const updateIsMobile = () => {
@@ -26,7 +30,7 @@
     });
 </script>
 
-<div class="container {isMobile ? 'hidden' : ''}">
+<div class="container {isMobile || scrolledPastHero ? 'hidden' : ''}">
     <div class="menuHeader">
         <nav class="menu {scrolled ? 'scrolled' : ''}">
             <ul class="menuContent">

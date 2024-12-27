@@ -9,12 +9,12 @@
 </svelte:head>
 
 <Navbar />
-<main>
+<main id="hero">
     <p>Hello, I'm</p>
     <h2>Brendan Glancy</h2>
     <h2 class="dark-gray">I use Neovim btw</h2>
 </main>
-<Github />
+<Github id="projects"/>
 <Footer />
 
 <style>

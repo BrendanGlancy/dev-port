@@ -10,6 +10,11 @@
     let contributions = [];
     let errorMessage = "";
 
+    function formatDate(dateString) {
+        const options = { year: "numeric", month: "short", day: "numeric" };
+        return new Date(dateString).toLocaleString(undefined, options);
+    }
+
     // Fetch GitHub User Data
     async function fetchUserData() {
         const username = "brendanglancy";
@@ -191,7 +196,7 @@
                             </span>
                         </div>
                         <div class="footer">
-                            <span>Last updated: {repo.date}</span>
+                            <span>Last updated: {formatDate(repo.date)}</span>
                         </div>
                     </li>
                 {/each}
@@ -216,7 +221,7 @@
                                 </a>
                             </div>
                             <p class="description">
-                                Date: {contribution.date}
+                                Date: {formatDate(contribution.date)}
                             </p>
                             <div class="footer">
                                 <p>Type: {contribution.type}</p>
