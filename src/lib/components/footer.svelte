@@ -112,7 +112,7 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
-        padding: 2rem;
+        padding: 3rem;
         background: radial-gradient(circle, #0c1019, #0d1117, #000);
         color: #c9d1d9;
         font-family: sans-serif;
@@ -137,7 +137,7 @@
 
     .footer-section ul {
         list-style: none;
-        padding: 0;
+        padding: 1rem;
     }
 
     .footer-section ul li {

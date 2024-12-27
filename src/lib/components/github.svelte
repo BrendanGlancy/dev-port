@@ -40,7 +40,6 @@
         const username = "brendanglancy";
         const apiUrl = `https://api.github.com/users/${username}/repos`;
         const apiRustscan = `https://api.github.com/orgs/rustscan/repos`;
-
         try {
             // Fetch RustScan repositories
             const responseRustscan = await fetch(apiRustscan, {
@@ -95,43 +94,9 @@
             // Combine and sort both repository lists
             repos = [...rustscanRepos, ...personalRepos]
                 .sort((a, b) => b.stars - a.stars)
-                .slice(0, 3);
+                .slice(0, 4);
         } catch (error) {
             errorMessage = `Failed to fetch repositories: ${error.message}`;
-            console.error(error);
-        }
-    }
-
-    // Fetch User Contributions
-    async function fetchContributions() {
-        const username = "brendanglancy";
-        const apiContributions = `https://api.github.com/users/${username}/events/public`;
-
-        try {
-            const response = await fetch(apiContributions, {
-                headers: {
-                    Accept: "application/vnd.github.v3+json",
-                },
-            });
-
-            if (!response.ok) throw new Error(`Error: ${response.status}`);
-
-            const data = await response.json();
-
-            contributions = data
-                .filter((event) =>
-                    ["PushEvent", "PullRequestEvent", "IssueEvent"].includes(
-                        event.type,
-                    ),
-                )
-                .map((event) => ({
-                    type: event.type,
-                    repo: event.repo.name,
-                    date: event.created_at,
-                }))
-                .slice(0, 9);
-        } catch (error) {
-            errorMessage = `Failed to fetch contributions: ${error.message}`;
             console.error(error);
         }
     }
@@ -140,7 +105,6 @@
     onMount(() => {
         fetchUserData();
         fetchGithub();
-        fetchContributions();
     });
 </script>
 
@@ -202,37 +166,6 @@
                 {/each}
             </ul>
         </div>
-        <div class="container contributions">
-            <header>
-                <h2>Recent Contributions</h2>
-            </header>
-            {#if contributions.length > 0}
-                <ul class="projects">
-                    {#each contributions as contribution}
-                        <li class="project">
-                            <div class="project-header">
-                                <strong>{contribution.type}</strong>
-                                <a
-                                    href={`https://github.com/${contribution.repo}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    {contribution.repo}
-                                </a>
-                            </div>
-                            <p class="description">
-                                Date: {formatDate(contribution.date)}
-                            </p>
-                            <div class="footer">
-                                <p>Type: {contribution.type}</p>
-                            </div>
-                        </li>
-                    {/each}
-                </ul>
-            {:else}
-                <p class="no-contributions">No recent contributions found.</p>
-            {/if}
-        </div>
     {/if}
 </section>
 
@@ -276,8 +209,8 @@
         background: #1a1b1f;
         border: 1px solid #333;
         border-radius: 10px;
-        padding: 1.5rem;
-        width: 300px;
+        padding: 2rem;
+        width: 400px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         display: flex;
         flex-direction: column;
@@ -348,11 +281,6 @@
         font-size: 0.8rem;
         color: #666;
         text-align: right;
-    }
-
-    .no-contributions {
-        color: #ccc;
-        font-size: 1rem;
     }
 
     .error {
