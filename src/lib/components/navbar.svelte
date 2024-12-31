@@ -34,7 +34,7 @@
         <nav class="menu {scrolled ? 'scrolled' : ''}">
             <ul class="menuContent">
                 <li class="menuHeader">
-                    <a href="/home">Home</a>
+                    <a href="#hero">Home</a>
                 </li>
                 <li class="menuHeader">
                     <a href="#projects">Projects</a>
