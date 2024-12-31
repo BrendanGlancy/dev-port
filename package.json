@@ -16,6 +16,7 @@
 		"vite": "^6.0.0"
 	},
 	"dependencies": {
+		"@fontsource/fira-code": "^5.1.1",
 		"@fortawesome/free-brands-svg-icons": "^6.7.2",
 		"@fortawesome/free-solid-svg-icons": "^6.7.2",
 		"@sveltestrap/sveltestrap": "^6.2.7",
