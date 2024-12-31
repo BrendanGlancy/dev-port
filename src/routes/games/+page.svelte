@@ -1,6 +1,6 @@
 <script>
     import { games } from "./games";
-    import "../../ematchi.css";
+    import "../../games.css";
 </script>
 
 <svelte:head>
