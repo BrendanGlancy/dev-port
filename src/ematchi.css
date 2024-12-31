@@ -19,13 +19,13 @@
 	height: 100%;
 	margin: 0;
 	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-	background: var(--bg-1);
+    background: radial-gradient(circle, #0e1311, #0d1117, #000);
 	color: var(--fg);
 }
 
 @media (prefers-color-scheme: dark) {
 	:root {
-		--bg-1: #111;
+		--bg-1: #0E0F11;
 		--bg-2: #444;
 		--bg-3: #666;
 		--fg: #eee;
