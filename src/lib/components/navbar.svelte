@@ -98,10 +98,6 @@
             }
         }
 
-        .scrolled {
-            backdrop-filter: blur(10px);
-        }
-
         ul {
             display: flex;
             flex-direction: row;

@@ -4,6 +4,7 @@
     import Modal from "$lib/components/game/ematchi/Modal.svelte";
     import { levels } from "$lib/components/game/ematchi/levels";
     import "../../ematchi.css";
+    import { goto } from "$app/navigation";
 
     let state: "waiting" | "playing" | "paused" | "won" | "lost" = "waiting";
 
@@ -56,8 +57,9 @@
             <div class="buttons">
                 {#if state === "paused"}
                     <button on:click={() => game.resume()}>resume</button>
-                    <button on:click={() => (state = 'waiting')}>quit</button>
+                    <button on:click={() => (state = "waiting")}>quit</button>
                 {:else}
+                    <button on:click={() => goto("/games")}> home </button>
                     {#each levels as level}
                         <button
                             on:click={() => {

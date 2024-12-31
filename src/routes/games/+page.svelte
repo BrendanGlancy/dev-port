@@ -37,7 +37,7 @@
         width: 40em;
         aspect-ratio: 1;
         border-radius: 2em;
-        background: var(--bg-1);
+        background: var(--bg-4);
     }
 
     .game p {

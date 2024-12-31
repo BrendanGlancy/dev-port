@@ -9,6 +9,7 @@
 	--bg-1: #fff;
 	--bg-2: #eee;
 	--bg-3: #777;
+    --bg-animated: radial-gradient(circle, #0e1311, #0d1117, #000);
 	--fg: #222;
 	--card-border: #222;
 	--card-border-found: #777;
@@ -25,9 +26,10 @@
 
 @media (prefers-color-scheme: dark) {
 	:root {
-		--bg-1: #0E0F11;
+		--bg-1: #111;
 		--bg-2: #444;
 		--bg-3: #666;
+		--bg-4: #0E0F11;
 		--fg: #eee;
 	    --accent: hsl(315, 66%, 37%);
 	}
