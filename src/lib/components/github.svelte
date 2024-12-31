@@ -108,7 +108,7 @@
     });
 </script>
 
-<section>
+<section id="projects">
     {#if errorMessage}
         <p class="error">{errorMessage}</p>
     {:else if repos.length === 0}
