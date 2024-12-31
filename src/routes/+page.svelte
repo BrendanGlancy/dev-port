@@ -2,93 +2,45 @@
     import Github from "$lib/components/github.svelte";
     import Navbar from "$lib/components/navbar.svelte";
     import Footer from "$lib/components/footer.svelte";
+    import Hero from "$lib/components/hero.svelte";
+
+    import "../styles.css";
 </script>
 
 <svelte:head>
     <title>Brendan Glancy</title>
+    <meta
+        name="description"
+        content="Brendan Glancy - Experienced Software Developer and System Administrator specializing in full-stack web development, cybersecurity, and IT solutions."
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="twitter:domain" content="brendanglancy.com" />
+    <meta property="twitter:url" content="https://brendanglancy.com" />
+    <meta
+        name="twitter:title"
+        content="Brendan Glancy | Software Developer & System Administrator"
+    />
+    <meta
+        name="twitter:description"
+        content="Explore Brendan Glancy's portfolio, featuring expertise in software development, cybersecurity, and IT administration. Check out his projects, including the emoji matching game, eMatchi."
+    />
+    <meta name="twitter:image" content="https://brendanglancy.com/og.png" />
+
+    <meta
+        property="og:title"
+        content="Brendan Glancy | Software Developer & System Administrator"
+    />
+    <meta
+        property="og:description"
+        content="Discover Brendan Glancy's work in software development, IT administration, and cybersecurity. Learn about his projects and professional experience."
+    />
+    <meta property="og:image" content="https://brendanglancy.com/og.png" />
+    <meta property="og:url" content="https://brendanglancy.com" />
+    <meta property="og:type" content="website" />
 </svelte:head>
 
 <Navbar />
-<main id="hero">
-    <p>Hello, I'm</p>
-    <h2>Brendan Glancy</h2>
-    <h2 class="dark-gray">I use Neovim btw</h2>
-</main>
-<Github id="projects"/>
+<Hero />
+<Github id="projects" />
 <Footer />
-
-<style>
-    /* Apply a black gradient background */
-    :global(body) {
-        margin: 0;
-        padding: 0;
-        height: 100%; /* Full height for body */
-        font-family:
-            "Nter",
-            -apple-system,
-            BlinkMacSystemFont,
-            "Segoe UI",
-            Roboto,
-            Oxygen,
-            Ubuntu,
-            Cantarell,
-            "Fira Sans",
-            "Droid Sans",
-            "Helvetica Neue",
-            sans-serif;
-    }
-
-    main {
-        background: radial-gradient(circle, #0d0c0e, #0C1019, #3a014f, #3d7c88, #0d4680);
-        background-size: 400% 400%;
-        animation: gradientAnimation 80s infinite;
-
-        display: flex;
-        flex-direction: column;
-        height: calc(100vh - 80px - 88px);
-        justify-content: center;
-        align-items: center;
-    }
-
-    h2 {
-        color: white;
-        font-size: 4rem;
-        margin: 0;
-        text-align: left;
-        width: 100%;
-        max-width: 600px;
-    }
-
-    .dark-gray {
-        color: #888889;
-    }
-
-    p {
-        color: #7feaff;
-        text-align: left;
-        font-size: 1.5rem;
-    }
-
-    @media (max-width: 768px) {
-        h2 {
-            font-size: 2rem; /* Smaller font size for mobile */
-            text-align: center;
-        }
-
-        p {
-            font-size: 1rem;
-        }
-    }
-
-    @keyframes gradientAnimation {
-        0% {
-            background-position: 0% 50%;
-        }
-        50% {
-            background-position: 100% 50%;
-        }
-        100% {
-            background-position: 0% 50%;
-        }
-    }
-</style>

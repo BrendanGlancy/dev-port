@@ -20,7 +20,6 @@
         window.addEventListener("scroll", handleScroll);
         window.addEventListener("resize", updateIsMobile);
 
-        // Initial check for mobile
         updateIsMobile();
 
         return () => {
@@ -41,7 +40,7 @@
                     <a href="#projects">Projects</a>
                 </li>
                 <li class="menuHeader">
-                    <a href="#socials">Socials</a>
+                    <a href="/games">Games</a>
                 </li>
                 <li class="menuHeader">
                     <a href="https://www.linkedin.com/in/brendan-glancy/"
@@ -115,17 +114,15 @@
             }
         }
 
-        /* Navbar non-transparent state when scrolled */
-        .menu.scrolled {
+        .scrolled {
             backdrop-filter: blur(10px);
-            background-color: #0D0D0F;
         }
 
         ul {
             display: flex;
             flex-direction: row;
             align-items: center;
-            gap: 4rem;
+            gap: 6rem;
         }
     }
 
