@@ -95,22 +95,6 @@
             a {
                 font-weight: 700;
                 color: white;
-
-                &:hover {
-                    color: #888889;
-                }
-            }
-
-            &:after {
-                content: "";
-                position: absolute;
-                z-index: -1;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                opacity: 50%;
-                border-radius: 1rem;
             }
         }
 

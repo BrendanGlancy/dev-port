@@ -17,8 +17,10 @@
 	},
 	"dependencies": {
 		"@fontsource/fira-code": "^5.1.1",
+		"@fontsource/grandstander": "^5.1.2",
 		"@fortawesome/free-brands-svg-icons": "^6.7.2",
 		"@fortawesome/free-solid-svg-icons": "^6.7.2",
+		"@neoconfetti/svelte": "^2.2.1",
 		"@sveltestrap/sveltestrap": "^6.2.7",
 		"svelte-fa": "^4.0.3"
 	}
