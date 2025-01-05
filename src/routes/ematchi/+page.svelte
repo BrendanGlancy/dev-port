@@ -59,7 +59,7 @@
                     <button on:click={() => game.resume()}>resume</button>
                     <button on:click={() => (state = "waiting")}>quit</button>
                 {:else}
-                    <button on:click={() => goto("/games")}> home </button>
+                    <button on:click={() => goto("/games")}>home</button>
                     {#each levels as level}
                         <button
                             on:click={() => {
