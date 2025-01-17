@@ -55,7 +55,7 @@
                     </li>
                     <li>
                         <strong>Ethan Tomford</strong>
-                        <a href="https://ethantomford.com/"
+                        <a href="https://ethantomford.com/" target="_blank" rel="noopener noreferrer"
                             ><Fa icon={faUpRightFromSquare} /></a
                         >
                         <p>Helped him cheat on the OSCP</p>
