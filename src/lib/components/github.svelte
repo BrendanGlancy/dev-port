@@ -39,7 +39,8 @@
     async function fetchGithub() {
         const username = "brendanglancy";
         const apiUrl = `https://api.github.com/users/${username}/repos`;
-        const apiRustscan = `https://api.github.com/orgs/rustscan/repos`;
+        const apiRustscan = `https://api.github.com/repos/bee-san/RustScan`;
+
         try {
             // Fetch RustScan repositories
             const responseRustscan = await fetch(apiRustscan, {
@@ -56,15 +57,16 @@
 
             const rustscanData = await responseRustscan.json();
 
-            const rustscanRepos = rustscanData.map((repo) => ({
-                name: repo.name,
-                description: repo.description,
-                url: repo.html_url,
-                stars: repo.stargazers_count,
-                forks: repo.forks_count,
-                date: repo.pushed_at,
-                language: repo.language,
-            }));
+            const rustscanRepos = [rustscanData]
+                .map((repo) => ({
+                    name: repo.name,
+                    description: repo.description,
+                    url: repo.html_url,
+                    stars: repo.stargazers_count,
+                    forks: repo.forks_count,
+                    date: repo.pushed_at,
+                    language: repo.language,
+                }));
 
             // Fetch personal repositories
             const responsePersonal = await fetch(apiUrl, {
@@ -91,6 +93,7 @@
                 language: repo.language,
             }));
 
+            console.log(rustscanRepos);
             // Combine and sort both repository lists
             repos = [...rustscanRepos, ...personalRepos]
                 .sort((a, b) => b.stars - a.stars)
