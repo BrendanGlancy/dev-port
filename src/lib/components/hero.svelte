@@ -1,68 +1,64 @@
-<main id="hero">
-    <p>Hello, I'm</p>
+<script>
+    let mouseEntered = false;
+</script>
+
+<main id="hero" class:entered={mouseEntered}>
     <h2>Brendan Glancy</h2>
-    <h2 class="dark-gray">I use Neovim btw</h2>
+    <table
+        class:entered={mouseEntered}
+        on:mouseenter={() => (mouseEntered = true)}
+        on:mouseleave={() => (mouseEntered = false)}
+    >
+        <thead>
+            <tr class:entered={mouseEntered}>
+                <th>Bench</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class:entered={mouseEntered}>
+                <td>425 Lbs</td>
+            </tr>
+        </tbody>
+    </table>
 </main>
 
 <style>
     main {
-        background: radial-gradient(
-            circle,
-            #0d0c0e,
-            #0c1019,
-            #3a014f,
-            #3d7c88,
-            #0d4680
-        );
-        background-size: 400% 400%;
-        animation: gradientAnimation 80s infinite;
-
+        background: linear-gradient(27deg, #2b2b2b, black, black);
         display: flex;
         flex-direction: column;
-        height: calc(100vh - 80px - 88px);
         justify-content: center;
         align-items: center;
+        height: calc(50vh);
+    }
+
+    main.entered {
+        background:
+            url("/physique.png") no-repeat center center,
+            radial-gradient(circle, #313136, black, black);
+        background-size: contain, cover;
+        background-blend-mode: normal;
     }
 
     h2 {
-        color: white;
-        font-size: 4rem;
+        color: #bfbfbf;
+        font-size: 3rem;
         margin: 0;
-        text-align: left;
-        width: 100%;
-        max-width: 600px;
     }
 
-    .dark-gray {
-        color: #888889;
+    table {
+        margin: 1rem 0;
+        padding: 0.5rem;
     }
 
-    p {
-        color: #7feaff;
-        text-align: left;
-        font-size: 1.5rem;
+    table.entered {
+        color: #bfbfbf;
     }
 
     @media (max-width: 768px) {
         h2 {
-            font-size: 2rem; /* Smaller font size for mobile */
+            font-size: 1.5rem; /* Smaller font size for mobile */
             text-align: center;
-        }
-
-        p {
-            font-size: 1rem;
-        }
-    }
-
-    @keyframes gradientAnimation {
-        0% {
-            background-position: 0% 50%;
-        }
-        50% {
-            background-position: 100% 50%;
-        }
-        100% {
-            background-position: 0% 50%;
         }
     }
 </style>

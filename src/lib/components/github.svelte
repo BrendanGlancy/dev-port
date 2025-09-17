@@ -15,7 +15,6 @@
         return new Date(dateString).toLocaleString(undefined, options);
     }
 
-    // Fetch GitHub User Data
     async function fetchUserData() {
         const username = "brendanglancy";
         const apiUrl = `https://api.github.com/users/${username}`;
@@ -42,7 +41,6 @@
         const apiRustscan = `https://api.github.com/repos/bee-san/RustScan`;
 
         try {
-            // Fetch RustScan repositories
             const responseRustscan = await fetch(apiRustscan, {
                 headers: {
                     Accept: "application/vnd.github.v3+json",
@@ -56,19 +54,13 @@
             }
 
             const rustscanData = await responseRustscan.json();
+            const rustscanRepos = [rustscanData].map((repo) => ({
+                name: repo.name,
+                url: repo.html_url,
+                stars: repo.stargazers_count,
+                language: repo.language,
+            }));
 
-            const rustscanRepos = [rustscanData]
-                .map((repo) => ({
-                    name: repo.name,
-                    description: repo.description,
-                    url: repo.html_url,
-                    stars: repo.stargazers_count,
-                    forks: repo.forks_count,
-                    date: repo.pushed_at,
-                    language: repo.language,
-                }));
-
-            // Fetch personal repositories
             const responsePersonal = await fetch(apiUrl, {
                 headers: {
                     Accept: "application/vnd.github.v3+json",
@@ -85,16 +77,11 @@
 
             const personalRepos = personalData.map((repo) => ({
                 name: repo.name,
-                description: repo.description,
                 url: repo.html_url,
                 stars: repo.stargazers_count,
-                forks: repo.forks_count,
-                date: repo.pushed_at,
                 language: repo.language,
             }));
 
-            console.log(rustscanRepos);
-            // Combine and sort both repository lists
             repos = [...rustscanRepos, ...personalRepos]
                 .sort((a, b) => b.stars - a.stars)
                 .slice(0, 4);
@@ -104,7 +91,6 @@
         }
     }
 
-    // Fetch All Data on Mount
     onMount(() => {
         fetchUserData();
         fetchGithub();
@@ -117,21 +103,7 @@
     {:else if repos.length === 0}
         <Loading />
     {:else}
-        <div class="header-container">
-            <header>
-                <h2>Recent Projects</h2>
-                <div class="profile">
-                    <img src={userData.avatar_url} alt="Profile" />
-                    <div class="user">
-                        {userData.login}
-                        <a
-                            href="https://github.com/brendanglancy"
-                            target="_blank">https://github.com/brendanglancy</a
-                        >
-                    </div>
-                </div>
-            </header>
-        </div>
+        <h2>Open Projects</h2>
         <div class="container">
             <ul class="projects">
                 {#each repos as repo}
@@ -144,11 +116,7 @@
                             >
                                 <strong>{repo.name}</strong>
                             </a>
-                            <p class="repo-url">{repo.homepage || repo.url}</p>
                         </div>
-                        <p class="description">
-                            {repo.description || "No description available."}
-                        </p>
                         <div class="tags">
                             <span>
                                 {repo.language}
@@ -157,28 +125,60 @@
                                 <Fa icon={faStar} />
                                 {repo.stars}
                             </span>
-                            <span>
-                                <Fa icon={faCodeFork} />
-                                {repo.forks}
-                            </span>
-                        </div>
-                        <div class="footer">
-                            <span>Last updated: {formatDate(repo.date)}</span>
                         </div>
                     </li>
                 {/each}
             </ul>
+        </div>
+        <h2>NDA'd projects</h2>
+        <div class="container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Company</th>
+                        <th>Summary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Software Developer</td>
+                        <td>LSI</td>
+                        <td
+                            >Work with Webos, Tizen, etc... to develop a media
+                            player</td
+                        >
+                    </tr>
+                    <tr>
+                        <td>System Administrator</td>
+                        <td>Tekanha</td>
+                        <td
+                            >Deal with high pressure situations with the goal of
+                            keeping production systems up</td
+                        >
+                    </tr>
+                    <tr>
+                        <td>Software Developer</td>
+                        <td>OVS</td>
+                        <td
+                            >Create a web presence and portal for a small
+                            growing company</td
+                        >
+                    </tr>
+                </tbody>
+            </table>
         </div>
     {/if}
 </section>
 
 <style>
     section {
-        background-color: #08090a;
-        background: radial-gradient(circle, #0e1311, #0d1117, #000);
-        color: #fff;
+        background-color: black;
+        background: radial-gradient(circle, #121212, black);
+        color: #e3e2e1;
         padding: 2rem;
         text-align: center;
+        min-height: 40vh;
     }
 
     a {
@@ -188,14 +188,8 @@
 
     .container {
         max-width: 1200px;
-        margin: 2rem auto;
+        margin: 4rem auto;
         text-align: center;
-    }
-
-    header h2 {
-        font-size: 18px;
-        margin-bottom: 1rem;
-        color: #bfbfbf;
     }
 
     .projects {
@@ -209,45 +203,15 @@
     }
 
     .project {
-        background: #1a1b1f;
-        border: 1px solid #333;
-        border-radius: 10px;
         padding: 2rem;
         width: 400px;
+        border-radius: 3px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        gap: 1rem;
-        transition:
-            transform 0.2s,
-            box-shadow 0.2s;
+        gap: 1.5rem;
         text-align: left;
-    }
-
-    header {
-        max-width: 1200px;
-        margin: auto;
-        text-align: left;
-
-        .user {
-            display: flex;
-            flex-direction: column;
-        }
-    }
-
-    .profile {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .profile img {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        object-fit: cover;
-        margin: 10px;
     }
 
     .project:hover {
@@ -261,17 +225,6 @@
         gap: 0.5rem;
     }
 
-    .repo-url {
-        font-size: 0.9rem;
-        color: #aaa;
-    }
-
-    .description {
-        font-size: 0.9rem;
-        color: #ccc;
-        margin: 0.5rem 0;
-    }
-
     .tags {
         display: flex;
         gap: 1rem;
@@ -280,14 +233,20 @@
         color: #888889;
     }
 
-    .footer {
-        font-size: 0.8rem;
-        color: #666;
-        text-align: right;
-    }
-
     .error {
         color: red;
         font-size: 1.2rem;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        text-align: left;
+        padding: 1rem;
+        border-bottom: 1px solid #e3e2e1;
     }
 </style>

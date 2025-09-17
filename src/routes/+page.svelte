@@ -40,7 +40,6 @@
     <meta property="og:type" content="website" />
 </svelte:head>
 
-<Navbar />
 <Hero />
 <Github id="projects" />
 <Footer />
