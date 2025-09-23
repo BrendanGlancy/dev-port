@@ -104,6 +104,20 @@
         <Loading />
     {:else}
         <h2>Open Projects</h2>
+        <div class="header-container">
+            <header>
+                <div class="profile">
+                    <img src={userData.avatar_url} alt="Profile" />
+                    <div class="user">
+                        {userData.login}
+                        <a
+                            href="https://github.com/brendanglancy"
+                            target="_blank">https://github.com/brendanglancy</a
+                        >
+                    </div>
+                </div>
+            </header>
+        </div>
         <div class="container">
             <ul class="projects">
                 {#each repos as repo}
@@ -186,10 +200,35 @@
         color: #00bfff;
     }
 
+    .profile {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .profile img {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin: 10px;
+    }
+
     .container {
         max-width: 1200px;
         margin: 4rem auto;
         text-align: center;
+    }
+
+    header {
+        max-width: 1200px;
+        margin: auto;
+        text-align: left;
+
+        .user {
+            display: flex;
+            flex-direction: column;
+        }
     }
 
     .projects {
