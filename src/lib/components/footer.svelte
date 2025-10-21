@@ -56,7 +56,7 @@
             <div class="footer-section">
                 <h3>
                     <a
-                        href="https://ethantomford.com/"
+                        href="https://www.cipherbuu.net/"
                         target="_blank"
                         rel="noopener"
                         ><strong>Ethan Tomford</strong>
