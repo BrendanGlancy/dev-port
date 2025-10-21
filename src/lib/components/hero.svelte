@@ -1,5 +1,22 @@
 <script>
     import { onMount } from "svelte";
+    /**
+      1. var scroll_yv = (scroll.y - scroll.py) * 0.5;
+        - The 0.5 multiplier dampens the scroll velocity
+        - Increase this to make water move faster (e.g., 1.0 or 2.0)
+        - Decrease this to make it slower (e.g., 0.2 or 0.3)
+      2. if (Math.abs(scroll_yv) > 0.01)
+        - The 0.01 threshold determines how sensitive it is to small scrolls
+        - Lower this to respond to gentler scrolling
+      3. The wave offset multiplier * 0.5
+        - Controls the horizontal wave intensity
+        - Increase for more dramatic side-to-side motion
+      4. cell_data.xv *= 0.99; cell_data.yv *= 0.99;
+        - These are the existing velocity decay values
+        - They make the water slow down over time
+        - Lower values (e.g., 0.95) = faster slowdown
+        - Higher values (e.g., 0.995) = water flows longer
+     */
 
     var canvas, ctx, container;
     var mouse = {
@@ -9,10 +26,14 @@
         py: 0,
         down: false,
     };
+    var scroll = {
+        y: 0,
+        py: 0,
+    };
     // need to be a multiple of resolution
     var canvas_width = 500;
     var canvas_height = 500;
-    var resolution = 50;
+    var resolution = 20;
     var pen_size = 50;
 
     var num_cols = 0;
@@ -111,6 +132,8 @@
         window.addEventListener("mousemove", mouse_move_handler);
         window.addEventListener("touchmove", touch_move_handler);
 
+        window.addEventListener("scroll", scroll_handler);
+
         requestAnimationFrame(draw);
     }
 
@@ -137,13 +160,13 @@
                 var ay = (p.y % resolution) / resolution;
 
                 /*
-                        eg: 100% - 75% = 25%,
-                        multiply that value by the cells velocity,
-                        then by 0.05 to greatly reduce the overall change in velocity
-                        then add that value to the particles velocity in each axis
+                    eg: 100% - 75% = 25%,
+                    multiply that value by the cells velocity,
+                    then by 0.05 to greatly reduce the overall change in velocity
+                    then add that value to the particles velocity in each axis
 
-                        this is done so that the change is velocity is incrementatlly made as the particle reaches the end of it's path across the cell
-                    */
+                    this is done so that the change is velocity is incrementatlly made as the particle reaches the end of it's path across the cell
+                */
                 p.xv += (1 - ax) * cell_data.xv * 0.05;
                 p.yv += (1 - ay) * cell_data.yv * 0.05;
 
@@ -175,9 +198,9 @@
                     ctx.moveTo(p.x, p.y);
 
                     /*
-                         draw a line from the particles current coordindates to the same coords
-                         creates a shimmering effect while the particles aren't moving
-                        */
+                     draw a line from the particles current coordindates to the same coords
+                     creates a shimmering effect while the particles aren't moving
+                    */
                     ctx.lineTo(p.x + limit, p.y + limit);
                     ctx.stroke();
                 }
@@ -202,6 +225,7 @@
     function draw() {
         var mouse_xv = mouse.x - mouse.px;
         var mouse_yv = mouse.y - mouse.py;
+        var scroll_yv = (scroll.y - scroll.py) * 0.19;
 
         for (let i = 0; i < vec_cells.length; i++) {
             var cell_datas = vec_cells[i];
@@ -216,13 +240,21 @@
                     );
                 }
 
+                // Apply scroll velocity to create wave effect
+                if (Math.abs(scroll_yv) > 0.01) {
+                    // Create horizontal wave pattern based on cell position
+                    var wave_offset = Math.sin((cell_data.x / canvas_width) * Math.PI * 2 + scroll.y * 0.01) * 0.5;
+                    cell_data.xv += wave_offset * scroll_yv;
+                    cell_data.yv += scroll_yv;
+                }
+
                 update_pressure(cell_data);
             }
         }
 
         // clears the canvas every time a new frame is drawn so the particles can move
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.strokeStyle = "#FFF";
+        ctx.strokeStyle = "#98b1eb";
         update_particle();
 
         // updates the cell velocity for every cell
@@ -237,6 +269,7 @@
 
         mouse.px = mouse.x;
         mouse.py = mouse.y;
+        scroll.py = scroll.y;
 
         requestAnimationFrame(draw);
     }
@@ -365,31 +398,10 @@
         mouse.y = e.touches[0].pageY - rect.top;
     }
 
-    // ego
-    let mouseEntered = $state(false);
-
-    let bench = $state(425);
-    let weight = $state(210);
-    let heightIn = $state(72);
-    let credit = $state(795);
-
-    function handleEnter() {
-        mouseEntered = true;
-        bench += 15;
-        weight += 15;
-        heightIn += 1;
-        credit += 10;
+    function scroll_handler(e) {
+        scroll.py = scroll.y;
+        scroll.y = window.scrollY || window.pageYOffset;
     }
-
-    function handleLeave() {
-        mouseEntered = false;
-    }
-
-    const fmtHeight = (inches) => {
-        const ft = Math.floor(inches / 12);
-        const inch = inches % 12;
-        return `${ft}'${inch}`;
-    };
 
     onMount(() => {
         window.requestAnimationFrame =
@@ -405,11 +417,12 @@
 
         return () => {
             window.removeEventListener("resize", resizeCanvas);
+            window.removeEventListener("scroll", scroll_handler);
         };
     });
 </script>
 
-<div class="hero-container" class:entered={mouseEntered}>
+<div class="hero-container">
     <canvas id="c"></canvas>
     <h2 id="hero">Brendan Glancy</h2>
 </div>

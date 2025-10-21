@@ -14,12 +14,18 @@
 html {
     scroll-behavior: smooth;
     overflow-x: hidden;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
 }
 
 body {
     overflow-x: hidden;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
 }
 
+/* Chrome, Safari, and newer Edge */
+html::-webkit-scrollbar,
 body::-webkit-scrollbar {
     display: none;
 }

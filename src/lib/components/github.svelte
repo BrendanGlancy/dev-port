@@ -159,8 +159,8 @@
                         <td>Software Developer</td>
                         <td>LSI</td>
                         <td
-                            >Work with Webos, Tizen, etc... to develop a media
-                            player</td
+                            >Work with Webos, Tizen, Android etc... to develop a
+                            media player</td
                         >
                     </tr>
                     <tr>
@@ -175,8 +175,8 @@
                         <td>Software Developer</td>
                         <td>OVS</td>
                         <td
-                            >Create a web presence and portal for a small
-                            growing company</td
+                            >Develop a Web Application for a small growing
+                            company</td
                         >
                     </tr>
                 </tbody>
