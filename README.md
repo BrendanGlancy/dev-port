@@ -7,9 +7,9 @@ Welcome to my software developer portfolio template built with Svelte, which hel
 <br>
 
 <p align="center">
-  <kbd>
-    <img src="https://github.com/user-attachments/assets/e60a610a-601c-4678-903c-b62a83fdeaba"></img>
-  </kbd>
+
+https://github.com/user-attachments/assets/70b0dfe9-0fcc-4219-b5e5-391b6ad58e91
+
 </p>
 
 
