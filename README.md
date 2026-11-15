@@ -41,7 +41,6 @@ I'm a software engineer in Akron–Canton, Ohio. I work across full-stack web de
 | **AI-assisted workflow** | A high-level view of how I use AI agents to go from idea to shipped code. |
 | **Open source** | RustScan and developer-portfolio contributions, with live star counts from the GitHub API. |
 | **Contact** | Email, GitHub, LinkedIn and résumé links. |
-| **Arcade** (`/games`) | Browser games, including eMatchi, an emoji matching game. |
 
 Other details:
 
@@ -93,12 +92,9 @@ src/
 │       ├── experience.svelte   # timeline
 │       ├── pipeline.svelte     # AI-assisted workflow
 │       ├── github.svelte       # open-source cards with live stars
-│       ├── footer.svelte       # contact + footer
-│       └── game/ematchi/       # eMatchi game
+│       └── footer.svelte       # contact + footer
 ├── routes/
-│   ├── +page.svelte            # home page
-│   ├── games/                  # arcade
-│   └── ematchi/
+│   └── +page.svelte            # home page
 └── styles.css                  # design tokens + shared styles
 ```
 

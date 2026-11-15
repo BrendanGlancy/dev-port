@@ -51,7 +51,6 @@
         <a class="btn" href={profile.github} target="_blank" rel="noopener">
             <Fa icon={faGithub} /> More on GitHub
         </a>
-        <a class="btn" href="/games">Play the arcade</a>
     </div>
 </section>
 
