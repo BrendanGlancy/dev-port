@@ -9,10 +9,6 @@ export const games: Game[] = [
         link: '/ematchi',
     },
     {
-        label: 'snake',
-        link: '/snake',
-    },
-    {
         label: 'coming soon...',
         link: '/',
     },

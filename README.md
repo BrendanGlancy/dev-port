@@ -1,14 +1,14 @@
-<h1 align="center">Developer Portfolio</h1>
+<h1 align="center">Brendan Glancy — Developer Portfolio</h1>
 
 <p align="center">
-  <strong>A modern, interactive portfolio built with SvelteKit featuring a stunning scroll-reactive fluid animation</strong>
+  <strong>My personal site, built with SvelteKit and a hand-written fluid simulation that reacts to your cursor, touch and scroll.</strong>
 </p>
 
 <p align="center">
-  <a href="https://brendanglancy.com/">Live Demo</a> •
-  <a href="#features">Features</a> •
-  <a href="#getting-started">Getting Started</a> •
-  <a href="#technologies">Technologies</a>
+  <a href="https://brendanglancy.com/">Live site</a> •
+  <a href="#whats-on-the-site">What's on the site</a> •
+  <a href="#getting-started">Getting started</a> •
+  <a href="#make-it-yours">Make it yours</a>
 </p>
 
 <p align="center">
@@ -19,130 +19,93 @@
 
 ---
 
-## Overview
-
-A cutting-edge developer portfolio template that showcases your projects and skills with style. Built with SvelteKit for blazing-fast performance and featuring an interactive fluid simulation that responds to both mouse movement and scroll.
-
-**[View Live Demo →](https://brendanglancy.com/)**
-
 https://github.com/user-attachments/assets/70b0dfe9-0fcc-4219-b5e5-391b6ad58e91
 
-## Features
+## About me
 
-✨ **Interactive Fluid Animation** - Beautiful scroll-reactive water simulation in the hero section
-📱 **Fully Responsive** - Looks great on all devices
-🚀 **Lightning Fast** - Built with SvelteKit and Vite for optimal performance
-🎮 **Built-in Games** - Includes eMatchi (emoji matching) and Snake
-🔗 **GitHub Integration** - Automatically showcases your GitHub projects
-🎨 **Modern UI** - Clean, professional design with smooth animations
-⚡ **Zero-Config Deploy** - Deploy anywhere with SvelteKit adapters
+I'm a software engineer in Akron–Canton, Ohio. I work across full-stack web development, systems programming in C, C++ and Rust, and security.
 
-## Getting Started
+- **DeliverThat** (2026 – present): full-stack development on production systems.
+- **LSI Digital** (2025 – 2026): built a video plugin that plays one video in sync across multiple **LG webOS** and **Samsung Tizen** screens that share nothing but a local network. Screens find each other over UDP and elect a leader, agree on an NTP-corrected clock, and start playback at a scheduled timestamp, within about a millisecond of each other's clocks.
+- **Open source:** I added compile-time UDP probe payloads to [RustScan](https://github.com/bee-san/RustScan/pull/643) (20k+ ★), and an EmailJS contact section to [developer-portfolio](https://github.com/1hanzla100/developer-portfolio/pull/30) (800+ ★).
+- **AI-assisted workflow:** a development workflow I designed in which AI agents carry work from idea to reviewed, tested code, and an engineer makes the decisions.
+- **Security:** top 2% in picoCTF 2022, Hack The Box global rank #534, BuckeyeCTF, and the CTF and Cyber Defense clubs at the University of Akron.
 
-### Prerequisites
+## What's on the site
 
-- [Node.js](https://nodejs.org/) (v18 or higher)
-- [Git](https://git-scm.com/)
+| Section | What it shows |
+| --- | --- |
+| **Hero** | Name and tagline over an interactive fluid simulation. Hovering, touching or scrolling stirs the particles. |
+| **About** | Bio, education, and CTF results. |
+| **Experience** | A timeline: DeliverThat, LSI Digital, Tekahna, OVS Knife Co., Canton Regional Chamber of Commerce. |
+| **AI-assisted workflow** | A high-level view of how I use AI agents to go from idea to shipped code. |
+| **Open source** | RustScan and developer-portfolio contributions, with live star counts from the GitHub API. |
+| **Contact** | Email, GitHub, LinkedIn and résumé links. |
+| **Arcade** (`/games`) | Browser games, including eMatchi, an emoji matching game. |
 
-### Installation
+Other details:
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/BrendanGlancy/dev-port.git
-   cd dev-port
-   ```
+- **Accessibility:** respects `prefers-reduced-motion`, has visible focus styles, and the mobile nav works without blocking page scroll.
+- **SEO:** Open Graph and Twitter cards, plus a `schema.org/Person` JSON-LD block.
+- **Fast:** the home page is prerendered and uses no UI framework beyond Svelte.
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+## Getting started
 
-3. **Start the development server**
-   ```bash
-   npm run dev
-   ```
+Requires [Node.js](https://nodejs.org/) 18 or newer.
 
-4. **Open your browser**
-   Navigate to `http://localhost:5173`
+```bash
+git clone https://github.com/BrendanGlancy/dev-port.git
+cd dev-port
+npm install
+npm run dev        # http://localhost:5173
+```
 
-### Build for Production
+Production build:
 
 ```bash
 npm run build
 npm run preview
 ```
 
-## Customization
+## Make it yours
 
-### Update Your Information
+All of the site's text lives in **`src/lib/data.js`**: profile, bio, experience, workflow overview, featured projects, CTF stats and shoutouts. Edit that file and the page updates; you don't need to touch the components.
 
-Edit the component files in `src/lib/components/` to customize:
-- **Hero Section**: `hero.svelte` - Your name and animated background
-- **GitHub Projects**: `github.svelte` - Configure your GitHub username
-- **Footer**: `footer.svelte` - Contact information and social links
+To tune the fluid animation, edit these values in `src/lib/components/hero.svelte`:
 
-### Customize the Fluid Animation
+| Variable | Effect |
+| --- | --- |
+| `scroll_yv` multiplier in `draw()` | How strongly scrolling pushes the fluid |
+| `resolution` | Grid cell size. Lower is smoother but heavier. |
+| `speck_count` | Number of particles (drops to 400 under reduced motion) |
+| `cell_data.xv *= 0.99` in `update_velocity()` | How long the fluid keeps moving after you stop |
 
-The scroll-reactive water animation can be customized in `src/lib/components/hero.svelte`:
-
-```javascript
-// Control scroll sensitivity (line 211)
-var scroll_yv = (scroll.y - scroll.py) * 0.16; // Increase for faster movement
-
-// Grid resolution (line 36)
-var resolution = 100; // Lower = smoother (e.g., 50), Higher = coarser (e.g., 100)
-
-// Particle count (line 41)
-var speck_count = 1000; // More particles = denser effect
-```
-
-## Technologies
-
-- **[SvelteKit](https://kit.svelte.dev/)** - Web application framework
-- **[Svelte 5](https://svelte.dev/)** - UI component framework
-- **[Vite](https://vitejs.dev/)** - Next-generation frontend tooling
-- **[Sveltestrap](https://sveltestrap.js.org/)** - Bootstrap 5 components for Svelte
-- **[Svelte FA](https://github.com/Cweili/svelte-fa)** - Font Awesome integration
-- **[Neoconfetti](https://www.neoconfetti.com/)** - Confetti animations
-
-## Project Structure
+## Project structure
 
 ```
-dev-port/
-├── src/
-│   ├── lib/
-│   │   └── components/      # Reusable Svelte components
-│   ├── routes/              # SvelteKit routes
-│   │   ├── +page.svelte    # Home page
-│   │   ├── ematchi/        # Emoji matching game
-│   │   ├── games/          # Games showcase
-│   │   └── snake/          # Snake game
-│   ├── app.html            # HTML template
-│   └── styles.css          # Global styles
-├── static/                  # Static assets
-└── package.json
+src/
+├── lib/
+│   ├── data.js                 # all site content
+│   └── components/
+│       ├── hero.svelte         # fluid simulation + intro
+│       ├── navbar.svelte
+│       ├── about.svelte        # bio, CTF stats
+│       ├── experience.svelte   # timeline
+│       ├── pipeline.svelte     # AI-assisted workflow
+│       ├── github.svelte       # open-source cards with live stars
+│       ├── footer.svelte       # contact + footer
+│       └── game/ematchi/       # eMatchi game
+├── routes/
+│   ├── +page.svelte            # home page
+│   ├── games/                  # arcade
+│   └── ematchi/
+└── styles.css                  # design tokens + shared styles
 ```
 
-## Contributing
+## Built with
 
-Contributions are welcome! Feel free to:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-This project is open source and available under the [MIT License](LICENSE).
-
-## Show Your Support
-
-If you find this project useful, please consider giving it a star ⭐️
-
-It helps others discover this template and motivates continued development!
+[SvelteKit](https://kit.svelte.dev/) · [Svelte 5](https://svelte.dev/) · [Vite](https://vitejs.dev/) · [Svelte FA](https://github.com/Cweili/svelte-fa) · [Fira Code](https://github.com/tonsky/FiraCode)
 
 ---
 
-<p align="center">Made with ❤️ using SvelteKit</p>
+<p align="center">If this helped you build your own portfolio, a ⭐️ is appreciated.</p>

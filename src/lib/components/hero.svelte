@@ -1,5 +1,6 @@
 <script>
     import { onMount } from "svelte";
+    import { profile } from "$lib/data.js";
     /**
       1. var scroll_yv = (scroll.y - scroll.py) * 0.5;
         - The 0.5 multiplier dampens the scroll velocity
@@ -105,13 +106,35 @@
 
     function resizeCanvas() {
         const rect = container.getBoundingClientRect();
+        // Mobile browsers fire resize when the URL bar shows/hides; only rebuild on a real size change.
+        if (rect.width === canvas_width && rect.height === canvas_height && vec_cells.length) return;
         canvas_width = rect.width;
         canvas_height = rect.height;
 
-        canvas.width = canvas_width;
-        canvas.height = canvas_height;
+        // Render at device resolution so the 1px strokes stay sharp on retina screens.
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.round(canvas_width * dpr);
+        canvas.height = Math.round(canvas_height * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.lineWidth = 1;
 
         initalizeGrid();
+    }
+
+    var raf = 0;
+    var visible = true;
+    var observer = null;
+    var reduced_motion = false;
+
+    function start() {
+        if (raf || reduced_motion) return;
+        scroll.py = scroll.y; // don't replay scrolling that happened while paused
+        raf = requestAnimationFrame(draw);
+    }
+
+    function stop() {
+        cancelAnimationFrame(raf);
+        raf = 0;
     }
 
     function init() {
@@ -120,21 +143,45 @@
         ctx = canvas.getContext("2d");
 
         resizeCanvas();
+        scroll.y = scroll.py = window.scrollY;
 
         window.addEventListener("resize", resizeCanvas);
+        // Listen on the hero only and stay passive, so taps and page scrolling keep working on touch devices.
+        container.addEventListener("mousemove", mouse_move_handler);
+        container.addEventListener("mouseleave", mouse_up_handler);
+        container.addEventListener("touchstart", touch_start_handler, { passive: true });
+        container.addEventListener("touchmove", touch_move_handler, { passive: true });
+        container.addEventListener("touchend", touch_end_handler);
+        container.addEventListener("touchcancel", touch_end_handler);
+        window.addEventListener("scroll", scroll_handler, { passive: true });
 
-        window.addEventListener("mousedown", mouse_down_handler);
-        window.addEventListener("touchstart", touch_start_handler);
+        if (reduced_motion) {
+            // One still frame of the particle field, no animation loop.
+            draw_frame();
+            return;
+        }
 
-        window.addEventListener("mouseup", mouse_up_handler);
-        window.addEventListener("touchend", touch_end_handler);
+        // Only animate while the hero is on screen.
+        observer = new IntersectionObserver(([entry]) => {
+            visible = entry.isIntersecting;
+            visible ? start() : stop();
+        });
+        observer.observe(container);
+        start();
+    }
 
-        window.addEventListener("mousemove", mouse_move_handler);
-        window.addEventListener("touchmove", touch_move_handler);
-
-        window.addEventListener("scroll", scroll_handler);
-
-        requestAnimationFrame(draw);
+    function teardown() {
+        stop();
+        if (observer) observer.disconnect();
+        window.removeEventListener("resize", resizeCanvas);
+        window.removeEventListener("scroll", scroll_handler);
+        if (!container) return;
+        container.removeEventListener("mousemove", mouse_move_handler);
+        container.removeEventListener("mouseleave", mouse_up_handler);
+        container.removeEventListener("touchstart", touch_start_handler);
+        container.removeEventListener("touchmove", touch_move_handler);
+        container.removeEventListener("touchend", touch_end_handler);
+        container.removeEventListener("touchcancel", touch_end_handler);
     }
 
     function update_particle() {
@@ -147,8 +194,8 @@
                 p.y >= 0 &&
                 p.y < canvas_height
             ) {
-                var col = parseInt(p.x / resolution);
-                var row = parseInt(p.y / resolution);
+                var col = Math.floor(p.x / resolution);
+                var row = Math.floor(p.y / resolution);
 
                 col = Math.min(col, num_cols - 1);
                 row = Math.min(row, num_rows - 1);
@@ -187,14 +234,11 @@
                 var dist = Math.sqrt(dx * dx + dy * dy);
                 var limit = Math.random() * 0.5;
 
+                // All particles go into one path, stroked once per frame (see draw_frame).
                 if (dist > limit) {
-                    ctx.lineWidth = 1;
-                    ctx.beginPath();
                     ctx.moveTo(p.x, p.y);
                     ctx.lineTo(p.px, p.py);
-                    ctx.stroke();
                 } else {
-                    ctx.beginPath();
                     ctx.moveTo(p.x, p.y);
 
                     /*
@@ -202,7 +246,6 @@
                      creates a shimmering effect while the particles aren't moving
                     */
                     ctx.lineTo(p.x + limit, p.y + limit);
-                    ctx.stroke();
                 }
 
                 // update the prev x and y coords to new ones for next loop
@@ -219,13 +262,21 @@
 
             p.xv *= 0.5;
             p.yv *= 0.5;
+            if (Math.abs(p.xv) < 1e-6) p.xv = 0;
+            if (Math.abs(p.yv) < 1e-6) p.yv = 0;
         }
     }
 
     function draw() {
+        draw_frame();
+        raf = visible ? requestAnimationFrame(draw) : 0;
+    }
+
+    function draw_frame() {
         var mouse_xv = mouse.x - mouse.px;
         var mouse_yv = mouse.y - mouse.py;
-        var scroll_yv = (scroll.y - scroll.py) * 0.19;
+        // Clamp so a fling-scroll can't blow up the simulation.
+        var scroll_yv = Math.max(-8, Math.min(8, (scroll.y - scroll.py) * 0.19));
 
         for (let i = 0; i < vec_cells.length; i++) {
             var cell_datas = vec_cells[i];
@@ -253,9 +304,11 @@
         }
 
         // clears the canvas every time a new frame is drawn so the particles can move
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, canvas_width, canvas_height);
         ctx.strokeStyle = "#98b1eb";
+        ctx.beginPath();
         update_particle();
+        ctx.stroke();
 
         // updates the cell velocity for every cell
         for (let i = 0; i < vec_cells.length; i++) {
@@ -270,8 +323,6 @@
         mouse.px = mouse.x;
         mouse.py = mouse.y;
         scroll.py = scroll.y;
-
-        requestAnimationFrame(draw);
     }
 
     function change_cell_velocity(cell_data, mvelX, mvelY, pen_size) {
@@ -335,6 +386,12 @@
         // this slowly decreases the cell's velocity over time so that the fluid stops it it's left alone
         cell_data.xv *= 0.99;
         cell_data.yv *= 0.99;
+
+        // Snap negligible motion to exactly zero. Otherwise an idle fluid decays into
+        // subnormal floats (~1e-322) that never reach zero, and subnormal math is
+        // very slow on many x86 CPUs: the page gets slower the longer it sits idle.
+        if (Math.abs(cell_data.xv) < 1e-6) cell_data.xv = 0;
+        if (Math.abs(cell_data.yv) < 1e-6) cell_data.yv = 0;
     }
 
     function cell(x, y, res) {
@@ -358,44 +415,39 @@
         this.xv = this.yv = 0;
     }
 
-    function mouse_down_handler(e) {
-        e.preventDefault();
-        mouse.down = true;
+    function set_pointer(x, y, reset) {
+        var rect = canvas.getBoundingClientRect();
+        if (reset) {
+            mouse.px = x - rect.left;
+            mouse.py = y - rect.top;
+        } else {
+            mouse.px = mouse.x;
+            mouse.py = mouse.y;
+        }
+        mouse.x = x - rect.left;
+        mouse.y = y - rect.top;
     }
 
-    function mouse_up_handler(e) {
+    function mouse_up_handler() {
         mouse.down = false;
     }
 
+    function mouse_move_handler(e) {
+        set_pointer(e.clientX, e.clientY, !mouse.down);
+        mouse.down = true; // hovering stirs the fluid
+    }
+
     function touch_start_handler(e) {
-        e.preventDefault();
-        var rect = canvas.getBoundingClientRect();
-        mouse.x = mouse.px = e.touches[0].pageX - rect.left; // set both previous and current coordinates
-        mouse.y = mouse.py = e.touches[0].pageY - rect.top;
+        set_pointer(e.touches[0].clientX, e.touches[0].clientY, true);
         mouse.down = true;
     }
 
-    function touch_end_handler(e) {
-        if (!e.touches) mouse.down = false;
-    }
-
-    function mouse_move_handler(e) {
-        e.preventDefault();
-        mouse.px = mouse.x;
-        mouse.py = mouse.y;
-
-        mouse.x = e.offsetX || e.layerX;
-        mouse.y = e.offsetY || e.layerY;
-    }
-
     function touch_move_handler(e) {
-        e.preventDefault();
-        mouse.px = mouse.x;
-        mouse.py = mouse.y;
+        set_pointer(e.touches[0].clientX, e.touches[0].clientY, false);
+    }
 
-        var rect = canvas.getBoundingClientRect();
-        mouse.x = e.touches[0].pageX - rect.left;
-        mouse.y = e.touches[0].pageY - rect.top;
+    function touch_end_handler(e) {
+        if (!e.touches.length) mouse.down = false;
     }
 
     function scroll_handler(e) {
@@ -404,54 +456,125 @@
     }
 
     onMount(() => {
-        window.requestAnimationFrame =
-            window.requestAnimationFrame ||
-            window.webkitRequestAnimationFrame ||
-            window.mozRequestAnimationFrame;
-
-        window.Fluid = {
-            initalize: init,
-        };
-
-        Fluid.initalize();
-
-        return () => {
-            window.removeEventListener("resize", resizeCanvas);
-            window.removeEventListener("scroll", scroll_handler);
-        };
+        reduced_motion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        init();
+        return teardown;
     });
 </script>
 
-<div class="hero-container">
-    <canvas id="c"></canvas>
-    <h2 id="hero">Brendan Glancy</h2>
-</div>
+<header class="hero-container" id="hero">
+    <canvas id="c" aria-hidden="true"></canvas>
+    <div class="hero-content">
+        <p class="eyebrow">{profile.role} · {profile.location}</p>
+        <h1>{profile.name}</h1>
+        <p class="tagline">{profile.tagline}</p>
+        <div class="cta">
+            <a class="btn primary" href="#work">See my work</a>
+            <a class="btn" href={profile.resume} target="_blank" rel="noopener">Résumé</a>
+            <a class="btn" href="#contact">Get in touch</a>
+        </div>
+    </div>
+    <a class="scroll-hint" href="#about" aria-label="Scroll to about">
+        <span></span>
+    </a>
+</header>
 
 <style>
     .hero-container {
-        background: black;
+        background: var(--bg);
         position: relative;
         overflow: hidden;
         height: 100vh;
+        height: 100svh;
+        min-height: 520px;
     }
 
     canvas {
         position: absolute;
-        top: 0;
-        left: 0;
+        inset: 0;
         width: 100%;
         height: 100%;
     }
 
-    h2 {
+    .hero-content {
         position: absolute;
-        top: 50%;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 0 1.25rem;
+        pointer-events: none; /* let the pointer reach the canvas */
+        z-index: 2;
+    }
+
+    .eyebrow {
+        font-family: var(--mono);
+        font-size: 0.85rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 1rem;
+    }
+
+    h1 {
+        color: var(--fg);
+        font-size: clamp(2.6rem, 9vw, 6rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        text-shadow: 0 0 40px rgba(0, 0, 0, 0.9);
+    }
+
+    .tagline {
+        max-width: 38rem;
+        margin-top: 1.25rem;
+        font-size: clamp(1rem, 2.4vw, 1.2rem);
+        line-height: 1.6;
+        color: var(--muted);
+        text-shadow: 0 0 20px rgba(0, 0, 0, 1);
+    }
+
+    .cta {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.75rem;
+        margin-top: 2rem;
+        pointer-events: auto;
+    }
+
+    .scroll-hint {
+        position: absolute;
+        bottom: 2rem;
         left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 10;
-        color: white;
-        font-size: 3rem;
-        margin: 0;
-        pointer-events: none; /* Allows mouse interactions to pass through to canvas */
+        transform: translateX(-50%);
+        width: 26px;
+        height: 42px;
+        border: 2px solid var(--line-strong);
+        border-radius: 14px;
+        z-index: 2;
+    }
+
+    .scroll-hint span {
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        width: 4px;
+        height: 8px;
+        margin-left: -2px;
+        border-radius: 2px;
+        background: var(--accent);
+        animation: wheel 1.8s ease-in-out infinite;
+    }
+
+    @keyframes wheel {
+        0% { opacity: 1; transform: translateY(0); }
+        100% { opacity: 0; transform: translateY(14px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .scroll-hint span { animation: none; }
     }
 </style>

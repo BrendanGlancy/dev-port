@@ -1,45 +1,55 @@
 <script>
-    import Github from "$lib/components/github.svelte";
     import Navbar from "$lib/components/navbar.svelte";
-    import Footer from "$lib/components/footer.svelte";
     import Hero from "$lib/components/hero.svelte";
+    import About from "$lib/components/about.svelte";
+    import Experience from "$lib/components/experience.svelte";
+    import Pipeline from "$lib/components/pipeline.svelte";
+    import Github from "$lib/components/github.svelte";
+    import Footer from "$lib/components/footer.svelte";
+    import { profile } from "$lib/data.js";
 
     import "../styles.css";
+
+    const title = `${profile.name} | ${profile.role}`;
+    const description =
+        "Brendan Glancy is a software engineer in Ohio working across full-stack web, systems programming in C and Rust, and security. Open-source contributor to RustScan and developer-portfolio.";
+    const image = `https://github.com/${profile.githubUser}.png?size=600`;
 </script>
 
 <svelte:head>
-    <title>Brendan Glancy</title>
-    <meta
-        name="description"
-        content="Brendan Glancy - Experienced Software Developer and System Administrator specializing in full-stack web development, cybersecurity, and IT solutions."
-    />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#000000" />
+    <link rel="canonical" href="https://brendanglancy.com/" />
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta property="twitter:domain" content="brendanglancy.com" />
-    <meta property="twitter:url" content="https://brendanglancy.com" />
-    <meta
-        name="twitter:title"
-        content="Brendan Glancy | Software Developer & System Administrator"
-    />
-    <meta
-        name="twitter:description"
-        content="Explore Brendan Glancy's portfolio, featuring expertise in software development, cybersecurity, and IT administration. Check out his projects, including the emoji matching game, eMatchi."
-    />
-    <meta name="twitter:image" content="https://brendanglancy.com/og.png" />
-
-    <meta
-        property="og:title"
-        content="Brendan Glancy | Software Developer & System Administrator"
-    />
-    <meta
-        property="og:description"
-        content="Discover Brendan Glancy's work in software development, IT administration, and cybersecurity. Learn about his projects and professional experience."
-    />
-    <meta property="og:image" content="https://brendanglancy.com/og.png" />
-    <meta property="og:url" content="https://brendanglancy.com" />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://brendanglancy.com/" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={image} />
+
+    {@html `<script type="application/ld+json">${JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Person",
+        name: profile.name,
+        jobTitle: profile.role,
+        url: "https://brendanglancy.com/",
+        sameAs: [profile.github, profile.linkedin],
+        alumniOf: "The University of Akron",
+    })}</script>`}
 </svelte:head>
 
-<Hero />
-<Github id="projects" />
+<Navbar />
+<main>
+    <Hero />
+    <About />
+    <Experience />
+    <Pipeline />
+    <Github />
+</main>
 <Footer />

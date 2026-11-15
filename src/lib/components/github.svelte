@@ -1,291 +1,142 @@
 <script>
     import { onMount } from "svelte";
     import Fa from "svelte-fa";
-    import { faStar, faCodeFork } from "@fortawesome/free-solid-svg-icons";
+    import { faStar, faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
+    import { faGithub } from "@fortawesome/free-brands-svg-icons";
+    import { featured, profile } from "$lib/data.js";
 
-    import Loading from "$lib/components/loading.svelte";
+    // Live star counts, keyed by "owner/repo". The cards still render if GitHub is unreachable or rate-limited.
+    let stars = $state({});
 
-    let repos = [];
-    let userData = {};
-    let contributions = [];
-    let errorMessage = "";
+    const fmt = (n) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : `${n}`);
 
-    function formatDate(dateString) {
-        const options = { year: "numeric", month: "short", day: "numeric" };
-        return new Date(dateString).toLocaleString(undefined, options);
-    }
-
-    async function fetchUserData() {
-        const username = "brendanglancy";
-        const apiUrl = `https://api.github.com/users/${username}`;
-
-        try {
-            const response = await fetch(apiUrl, {
-                headers: {
-                    Accept: "application/vnd.github.v3+json",
-                },
-            });
-
-            if (!response.ok) throw new Error(`Error: ${response.status}`);
-
-            userData = await response.json();
-        } catch (error) {
-            errorMessage = `Failed to fetch user profile: ${error.message}`;
-            console.error(error);
+    onMount(async () => {
+        const get = (url) =>
+            fetch(url, { headers: { Accept: "application/vnd.github+json" } })
+                .then((r) => (r.ok ? r.json() : null))
+                .catch(() => null);
+        const repos = await Promise.all(featured.map((p) => get(`https://api.github.com/repos/${p.repo}`)));
+        const next = {};
+        for (const repo of repos) {
+            if (repo?.full_name) next[repo.full_name.toLowerCase()] = repo.stargazers_count;
         }
-    }
-
-    async function fetchGithub() {
-        const username = "brendanglancy";
-        const apiUrl = `https://api.github.com/users/${username}/repos`;
-        const apiRustscan = `https://api.github.com/repos/bee-san/RustScan`;
-
-        try {
-            const responseRustscan = await fetch(apiRustscan, {
-                headers: {
-                    Accept: "application/vnd.github.v3+json",
-                },
-            });
-
-            if (!responseRustscan.ok) {
-                throw new Error(
-                    `Error fetching RustScan repos: ${responseRustscan.status}`,
-                );
-            }
-
-            const rustscanData = await responseRustscan.json();
-            const rustscanRepos = [rustscanData].map((repo) => ({
-                name: repo.name,
-                url: repo.html_url,
-                stars: repo.stargazers_count,
-                language: repo.language,
-            }));
-
-            const responsePersonal = await fetch(apiUrl, {
-                headers: {
-                    Accept: "application/vnd.github.v3+json",
-                },
-            });
-
-            if (!responsePersonal.ok) {
-                throw new Error(
-                    `Error fetching personal repos: ${responsePersonal.status}`,
-                );
-            }
-
-            const personalData = await responsePersonal.json();
-
-            const personalRepos = personalData.map((repo) => ({
-                name: repo.name,
-                url: repo.html_url,
-                stars: repo.stargazers_count,
-                language: repo.language,
-            }));
-
-            repos = [...rustscanRepos, ...personalRepos]
-                .sort((a, b) => b.stars - a.stars)
-                .slice(0, 4);
-        } catch (error) {
-            errorMessage = `Failed to fetch repositories: ${error.message}`;
-            console.error(error);
-        }
-    }
-
-    onMount(() => {
-        fetchUserData();
-        fetchGithub();
+        stars = next;
     });
 </script>
 
-<section id="projects">
-    {#if errorMessage}
-        <p class="error">{errorMessage}</p>
-    {:else if repos.length === 0}
-        <Loading />
-    {:else}
-        <h2>Open Projects</h2>
-        <div class="header-container">
-            <header>
-                <div class="profile">
-                    <img src={userData.avatar_url} alt="Profile" />
-                    <div class="user">
-                        {userData.login}
-                        <a
-                            href="https://github.com/brendanglancy"
-                            target="_blank">https://github.com/brendanglancy</a
-                        >
+<section id="work" class="section">
+    <h2 class="section-title"><span class="num">04.</span> Open source</h2>
+    <ul class="projects">
+        {#each featured as p}
+            {@const count = stars[p.repo.toLowerCase()]}
+            <li>
+                <a class="project" href={p.link} target="_blank" rel="noopener">
+                    <div class="top">
+                        <span class="kind">{p.kind}</span>
+                        <Fa icon={faArrowUpRightFromSquare} size="sm" />
                     </div>
-                </div>
-            </header>
-        </div>
-        <div class="container">
-            <ul class="projects">
-                {#each repos as repo}
-                    <li class="project">
-                        <div class="project-header">
-                            <a
-                                href={repo.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <strong>{repo.name}</strong>
-                            </a>
-                        </div>
-                        <div class="tags">
-                            <span>
-                                {repo.language}
-                            </span>
-                            <span>
-                                <Fa icon={faStar} />
-                                {repo.stars}
-                            </span>
-                        </div>
-                    </li>
-                {/each}
-            </ul>
-        </div>
-        <h2>NDA'd projects</h2>
-        <div class="container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Company</th>
-                        <th>Summary</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Software Developer</td>
-                        <td>LSI</td>
-                        <td
-                            >Work with Webos, Tizen, Android etc... to develop a
-                            media player</td
-                        >
-                    </tr>
-                    <tr>
-                        <td>System Administrator</td>
-                        <td>Tekanha</td>
-                        <td
-                            >Deal with high pressure situations with the goal of
-                            keeping production systems up</td
-                        >
-                    </tr>
-                    <tr>
-                        <td>Software Developer</td>
-                        <td>OVS</td>
-                        <td
-                            >Develop a Web Application for a small growing
-                            company</td
-                        >
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    {/if}
+                    <h3>{p.name}</h3>
+                    <p>{p.desc}</p>
+                    <div class="meta">
+                        <span class="lang"><i data-lang={p.lang}></i>{p.lang}</span>
+                        {#if count !== undefined}
+                            <span><Fa icon={faStar} size="sm" /> {fmt(count)}</span>
+                        {/if}
+                    </div>
+                </a>
+            </li>
+        {/each}
+    </ul>
+    <div class="more">
+        <a class="btn" href={profile.github} target="_blank" rel="noopener">
+            <Fa icon={faGithub} /> More on GitHub
+        </a>
+        <a class="btn" href="/games">Play the arcade</a>
+    </div>
 </section>
 
 <style>
-    section {
-        background-color: black;
-        background: radial-gradient(circle, #121212, black);
-        color: #e3e2e1;
-        padding: 2rem;
-        text-align: center;
-        min-height: 40vh;
-    }
-
-    a {
-        text-decoration: none;
-        color: #00bfff;
-    }
-
-    .profile {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .profile img {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        object-fit: cover;
-        margin: 10px;
-    }
-
-    .container {
-        max-width: 1200px;
-        margin: 4rem auto;
-        text-align: center;
-    }
-
-    header {
-        max-width: 1200px;
-        margin: auto;
-        text-align: left;
-
-        .user {
-            display: flex;
-            flex-direction: column;
-        }
-    }
-
     .projects {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 2rem;
         list-style: none;
-        padding: 0;
-        margin: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.25rem;
     }
 
     .project {
-        padding: 2rem;
-        width: 400px;
-        border-radius: 3px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        height: 100%;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
-        gap: 1.5rem;
-        text-align: left;
+        gap: 0.75rem;
+        padding: 1.6rem;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--bg-card);
+        text-decoration: none;
+        transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
     }
 
     .project:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        transform: translateY(-4px);
+        border-color: var(--accent);
+        box-shadow: 0 12px 40px -12px rgba(152, 177, 235, 0.25);
     }
 
-    .project-header {
+    .top {
         display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .tags {
-        display: flex;
-        gap: 1rem;
-        font-size: 0.85rem;
         justify-content: space-between;
-        color: #888889;
+        align-items: center;
+        color: var(--subtle);
     }
 
-    .error {
-        color: red;
-        font-size: 1.2rem;
+    .kind {
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--accent);
     }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
+    h3 {
+        font-size: 1.3rem;
+        font-weight: 700;
     }
 
-    th,
-    td {
-        text-align: left;
-        padding: 1rem;
-        border-bottom: 1px solid #e3e2e1;
+    p {
+        color: var(--muted);
+        font-size: 0.95rem;
+        flex: 1;
+    }
+
+    .meta {
+        display: flex;
+        justify-content: space-between;
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        color: var(--subtle);
+    }
+
+    .meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .lang i {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--subtle);
+    }
+
+    .lang i[data-lang="Rust"] { background: #dea584; }
+    .lang i[data-lang="JavaScript"] { background: #f1e05a; }
+
+    .more {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        justify-content: center;
+        margin-top: 3rem;
     }
 </style>

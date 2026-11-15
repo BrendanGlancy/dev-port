@@ -1,128 +1,103 @@
 <script>
-    import { onMount } from "svelte";
     import Fa from "svelte-fa";
-    import {
-        faStar,
-        faCodeFork,
-        faUpRightFromSquare,
-    } from "@fortawesome/free-solid-svg-icons";
-    import { faGithub } from "@fortawesome/free-brands-svg-icons";
+    import { faEnvelope, faFileLines } from "@fortawesome/free-solid-svg-icons";
+    import { faGithub, faLinkedin } from "@fortawesome/free-brands-svg-icons";
+    import { profile, shoutouts } from "$lib/data.js";
 
-    let data = [];
-    let errorMessage = "";
-
-    async function fetchRepoData() {
-        const apiUrl = `https://api.github.com/repos/BrendanGlancy/dev-port`;
-
-        try {
-            const response = await fetch(apiUrl, {
-                headers: {
-                    Accept: "application/vnd.github.v3+json",
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error: ${response.status}`);
-            }
-
-            data = await response.json();
-        } catch (error) {
-            errorMessage = "Failed to fetch profile";
-            console.log(error);
-        }
-    }
-
-    onMount(() => {
-        fetchRepoData();
-    });
+    const year = new Date().getFullYear();
 </script>
 
-<section>
-    {#if errorMessage}
-        <p class="error">{errorMessage}</p>
-    {:else}
-        <h2>Shoutouts</h2>
-        <footer class="footer-container">
-            <div class="footer-section">
-                <h3>
-                    <a
-                        href="https://coontzy1.github.io/"
-                        target="_blank"
-                        rel="noopener"
-                        ><strong>Austin Coontz</strong>
-                    </a>
-                </h3>
-            </div>
-            <div class="footer-section">
-                <h3>
-                    <a
-                        href="https://www.cipherbuu.net/"
-                        target="_blank"
-                        rel="noopener"
-                        ><strong>Ethan Tomford</strong>
-                    </a>
-                </h3>
-            </div>
-            <div class="footer-section">
-                <h3>
-                    <a href="https://github.com/BrendanGlancy">GitHub</a>
-                </h3>
-            </div>
-        </footer>
-    {/if}
+<section id="contact" class="section contact">
+    <h2 class="section-title"><span class="num">05.</span> Contact</h2>
+    <div class="cta">
+        <p class="big">Have a role, a project, or a CTF team that needs another player?</p>
+        <p>My inbox is open. I usually reply within a day or two.</p>
+        <a class="btn primary" href="mailto:{profile.email}"><Fa icon={faEnvelope} /> Say hello</a>
+        <div class="socials">
+            <a href={profile.github} target="_blank" rel="noopener" aria-label="GitHub"><Fa icon={faGithub} size="lg" /></a>
+            <a href={profile.linkedin} target="_blank" rel="noopener" aria-label="LinkedIn"><Fa icon={faLinkedin} size="lg" /></a>
+            <a href={profile.resume} target="_blank" rel="noopener" aria-label="Résumé"><Fa icon={faFileLines} size="lg" /></a>
+        </div>
+    </div>
 </section>
 
+<footer>
+    <p>
+        Shoutouts:
+        {#each shoutouts as s, i}
+            <a href={s.link} target="_blank" rel="noopener">{s.name}</a>{i < shoutouts.length - 1 ? " · " : ""}
+        {/each}
+    </p>
+    <p>
+        © {year} {profile.name} · Built with SvelteKit ·
+        <a href="https://github.com/BrendanGlancy/dev-port" target="_blank" rel="noopener">Source</a>
+    </p>
+</footer>
+
 <style>
-    h2 {
-        display: flex;
-        justify-content: center;
-        padding: 4rem 0.5rem 0.5rem 0.5rem;
-        margin: 0;
-        color: #8b949e;
-        background: black;
-    }
-
-    .footer-container {
+    .contact {
         text-align: center;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        background: black;
-        color: #c9d1d9;
-        font-family: sans-serif;
     }
 
-    a {
-        color: #8b949e;
+    .contact .section-title {
+        text-align: left;
+    }
+
+    .cta {
+        max-width: 38rem;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .big {
+        font-size: clamp(1.4rem, 3.5vw, 2rem);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.3;
+    }
+
+    .cta p:not(.big) {
+        color: var(--muted);
+        margin-bottom: 0.75rem;
+    }
+
+    .socials {
+        display: flex;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .socials a {
+        color: var(--muted);
+        transition: color 0.2s, transform 0.2s;
+    }
+
+    .socials a:hover {
+        color: var(--accent);
+        transform: translateY(-2px);
+    }
+
+    footer {
+        border-top: 1px solid var(--line);
+        padding: 2rem 1.25rem;
+        text-align: center;
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        color: var(--subtle);
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    footer a {
+        color: var(--muted);
         text-decoration: none;
     }
 
-    .footer-section {
-        flex: 1 1 25%;
-        margin: 1.5rem;
-        padding: 1.5rem;
-    }
-
-    .footer-section h3 {
-        font-size: 1.2rem;
-        margin-bottom: 1rem;
-    }
-
-    /* Mobile Styling */
-    @media (max-width: 768px) {
-        .footer-container {
-            flex-direction: column;
-            padding: 1rem;
-        }
-
-        .footer-section {
-            flex: 1 1 100%;
-            margin: 1rem 0;
-            padding: 1rem;
-        }
-
-        .footer-section h3 {
-            font-size: 1rem;
-        }
+    footer a:hover {
+        color: var(--accent);
     }
 </style>
