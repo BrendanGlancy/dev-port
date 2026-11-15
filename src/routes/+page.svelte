@@ -13,7 +13,7 @@
     const title = `${profile.name} | ${profile.role}`;
     const description =
         "Brendan Glancy is a software engineer in Ohio working across full-stack web, systems programming in C and Rust, and security. Open-source contributor to RustScan and developer-portfolio.";
-    const image = `https://github.com/${profile.githubUser}.png?size=600`;
+    const image = "https://avatars.githubusercontent.com/u/61941978?v=4&s=600";
 </script>
 
 <svelte:head>

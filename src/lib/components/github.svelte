@@ -58,7 +58,7 @@
     .projects {
         list-style: none;
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
         gap: 1.25rem;
     }
 
@@ -67,7 +67,7 @@
         display: flex;
         flex-direction: column;
         gap: 0.75rem;
-        padding: 1.6rem;
+        padding: clamp(1.25rem, 5vw, 1.6rem);
         border: 1px solid var(--line);
         border-radius: 16px;
         background: var(--bg-card);
@@ -75,10 +75,17 @@
         transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
     }
 
-    .project:hover {
-        transform: translateY(-4px);
+    .project:active {
         border-color: var(--accent);
-        box-shadow: 0 12px 40px -12px rgba(152, 177, 235, 0.25);
+    }
+
+    /* Hover lift only on devices that really hover; on touch it would stick after a tap. */
+    @media (hover: hover) {
+        .project:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 12px 40px -12px rgba(152, 177, 235, 0.25);
+        }
     }
 
     .top {
@@ -136,6 +143,6 @@
         flex-wrap: wrap;
         gap: 0.75rem;
         justify-content: center;
-        margin-top: 3rem;
+        margin-top: clamp(2rem, 6vw, 3rem);
     }
 </style>

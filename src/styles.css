@@ -1,5 +1,5 @@
-@import '@fontsource/fira-code/400.css';
-@import '@fontsource/fira-code/500.css';
+/* Latin subset only, one weight: the mono face is used for short labels. */
+@import '@fontsource/fira-code/latin-400.css';
 
 * {
     margin: 0;
@@ -21,6 +21,9 @@
     --mono: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
     --sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
     color-scheme: dark;
+    /* Page gutter that also clears the notch / rounded corners in landscape (viewport-fit=cover). */
+    --gutter-l: max(1.25rem, env(safe-area-inset-left));
+    --gutter-r: max(1.25rem, env(safe-area-inset-right));
 }
 
 html {
@@ -28,6 +31,9 @@ html {
     scroll-padding-top: 4.5rem;
     overflow-x: hidden;
     background: var(--bg);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: rgba(152, 177, 235, 0.18);
 }
 
 body {
@@ -36,6 +42,7 @@ body {
     color: var(--fg);
     font-family: var(--sans);
     line-height: 1.6;
+    overflow-wrap: break-word;
     -webkit-font-smoothing: antialiased;
 }
 
@@ -58,7 +65,7 @@ a {
 .section {
     max-width: 1100px;
     margin: 0 auto;
-    padding: 6rem 1.25rem;
+    padding: clamp(3.5rem, 10vw, 6rem) var(--gutter-r) clamp(3.5rem, 10vw, 6rem) var(--gutter-l);
 }
 
 .section-title {
@@ -68,7 +75,8 @@ a {
     font-size: clamp(1.6rem, 4vw, 2.2rem);
     font-weight: 700;
     letter-spacing: -0.02em;
-    margin-bottom: 2.5rem;
+    line-height: 1.25;
+    margin-bottom: clamp(1.75rem, 5vw, 2.5rem);
 }
 
 .section-title .num {
@@ -81,6 +89,7 @@ a {
 .section-title::after {
     content: '';
     flex: 1;
+    min-width: 1rem;
     height: 1px;
     background: var(--line);
     align-self: center;
@@ -90,6 +99,7 @@ a {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
+    min-height: 44px;
     padding: 0.7rem 1.3rem;
     border: 1px solid var(--line-strong);
     border-radius: 999px;
@@ -104,7 +114,10 @@ a {
 
 .btn:hover {
     border-color: var(--accent);
-    transform: translateY(-1px);
+}
+
+.btn:active {
+    border-color: var(--accent);
 }
 
 .btn.primary {
@@ -115,6 +128,22 @@ a {
 
 .btn.primary:hover {
     background: var(--accent-strong);
+}
+
+/* Lift effects only where a real hover exists, so they don't stick after a tap. */
+@media (hover: hover) {
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+}
+
+/* The hero buttons sit on an animating canvas: a backdrop blur there is re-rendered every
+   frame, which is expensive on phone GPUs. Use a slightly more opaque fill instead. */
+@media (max-width: 720px), (hover: none) {
+    .btn {
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: none;
+    }
 }
 
 .chip {

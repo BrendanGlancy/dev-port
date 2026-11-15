@@ -34,7 +34,7 @@
         display: grid;
         grid-template-columns: 11rem 1fr;
         gap: 1.5rem;
-        padding: 0 0 2.75rem 2rem;
+        padding: 0 0 clamp(2rem, 6vw, 2.75rem) 2rem;
     }
 
     .timeline > li::before {

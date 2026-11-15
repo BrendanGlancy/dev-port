@@ -12,11 +12,12 @@
         </div>
         <aside class="card">
             <img
-                src="https://github.com/{profile.githubUser}.png?size=240"
+                src="https://avatars.githubusercontent.com/u/61941978?v=4&s=192"
                 alt="Portrait of {profile.name}"
                 width="96"
                 height="96"
                 loading="lazy"
+                decoding="async"
             />
             <dl>
                 <dt>Based in</dt>
@@ -49,7 +50,7 @@
     .grid {
         display: grid;
         grid-template-columns: 1.6fr 1fr;
-        gap: 3rem;
+        gap: clamp(1.75rem, 5vw, 3rem);
         align-items: center;
     }
 
@@ -69,6 +70,7 @@
     }
 
     .card img {
+        display: block;
         border-radius: 50%;
         border: 2px solid var(--accent);
         margin-bottom: 1rem;
@@ -91,7 +93,7 @@
     h3 {
         font-size: 0.85rem;
         font-family: var(--mono);
-        font-weight: 500;
+        font-weight: 400;
         color: var(--subtle);
         text-transform: uppercase;
         letter-spacing: 0.08em;
@@ -99,12 +101,12 @@
     }
 
     .sec {
-        margin-top: 3.5rem;
+        margin-top: clamp(2.5rem, 7vw, 3.5rem);
     }
 
     .stats {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
         gap: 1rem;
     }
 

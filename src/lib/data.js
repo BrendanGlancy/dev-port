@@ -24,7 +24,7 @@ export const experience = [
         date: "2026 – Present",
         summary:
             "Full-stack development on production systems, from backend services and cloud infrastructure to cross-platform front ends.",
-        tags: ["Node.js", "AWS", "Svelte", "TypeScript"],
+        tags: ["Node.js", "AWS", "TypeScript"],
     },
     {
         role: "Software Developer",

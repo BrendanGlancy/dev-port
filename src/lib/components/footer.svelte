@@ -64,25 +64,36 @@
         margin-bottom: 0.75rem;
     }
 
+    /* 44px tap targets; the icons keep their old visual spacing (20px glyph + 24px gap). */
     .socials {
         display: flex;
-        gap: 1.5rem;
-        margin-top: 1.5rem;
+        margin-top: 0.9rem;
     }
 
     .socials a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
         color: var(--muted);
         transition: color 0.2s, transform 0.2s;
     }
 
-    .socials a:hover {
+    .socials a:active {
         color: var(--accent);
-        transform: translateY(-2px);
+    }
+
+    @media (hover: hover) {
+        .socials a:hover {
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
     }
 
     footer {
         border-top: 1px solid var(--line);
-        padding: 2rem 1.25rem;
+        padding: 2rem var(--gutter-r) calc(2rem + env(safe-area-inset-bottom)) var(--gutter-l);
         text-align: center;
         font-family: var(--mono);
         font-size: 0.8rem;
@@ -95,6 +106,18 @@
     footer a {
         color: var(--muted);
         text-decoration: none;
+    }
+
+    @media (pointer: coarse) {
+        /* Looser lines so adjacent inline links are easier to hit. */
+        footer {
+            line-height: 2.2;
+            gap: 0;
+        }
+
+        footer a {
+            padding: 0.6rem 0.15rem;
+        }
     }
 
     footer a:hover {

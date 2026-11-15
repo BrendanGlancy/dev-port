@@ -111,6 +111,10 @@
         canvas_width = rect.width;
         canvas_height = rect.height;
 
+        // Keep particle density roughly constant instead of packing the desktop count
+        // into a phone-sized canvas: ~500 on a 390x844 phone, 1000 from ~650k px² up.
+        speck_count = Math.max(300, Math.min(1000, Math.round((canvas_width * canvas_height) / 650)));
+
         // Render at device resolution so the 1px strokes stay sharp on retina screens.
         var dpr = Math.min(window.devicePixelRatio || 1, 2);
         canvas.width = Math.round(canvas_width * dpr);
@@ -282,7 +286,8 @@
             var cell_datas = vec_cells[i];
             for (let j = 0; j < cell_datas.length; j++) {
                 var cell_data = cell_datas[j];
-                if (mouse.down) {
+                // A stationary pointer adds nothing; skip the per-cell distance test.
+                if (mouse.down && (mouse_xv !== 0 || mouse_yv !== 0)) {
                     change_cell_velocity(
                         cell_data,
                         mouse_xv,
@@ -484,9 +489,11 @@
         background: var(--bg);
         position: relative;
         overflow: hidden;
-        height: 100vh;
-        height: 100svh;
-        min-height: 520px;
+        display: flex;
+        /* min-height, not height: on short / landscape phones the hero grows to fit its
+           content instead of clipping the buttons. */
+        min-height: 100vh;
+        min-height: 100svh;
     }
 
     canvas {
@@ -494,17 +501,21 @@
         inset: 0;
         width: 100%;
         height: 100%;
+        /* Vertical scrolling and pinch-zoom stay with the browser; drags still stir the fluid. */
+        touch-action: pan-y pinch-zoom;
     }
 
     .hero-content {
-        position: absolute;
-        inset: 0;
+        position: relative;
+        flex: 1;
+        min-width: 0;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         text-align: center;
-        padding: 0 1.25rem;
+        /* Top clears the fixed nav, bottom clears the scroll hint. */
+        padding: calc(4.75rem + env(safe-area-inset-top)) var(--gutter-r) 5.25rem var(--gutter-l);
         pointer-events: none; /* let the pointer reach the canvas */
         z-index: 2;
     }
@@ -516,6 +527,7 @@
         text-transform: uppercase;
         color: var(--accent);
         margin-bottom: 1rem;
+        text-wrap: balance;
     }
 
     h1 {
@@ -534,6 +546,7 @@
         line-height: 1.6;
         color: var(--muted);
         text-shadow: 0 0 20px rgba(0, 0, 0, 1);
+        text-wrap: balance;
     }
 
     .cta {
@@ -567,6 +580,37 @@
         border-radius: 2px;
         background: var(--accent);
         animation: wheel 1.8s ease-in-out infinite;
+    }
+
+    /* Extend the hint's tap area to 44px without changing how it looks. */
+    .scroll-hint::before {
+        content: "";
+        position: absolute;
+        inset: -3px -11px;
+    }
+
+    /* Landscape phones: no room for the hint; tighten the vertical rhythm. */
+    @media (max-height: 480px) {
+        .hero-content {
+            padding-top: calc(4rem + env(safe-area-inset-top));
+            padding-bottom: 1.5rem;
+        }
+
+        .scroll-hint {
+            display: none;
+        }
+
+        h1 {
+            font-size: clamp(2.6rem, 7vw, 4rem);
+        }
+
+        .tagline {
+            margin-top: 0.9rem;
+        }
+
+        .cta {
+            margin-top: 1.4rem;
+        }
     }
 
     @keyframes wheel {

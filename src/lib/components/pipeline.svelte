@@ -70,7 +70,7 @@
     .principles {
         list-style: none;
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
         gap: 1.5rem;
         margin-top: 2.5rem;
     }
